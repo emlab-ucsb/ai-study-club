@@ -1,4 +1,4 @@
-# ai-study-club
+# AI Study Club
 
 Materials for the emLab AI study club — a running collection of small, throwaway
 demos used to show colleagues how AI coding tools actually behave in a real repo.
