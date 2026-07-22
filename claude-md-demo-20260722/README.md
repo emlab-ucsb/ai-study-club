@@ -8,10 +8,6 @@ Claude to have something real to read. What we're demonstrating is how to give
 Claude Code standing instructions about a repository, so you don't re-explain
 the same things every session.
 
-This README doubles as the written record of a live session in which we built
-the repo and set it up from scratch. The steps below are what actually
-happened, including the parts that went wrong.
-
 ---
 
 ## 1. What `CLAUDE.md` is
@@ -35,8 +31,7 @@ Project rules travel with the code. Personal rules travel with you. All
 applicable files load together.
 
 **Scope follows file location.** A `CLAUDE.md` in a subdirectory applies when
-Claude works in that subdirectory. Put the file at the level whose rules it
-describes.
+Claude works in that subdirectory.
 
 ---
 
@@ -62,17 +57,7 @@ source("R/program_impact.R")
 save_program_impact()
 ```
 
-That queries, plots, and writes `figs/program_impact.png`. Styling matches
-`theme_bwbs()` from the ocean-ghg-bwbs project, so the figures look like the
-ones in that report.
-
-Two things worth knowing:
-
-- It needs BigQuery access to `emlab-gcp`, so it won't run for everyone. That's
-  deliberate — the cost rules in step 4 and the hook in step 8 then apply to
-  something real rather than hypothetical.
-- The table is pre-aggregated over all vessels. The published report recomputes
-  its totals over compliant vessels only, so these numbers differ from it.
+That queries, plots, and writes `figs/program_impact.png`.
 
 ---
 
@@ -88,8 +73,7 @@ That was accepted deliberately, and the generated file notes that it should
 move down if `ai-study-club/` ever holds a second project.
 
 **The draft is a starting point, not the finished article.** It captures what's
-inferable from the code. It cannot know your intent — the generated file only
-warns about BigQuery costs because that was stated out loud in conversation.
+inferable from the code. It cannot know your intent.
 
 ---
 
@@ -111,35 +95,17 @@ Just a markdown file. Edit freely.
 - Long files — 300 lines dilutes itself and the good rules get lost
 - Anything already obvious from reading the code
 
-Rules that *are* true here:
+Rules that we could add here:
 
 ```markdown
 ## Do not
-- Do not run a new BigQuery query without a dry run first. Report the estimated
-  bytes scanned and ask before running anything above 10 GB.
 - Do not add dependencies beyond bigrquery and ggplot2 — the point is a small
   file colleagues can read in one sitting.
 - Do not reorganize this directory — the layout matches the walkthrough in the README.
 ```
 
-Each maps to concrete damage: an unexpected bill, a demo nobody can follow,
+Each maps to concrete damage: a demo nobody can follow,
 files desynced from the presentation.
-
-### Give every rule its reason
-
-Compare:
-
-> Never run a BigQuery query above 10Gb.
-
-with:
-
-> Never run a BigQuery query without first running it with `--dry_run` and
-> reporting the estimated bytes scanned. If the estimate exceeds 10 GB, stop
-> and ask before running it.
-
-The second names the unit BigQuery actually bills on, and says what to do
-instead of stopping. A prohibition with no alternative leaves Claude
-improvising at exactly the wrong moment.
 
 ---
 
@@ -196,6 +162,22 @@ The BigQuery rule illustrates the placement question well: there's no
 BigQuery anywhere in this demo repo, so in a project file it would be
 decoration. In the global file it applies to every project that *does* touch
 BigQuery.
+
+### Give every rule its reason
+
+Compare:
+
+> Never run a BigQuery query above 10Gb.
+
+with:
+
+> Never run a BigQuery query without first running it with `--dry_run` and
+> reporting the estimated bytes scanned. If the estimate exceeds 10 GB, stop
+> and ask before running it.
+
+The second names the unit BigQuery actually bills on, and says what to do
+instead of stopping. A prohibition with no alternative leaves Claude
+improvising at exactly the wrong moment.
 
 ---
 

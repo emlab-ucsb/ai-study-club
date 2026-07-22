@@ -11,7 +11,7 @@ behaviour* is the point, not the code.
 
 | Folder | Session | Topic |
 |---|---|---|
-| [claude-md-demo-20260722/](claude-md-demo-20260722/) | 2026-07-22 | How `CLAUDE.md` works — `/init`, editing the draft, watching Claude follow the rules |
+| [claude-md-demo-20260722/](claude-md-demo-20260722/) | 2026-07-22 | How `CLAUDE.md` works — `/init`, editing the draft, and adding permissions |
 
 ## Conventions
 
