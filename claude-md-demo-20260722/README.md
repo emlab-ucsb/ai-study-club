@@ -421,8 +421,7 @@ Then **open `/hooks` (from Claude chat) once** so the new file is picked up, or 
 | Effort | one line of JSON | a script to write and test |
 | Good for | "always ask before X" | "block X unless condition Y" |
 
-Start with permissions. Reach for a hook only when the rule needs logic —
-inspecting arguments, checking a file, calling out to another tool.
+Start with permissions. Reach for a hook only when the rule needs logic.
 
 
 
