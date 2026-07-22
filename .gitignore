@@ -1,0 +1,36 @@
+# Claude Code
+CLAUDE.local.md
+.claude/settings.local.json
+
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+.Renviron
+*_cache/
+/cache/
+renv/library/
+renv/staging/
+
+# Python (for future sessions)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Environment / secrets
+.env
+.env.local
+*.pem
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
