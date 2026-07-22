@@ -1,4 +1,4 @@
-# claude-md-demo
+# claude-md-demo-20260722
 
 A deliberately tiny R project whose **only purpose is to demo how `CLAUDE.md` works**.
 
