@@ -115,7 +115,7 @@ files desynced from the presentation.
 automatically. To apply them:
 
 - Ask Claude to "re-read `CLAUDE.md`" — no restart, smoothest for a live demo
-- `/clear`
+- `/clear` (wipes the conversation history and starts a fresh session)
 - Open a new chat
 - Restart the editor (overkill)
 
@@ -222,12 +222,12 @@ later files overriding earlier ones.
 **Scope decides where a rule goes.** Any rule works in any of the three files —
 the question is how widely you want it to apply.
 
-For example,`Bash(Rscript *)` in this repo's `.claude/settings.json` allows `Rscript` here
-only. In `~/.claude/settings.json` it allows it everywhere, which is what you
+For example,`Bash(Rscript *)` in this repo's `.claude/settings.json` allows `Rscript` without asking here only. In `~/.claude/settings.json` it allows it everywhere, which is what you
 want if all your projects are R. Put it in the repo file when the rule is about
 *this* project's tooling; put it in the global file when it's about how you
-work. Also, if you wanted `Read(./.env)` and `Bash(rm -rf *)` to be true in every project you'll ever work
-on, `~/.claude/settings.json` is the obvious home for those.
+work. The same logic applies to `deny` rules: blocking `Read(./.env)` and
+`Bash(rm -rf *)` is something you want in every project, so those belong in
+`~/.claude/settings.json` rather than any single repo.
 
 Because project settings load after user settings, a repo you clone can loosen
 a rule you set globally. A global `deny` is a strong default, not an absolute
