@@ -142,8 +142,7 @@ it when they clone.
 ```bash
 touch ~/.claude/CLAUDE.md && open -e ~/.claude/CLAUDE.md
 ```
-
-Include rules that apply to your general workflow, regardless of the repository. For example:
+You can execute the line above in the terminal to create and open the file or create it manually under `~/.claude/`. Include rules that apply to your general workflow, regardless of the repository. For example:
 
 ```markdown
 ## Data and cost safety
@@ -408,7 +407,7 @@ From the terminal, that's:
 mkdir -p .claude
 touch .claude/settings.json
 ```
-Paste the JSON in and save.
+Paste the JSON contents in and save. You can also create it manually within the repo's `.claude` folder.
 
 Then **open `/hooks` (from Claude chat) once** so the new file is picked up, or nothing fires.
 
