@@ -222,19 +222,15 @@ later files overriding earlier ones.
 **Scope decides where a rule goes.** Any rule works in any of the three files —
 the question is how widely you want it to apply.
 
-For example,`Bash(Rscript *)` in this repo's `.claude/settings.json` allows `Rscript` without asking here only. In `~/.claude/settings.json` it allows it everywhere, which is what you
-want if all your projects are R. Put it in the repo file when the rule is about
+For example, an `allow` rule to `Bash(Rscript *)` in this repo's `.claude/settings.json` allows `Rscript` without asking. If placed in `~/.claude/settings.json` it allows it everywhere. Put it in the repo file when the rule is about
 *this* project's tooling; put it in the global file when it's about how you
 work. The same logic applies to `deny` rules: blocking `Read(./.env)` and
 `Bash(rm -rf *)` is something you want in every project, so those belong in
 `~/.claude/settings.json` rather than any single repo.
 
 Because project settings load after user settings, a repo you clone can loosen
-a rule you set globally. A global `deny` is a strong default, not an absolute
-guarantee; it's only airtight in files you control.
+a rule you set globally.
 
-Note this repo ships no `.claude/settings.json` — the examples below are
-documentation, not live configuration.
 
 ### Permissions
 
@@ -428,23 +424,6 @@ Then **open `/hooks` (from Claude chat) once** so the new file is picked up, or 
 Start with permissions. Reach for a hook only when the rule needs logic —
 inspecting arguments, checking a file, calling out to another tool.
 
----
 
-## Demo script
 
-1. Show the repo with no `CLAUDE.md` — the "before" state.
-2. Run `/init`. Read the draft aloud; point out what it inferred from
-   `DESCRIPTION` and the test layout, and what it couldn't have known.
-3. Add one crisp, checkable rule by hand — e.g. *assignment is always `<-`,
-   never `=`*.
-4. Say "re-read `CLAUDE.md`", then ask Claude to add a function. Colleagues
-   watch the rule get followed. A rule you can *see* obeyed lands better than a
-   paragraph of philosophy.
-5. Show `~/.claude/CLAUDE.md` and the scope distinction.
-6. Close on the enforcement point from step 8: soft rule versus hard rule.
 
----
-
-## TODO
-
-- Logging examples — a later session.
