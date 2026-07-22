@@ -1,9 +1,10 @@
-Package: penguinrater
-Title: Rates Penguins, Unscientifically
+Package: programimpact
+Title: BWBS Program Emissions Impact
 Version: 0.0.1
-Authors@R: person("Study", "Club", email = "polcarbo@gmail.com", role = c("aut", "cre"))
-Description: A demo package that assigns entirely made-up scores to penguins.
-    Exists solely as a sandbox for demonstrating CLAUDE.md setup.
+Authors@R: person("Study", "Club", email = "pcarbomestre@ucsb.com", role = c("aut", "cre"))
+Description: Pulls program-level emissions totals for the 2024 BWBS season from
+    BigQuery and plots actual, counterfactual and impact figures. Exists as a
+    sandbox for demonstrating CLAUDE.md setup.
 License: MIT
 Encoding: UTF-8
-Suggests: testthat (>= 3.0.0)
+Imports: bigrquery, ggplot2, patchwork
