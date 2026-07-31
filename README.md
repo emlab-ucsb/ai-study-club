@@ -16,7 +16,7 @@ behaviour* is the point, not the code.
 ## Conventions
 
 - One folder per session, named `<topic>-<YYYYMMDD>`.
-- Each folder has its own `README.md` with the demo script for that session.
+- Each folder has its own `README.md`.
 - Demo projects are disposable. Don't build anything real on top of them.
 
 ## Getting started
