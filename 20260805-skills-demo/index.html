@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skills Demo — emLab AI Study Club</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/white.css">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Slide 1: title -->
+      <section>
+        <h1>Skills Demo</h1>
+        <p>emLab AI Study Club — 2026-08-05</p>
+      </section>
+
+      <!-- Slide 2: lorem ipsum -->
+      <section>
+        <h2>Lorem ipsum</h2>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <ul>
+          <li>Ut enim ad minim veniam, quis nostrud exercitation</li>
+          <li>Duis aute irure dolor in reprehenderit in voluptate</li>
+          <li>Excepteur sint occaecat cupidatat non proident</li>
+        </ul>
+      </section>
+
+      <!-- Slide 3: video. Served from the LFS media endpoint (Pages doesn't
+           serve LFS content); preload="none" + local poster so LFS bandwidth
+           is only spent on play. Requires the repo to be public. -->
+      <section>
+        <h2>Recording</h2>
+        <video
+          controls
+          preload="none"
+          style="max-width: 90%; max-height: 70vh;"
+          poster="../assets/thumbnail.png"
+          src="https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/file_example_MOV_480_700kB.mov">
+        </video>
+      </section>
+
+      <!-- Slide 4: questions -->
+      <section>
+        <h1>Questions?</h1>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({ hash: true });
+  </script>
+</body>
+</html>

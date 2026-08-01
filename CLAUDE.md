@@ -26,6 +26,9 @@ session needs rules of its own, add a `CLAUDE.md` inside that folder.
 
   Requires `bigrquery`, `ggplot2`, `patchwork`. No test suite.
 
+- `20260805-skills-demo/` — a Reveal.js slide deck (`index.html`, CDN-loaded,
+  no build step). Open the file in a browser or serve via GitHub Pages.
+
 ## Conventions
 
 - R style: `<-` for assignment, package-qualified calls (`ggplot2::aes()`), roxygen
