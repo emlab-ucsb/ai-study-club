@@ -33,13 +33,17 @@
 
       <!-- Slide 3: video. Served from the LFS media endpoint (Pages doesn't
            serve LFS content); preload="none" + local poster so LFS bandwidth
-           is only spent on play. Requires the repo to be public. -->
+           is only spent on play. Requires the repo to be public.
+
+           Sized explicitly rather than with r-stretch: r-stretch computes the
+           box from videoWidth/videoHeight, which are 0 under preload="none",
+           collapsing the element to a blank slide. 920x600 fills the default
+           960x700 slide; the video letterboxes inside it. -->
       <section>
-        <h2>Recording</h2>
         <video
           controls
           preload="none"
-          style="max-width: 90%; max-height: 70vh;"
+          style="width: 920px; height: 600px;"
           poster="../assets/thumbnail.png"
           src="https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/file_example_MOV_480_700kB.mov">
         </video>
