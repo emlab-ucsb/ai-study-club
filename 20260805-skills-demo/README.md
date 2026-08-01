@@ -9,6 +9,24 @@ CDN, no build step). Open it locally with:
 open 20260805-skills-demo/index.html
 ```
 
-or view it through GitHub Pages once pushed. Slide 3 embeds the session
-recording from Git LFS via `media.githubusercontent.com` — that link only
-works while the repo is public.
+The text below is the basis for the content in the presentation (adapted by Claude):
+
+## Slide 1: Title
+
+**Adapting Claude to your workflow**
+
+Jordan Wingenroth
+08/05/2026
+
+## Slide 2
+
+
+
+## Slide 3
+
+Title the video "Worldwide!"
+
+## Slide 4
+
+Make the background teal
+
