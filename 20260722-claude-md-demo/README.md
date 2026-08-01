@@ -68,7 +68,7 @@ and drafts a `CLAUDE.md`. It writes to Claude's **current working directory**,
 so start the session where you want the file.
 
 In this demo the session was running one level up, in `ai-study-club/`, so the
-file landed at `ai-study-club/CLAUDE.md` rather than inside `claude-md-demo/`.
+file landed at `ai-study-club/CLAUDE.md` rather than inside `20260722-claude-md-demo/`.
 That was accepted deliberately, and the generated file notes that it should
 move down if `ai-study-club/` ever holds a second project.
 

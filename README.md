@@ -11,11 +11,11 @@ behaviour* is the point, not the code.
 
 | Folder | Session | Topic |
 |---|---|---|
-| [claude-md-demo-20260722/](claude-md-demo-20260722/) | 2026-07-22 | How `CLAUDE.md` works — `/init`, editing the draft, and adding permissions |
+| [20260722-claude-md-demo/](20260722-claude-md-demo/) | 2026-07-22 | How `CLAUDE.md` works — `/init`, editing the draft, and adding permissions |
 
 ## Conventions
 
-- One folder per session, named `<topic>-<YYYYMMDD>`.
+- One folder per session, named `<YYYYMMDD>-<topic>` so they sort chronologically.
 - Each folder has its own `README.md`.
 - Demo projects are disposable. Don't build anything real on top of them.
 
