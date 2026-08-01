@@ -17,6 +17,44 @@
     }
     .reveal .term-skills     { color: #D97757; }
     .reveal .term-connectors { color: #3B9C7F; }
+
+    /* Title slide: byline smaller than the title, date smaller still. */
+    .reveal .byline { font-size: 0.7em; }
+    .reveal .date   { font-size: 0.5em; }
+
+    /* Screenshot that fades out to the white background. The wrapper clips the
+       image to the top 300px of 721 (~42%), and the mask fades to nothing by
+       exactly that point so there's no hard cut at the edge. */
+    .reveal .fade-shot {
+      width: 900px;
+      height: 300px;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+    /* Explicit width AND height, and max-height/max-width unset: reveal.css
+       caps `section img` at a percentage of its container, which would clamp
+       the height to .fade-shot's height while the width stayed 900px and
+       stretch the image wide. 900x721 is the source's 2314x1854 aspect.
+
+       Mask stops 12%/42%: a long, gradual fade that starts well above the
+       "Announcements" heading (36%) and hits fully transparent right at the
+       300px clip edge, so the heading and a little of the text under it are
+       still faintly visible and there's no hard cut. Keep the two declarations
+       IDENTICAL:
+       Chrome reads -webkit-mask-image, Firefox reads mask-image, so any drift
+       between them shows up as a different fade per browser. */
+    .reveal .fade-shot img {
+      width: 900px;
+      height: 721px;
+      max-width: none;
+      max-height: none;
+      display: block;
+      margin: 0;
+      border: none;
+      box-shadow: none;
+      -webkit-mask-image: linear-gradient(to bottom, #000 12%, transparent 42%);
+              mask-image: linear-gradient(to bottom, #000 12%, transparent 42%);
+    }
   </style>
 </head>
 <body>
@@ -26,24 +64,22 @@
       <!-- Slide 1: title -->
       <section>
         <h1>Adapting Claude to your workflow</h1>
-        <p>Jordan Wingenroth</p>
-        <p>08/05/2026</p>
+        <p class="byline">Jordan Wingenroth</p>
+        <p class="date">08/05/2026</p>
       </section>
 
       <!-- Slide 2: Connectors intro -->
       <section>
         <h2>Step 1: <span class="term-connectors">Connectors</span></h2>
         <p>
-          <span class="term-skills">Claude Skills</span> are only as powerful as
-          the tools you put in their hands.
+          <span class="term-skills">Skills</span> are only as powerful as the
+          tools you put in their hands.
         </p>
-        <ul>
-          <li>
-            <span class="term-connectors">Connectors</span> (sometimes called
-            MCPs<sup>1</sup>) are a straightforward way to put Claude in touch
-            with your other tools<sup>2</sup>.
-          </li>
-        </ul>
+        <p>
+          <span class="term-connectors">Connectors</span> (sometimes called
+          MCPs<sup>1</sup>) are a straightforward way to put Claude in touch
+          with your other software<sup>2</sup>.
+        </p>
         <p class="footnote">
           <sup>1</sup> Model Context Protocol.<br>
           <sup>2</sup> There's a connector for Google Drive, but not yet for
@@ -65,7 +101,7 @@
           controls
           preload="none"
           style="width: 620px; height: 480px;"
-          src="https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/connectors_1.mov">
+          src="https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/connectors_setup.mov">
         </video>
         <p class="fragment">
           If you haven't set up your connectors yet, clicking "Connect"
@@ -73,8 +109,20 @@
         </p>
       </section>
 
-      <!-- Slide 4: blank -->
-      <section></section>
+      <!-- Slide 4: Connectors in use. The PNG isn't LFS-tracked, so it can be
+           served as a plain relative path from Pages. -->
+      <section>
+        <p>
+          Once a <span class="term-connectors">Connector</span> is set up, Claude
+          sees it in the chat and should load it for use when it finds it
+          applicable.
+        </p>
+        <p>For example:</p>
+        <div class="fade-shot">
+          <img src="../assets/connectors_use_example.png"
+               alt="Claude answering a question using the Slack connector">
+        </div>
+      </section>
 
       <!-- Slide 5: blank, gray background -->
       <section data-background-color="gray"></section>
