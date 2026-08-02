@@ -18,13 +18,13 @@ open 20260805-skills-demo/index.html
 
 ## Adapting Claude to your workflow (title slide)
 
-**Adapting Claude to your workflow**
+**Adapting Claude to your workflow** [plenty of spacing between words]
 
-Jordan Wingenroth [smaller font]
+Jordan Wingenroth [somewhat smaller font]
 
-08/05/2026 [even smaller font]
+08/05/2026 [smaller font]
 
-## Step 1: Connectors
+## Level 1: Connectors
 
 Skills are only as powerful as the tools you put in their hands. 
 
@@ -40,11 +40,11 @@ Have appear on click: If you haven't set up your connectors yet, clicking "Conne
 
 ## Slide 3
 
-Once a Connector is set up, Claude sees it in the chat and should load it for use it when it finds it applicable.
+Once a Connector is set up, Claude sees it in the chat and should load it for use it when it finds it applicable. For example: 
 
 [insert connectors_use_example.png, fade whole image width to background/white beginning at "Announcements"]
 
-## Slide 4
+## Level 2: Skills
 
-Blank, gray background
+A Claude
 
