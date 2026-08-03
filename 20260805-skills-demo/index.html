@@ -74,8 +74,9 @@
     /* Neither reveal.css nor the white theme sizes inline <code>, so it
        computes to the same px as its surroundings — but generic `monospace`
        resolves to Menlo here, whose larger x-height reads as oversized next to
-       the body font. 0.9em evens them out optically. */
-    .reveal .compare code { font-size: 0.9em; }
+       the body font. 0.9em evens them out optically, everywhere <code> is
+       used rather than only in the table. */
+    .reveal code { font-size: 0.9em; }
 
     /* Meme images: matched on height so the two sit the same in the deck
        despite different aspects (400x400 and 945x609). max-* unset because
@@ -88,6 +89,20 @@
       max-height: none;
       border: none;
       box-shadow: none;
+    }
+
+    /* Slide paragraphs already span the full 960px, so there's no box to
+       widen — a lone word on the last line is a widow, not a width problem.
+       text-wrap: pretty makes the browser rebalance the earlier line breaks to
+       avoid it. Ignored by browsers that don't support it, which just puts the
+       widow back; nothing else changes. */
+    .reveal .slides section p { text-wrap: pretty; }
+
+    /* The line that lands where a video was, once it fades out. Sized up and
+       given room above so it reads as the payoff rather than a caption. */
+    .reveal .payoff {
+      font-size: 1.4em;
+      margin-top: 1.5em;
     }
 
     /* A slide that is one centered sentence and nothing else. Reveal already
@@ -143,8 +158,13 @@
   <div class="reveal">
     <div class="slides">
 
-      <!-- Slide 1: title -->
-      <section>
+      <!-- Slide 1: title. The `center` class is reveal's own per-slide opt-in
+           (its layout checks `config.center || slide.classList.contains
+           ("center")`), so this one slide centers vertically while the deck's
+           global center: false keeps everything else top-aligned. Don't
+           substitute CSS here: reveal writes `display` inline on the visible
+           slide, which overrides any flex-centering rule in the stylesheet. -->
+      <section class="center">
         <h1 class="deck-title">Adapting Claude to your workflow with
           <span class="term-skills">Skills</span></h1>
         <p class="byline">Jordan Wingenroth</p>
@@ -240,26 +260,95 @@
           controls
           preload="none"
           style="width: 500px; height: 379px;"
+          poster="../assets/skills_setup_poster.jpg"
           src="../assets/skills_setup.mov">
         </video>
       </section>
 
-      <!-- Slide 6: placeholder. Repeats the previous slide's heading, so both
-           halves of the 5->6 boundary have to fade: the outgoing slide fades
-           out (set on slide 5) and this one fades in. Leaving forward to slide
-           7 slides as normal. -->
+      <!-- Slide 6: repeats the previous slide's heading, so both halves of the
+           5->6 boundary have to fade: the outgoing slide fades out (set on
+           slide 5) and this one fades in. Leaving forward to slide 7 slides as
+           normal. Source is 1948x1538 (~1.27:1), so 500x395 matches the
+           footprint of the clip on slide 5.
+
+           TEMPORARY: local path for offline authoring. Before publishing,
+           restore the LFS media endpoint:
+           https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/random_star.mov -->
       <section data-transition="fade-in slide-out">
         <h2>First steps</h2>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-          ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat.
+          There are many ways to create a <span class="term-skills">Skill</span>
+          but let's start simple. I googled "astronomy stars database" and the
+          first result was SIMBAD, so&hellip;
         </p>
+        <video
+          controls
+          preload="none"
+          style="width: 500px; height: 395px;"
+          poster="../assets/random_star_poster.jpg"
+          src="../assets/random_star.mov">
+        </video>
       </section>
 
-      <!-- Slide 7: standalone statement, no heading. -->
-      <section class="statement">
+      <!-- Slide 7: Improving. Source is 2148x1650 (~1.30:1), so 500x384 keeps
+           the aspect and matches the other clips' footprint.
+
+           TEMPORARY: local path for offline authoring. Before publishing,
+           restore the LFS media endpoint:
+           https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/skill_creator.mov -->
+      <section>
+        <h2>Improving</h2>
+        <p>
+          Not bad! But it took over 30 seconds. Some of that time was spent
+          troubleshooting, which is good information to add to the
+          <span class="term-skills">Skill</span> using
+          <code>skill-creator</code>.
+        </p>
+        <video
+          controls
+          preload="none"
+          style="width: 500px; height: 384px;"
+          poster="../assets/skill_creator_poster.jpg"
+          src="../assets/skill_creator.mov">
+        </video>
+      </section>
+
+      <!-- Slides 8-9: Run it back. Same trick as First steps — the heading and
+           intro repeat verbatim and the boundary crossfades, so only the video
+           swaps for the payoff line. Source is 2148x1650 (~1.30:1), so 500x384
+           matches the other clips.
+
+           TEMPORARY: local path for offline authoring. Before publishing,
+           restore the LFS media endpoint:
+           https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/improved_random_star.mov -->
+      <section data-transition="slide-in fade-out">
+        <h2>Run it back</h2>
+        <p>
+          Let's see how it runs now. I am also going to switch to a less
+          powerful model, Sonnet, which failed to retrieve the data using the
+          original version of the <span class="term-skills">Skill</span>.
+        </p>
+        <video
+          controls
+          preload="none"
+          style="width: 500px; height: 384px;"
+          poster="../assets/improved_random_star_poster.jpg"
+          src="../assets/improved_random_star.mov">
+        </video>
+      </section>
+
+      <section data-transition="fade-in slide-out">
+        <h2>Run it back</h2>
+        <p>
+          Let's see how it runs now. I am also going to switch to a less
+          powerful model, Sonnet, which failed to retrieve the data using the
+          original version of the <span class="term-skills">Skill</span>.
+        </p>
+        <p class="payoff">Much better.</p>
+      </section>
+
+      <!-- Slide 10: standalone statement, no heading. -->
+      <section class="statement center">
         <p>
           The most useful <span class="term-skills">Skills</span> strike a
           balance between breadth of applicability and depth of knowledge.
@@ -271,7 +360,7 @@
         </p>
       </section>
 
-      <!-- Slide 8: Connectors intro -->
+      <!-- Slide 11: Connectors intro -->
       <section>
         <h2>Branching out: <span class="term-connectors">Connectors</span></h2>
         <p>
@@ -296,7 +385,7 @@
         </div>
       </section>
 
-      <!-- Slide 9: Connectors video.
+      <!-- Slide 12: Connectors video.
 
            TEMPORARY: local path for offline authoring. Before publishing,
            restore the LFS media endpoint (Pages doesn't serve LFS content, and
@@ -313,6 +402,7 @@
           controls
           preload="none"
           style="width: 620px; height: 480px;"
+          poster="../assets/connectors_setup_poster.jpg"
           src="../assets/connectors_setup.mov">
         </video>
         <p class="fragment footnote">
@@ -321,7 +411,7 @@
         </p>
       </section>
 
-      <!-- Slide 10: Connectors in use. The PNG isn't LFS-tracked, so it can be
+      <!-- Slide 13: Connectors in use. The PNG isn't LFS-tracked, so it can be
            served as a plain relative path from Pages. -->
       <section>
         <p>

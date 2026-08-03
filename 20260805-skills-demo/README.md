@@ -71,11 +71,24 @@ Skills are located under the Customize menu. Claude comes with a library of Skil
 
 ## First steps
 
-Add lorem ipsum here to demonstrate fade transition to slide with same title.
+There are many ways to create a skill but let's start simple. I googled "astronomy stars database" and the first result was SIMBAD, so...
 
-## No title
+[random_star.mov]
 
-[Center text] The most useful skills strike a balance between breadth of applicability and depth of knowledge. Making Skills that fulfill a specific need or play a meaningful role for a user or organization is where the real magic happens, kind of like how CLAUDE.md is customized for the repo in which it lives.
+## Improving
+
+Not bad! But it took over 30 seconds. Some of that time was spent troubleshooting, which is good information to add to the skill using `skill-creator`.
+
+[skill_creator.mov]
+
+## Run it back
+
+Let's see how it runs now. I am also going to switch to a less powerful model, Sonnet, which failed to retrieve the data using the original version of the skill.
+
+[improved_random_star.mov]
+___
+
+And then have the text "Much better." replace the video using the fade technique we used for "First steps".
 
 ## Branching out: Connectors
 
