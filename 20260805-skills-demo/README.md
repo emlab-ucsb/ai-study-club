@@ -51,7 +51,7 @@ It's something you are good at.
 What is a Skill? [Skill in orange color]
 ___
 
-It's when Claude loads a set of specialized tools within a chat or Cowork session
+It's when Claude loads a special folder of tools and info that are geared towards a specific task or subject, within a chat or Cowork session.
 
 [Insert kung fu JPG I put in `assets/`]
 
@@ -65,7 +65,7 @@ Add a table comparing CLAUDE.md (left) and Skills. Use formatting described in t
 | --- | --- |
 | Added to Claude Code context automatically on load | Skill title and summary always available to Claude Chat and Cowork |
 | Lives in the repo, scoped to that codebase | Lives in your account, not accessed by Claude Code |
-| A single markdown file | A folder: `SKILL.md` plus any scripts or reference files |
+| A single markdown file that references other files in the repo | A folder: `SKILL.md` plus any scripts or reference files |
 | Can be shared between teammates on a GitHub repo | Can be shared with individuals or the whole emLab team on the Claude app |
 
 ## First steps
