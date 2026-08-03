@@ -69,11 +69,15 @@ Skills are located under the Customize menu. Claude comes with a library of Skil
 
 [assets/skills_setup.mov] (match formatting currently in the HTML for connectors)
 
+## First steps
+
+Add lorem ipsum here to demonstrate fade transition to slide with same title.
+
 ## No title
 
-[Center text] Creating Skills tailored to a specific user or organization is where the real magic happens, kind of like how CLAUDE.md is customized for the repo in which it lives.
+[Center text] The most useful skills strike a balance between breadth of applicability and depth of knowledge. Making Skills that fulfill a specific need or play a meaningful role for a user or organization is where the real magic happens, kind of like how CLAUDE.md is customized for the repo in which it lives.
 
-## Upskilling: Connectors
+## Branching out: Connectors
 
 Skills are only as powerful as the tools they have to work with. 
 

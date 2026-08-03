@@ -226,7 +226,10 @@
            TEMPORARY: local path for offline authoring. Before publishing,
            restore the LFS media endpoint:
            https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/skills_setup.mov -->
-      <section>
+      <!-- slide-in fade-out: arrives from slide 4 the usual way, but fades
+           when leaving so the repeated heading on the next slide doesn't get
+           dragged sideways. Each slide controls its own half of a boundary. -->
+      <section data-transition="slide-in fade-out">
         <h2>First steps</h2>
         <p>
           <span class="term-skills">Skills</span> are located under the
@@ -241,21 +244,36 @@
         </video>
       </section>
 
-      <!-- Slide 6: standalone statement, no heading. The README's sentence for
-           this slide is unfinished ("...is the ."), so this keeps the last
-           complete wording it had; replace once the line is finished. -->
-      <section class="statement">
+      <!-- Slide 6: placeholder. Repeats the previous slide's heading, so both
+           halves of the 5->6 boundary have to fade: the outgoing slide fades
+           out (set on slide 5) and this one fades in. Leaving forward to slide
+           7 slides as normal. -->
+      <section data-transition="fade-in slide-out">
+        <h2>First steps</h2>
         <p>
-          Creating <span class="term-skills">Skills</span> tailored to a
-          specific user or organization is where the real magic happens, kind of
-          like how <span class="term-claudemd">CLAUDE.md</span> is
-          customized for the repo in which it lives.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+          ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat.
         </p>
       </section>
 
-      <!-- Slide 7: Connectors intro -->
+      <!-- Slide 7: standalone statement, no heading. -->
+      <section class="statement">
+        <p>
+          The most useful <span class="term-skills">Skills</span> strike a
+          balance between breadth of applicability and depth of knowledge.
+          Making <span class="term-skills">Skills</span> that fulfill a specific
+          need or play a meaningful role for a user or organization is where the
+          real magic happens, kind of like how
+          <span class="term-claudemd">CLAUDE.md</span> is customized for the
+          repo in which it lives.
+        </p>
+      </section>
+
+      <!-- Slide 8: Connectors intro -->
       <section>
-        <h2>Upskilling: <span class="term-connectors">Connectors</span></h2>
+        <h2>Branching out: <span class="term-connectors">Connectors</span></h2>
         <p>
           <span class="term-skills">Skills</span> are only as powerful as the
           tools they have to work with.
@@ -278,7 +296,7 @@
         </div>
       </section>
 
-      <!-- Slide 8: Connectors video.
+      <!-- Slide 9: Connectors video.
 
            TEMPORARY: local path for offline authoring. Before publishing,
            restore the LFS media endpoint (Pages doesn't serve LFS content, and
@@ -303,7 +321,7 @@
         </p>
       </section>
 
-      <!-- Slide 9: Connectors in use. The PNG isn't LFS-tracked, so it can be
+      <!-- Slide 10: Connectors in use. The PNG isn't LFS-tracked, so it can be
            served as a plain relative path from Pages. -->
       <section>
         <p>
@@ -322,7 +340,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
   <script>
-    Reveal.initialize({ hash: true });
+    // center: false — content is top-aligned instead of vertically centered,
+    // so a heading lands in the same place on every slide. That's what lets a
+    // repeated title hold still across the fade on "First steps".
+    Reveal.initialize({ hash: true, center: false });
   </script>
 </body>
 </html>
