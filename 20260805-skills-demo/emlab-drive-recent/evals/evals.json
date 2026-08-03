@@ -1,0 +1,23 @@
+{
+  "skill_name": "emlab-drive-recent",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "What are the 3 most recently edited documents in the emLab Drive? Summarize each.",
+      "expected_output": "Three in-drive documents, each verified via parent-chain walk, with path, date, content summary, and a closing line naming the window and exclusions.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Catch me up on what the team has been working on in Drive this week.",
+      "expected_output": "Triggers the skill on indirect phrasing. Bulk PDF upload collapsed to one entry rather than filling all slots.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "What changed in the communications folder recently?",
+      "expected_output": "Scoped subtree path: queries parentId directly, skips parent-chain verification, notes that recursion is unavailable.",
+      "files": []
+    }
+  ]
+}

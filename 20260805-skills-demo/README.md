@@ -118,4 +118,10 @@ If you haven't set up your connectors yet, clicking "Connect" should take you to
 Once a Connector is set up, Claude sees it in the chat and should load it for use it when it finds it applicable. For example: 
 
 [insert connectors_use_example.png, fade whole image width to background/white beginning at "Announcements"]
+___
 
+Connectors often come equipped with tools adequate for most routine tasks. But if you come up with an outside-the-box idea, creating a Skill can feel like giving Claude superpowers. [smallish text]
+
+##
+
+Add a slide with the emlab-drive-recent.jpg asset up top and a scrollable box with the corresponding SKILL.md filling the main area.
