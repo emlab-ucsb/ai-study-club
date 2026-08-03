@@ -18,7 +18,7 @@ open 20260805-skills-demo/index.html
 
 ## Adapting Claude to your workflow with Skills (title slide)
 
-**Adapting Claude to your workflow** [plenty of spacing between words]
+**Adapting Claude to your workflow with Skills** 
 
 Jordan Wingenroth [somewhat smaller font]
 
