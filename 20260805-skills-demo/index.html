@@ -35,6 +35,41 @@
     .reveal .term-skills     { color: #D97757; }
     .reveal .term-connectors { color: #3B9C7F; }
 
+    /* Same treatment for the other two named things, in the remaining Claude
+       palette hues: CLAUDE.md in slate blue, Projects in heather purple. Both
+       darkened from the brand tints so they hold contrast on the cream. */
+    .reveal .term-claudemd,
+    .reveal .term-projects {
+      font-weight: bold;
+    }
+    .reveal .term-claudemd { color: #4A7DB5; }
+    .reveal .term-projects { color: #8B6BB1; }
+
+    /* Comparison table: the white theme's default is a heavy full-width grid.
+       Strip it back to horizontal rules and give the two columns equal width. */
+    .reveal .compare {
+      font-size: 0.6em;
+      border-collapse: collapse;
+      table-layout: fixed;
+      width: 100%;
+    }
+    .reveal .compare th,
+    .reveal .compare td {
+      width: 50%;
+      vertical-align: top;
+      text-align: left;
+      padding: 0.4em 0.6em;
+      border: none;
+      border-bottom: 1px solid rgba(20, 20, 19, 0.15);
+    }
+    .reveal .compare thead th { border-bottom-width: 2px; }
+
+    /* Neither reveal.css nor the white theme sizes inline <code>, so it
+       computes to the same px as its surroundings — but generic `monospace`
+       resolves to Menlo here, whose larger x-height reads as oversized next to
+       the body font. 0.9em evens them out optically. */
+    .reveal .compare code { font-size: 0.9em; }
+
     /* Title slide: airy spacing on the title, byline smaller than it, date
        smaller still. */
     .reveal .deck-title { word-spacing: 0.05em; }
@@ -87,7 +122,46 @@
         <p class="date">08/05/2026</p>
       </section>
 
-      <!-- Slide 2: Connectors intro -->
+      <!-- Slide 2: CLAUDE.md vs Skills. Table mirrors the README's four rows. -->
+      <section>
+        <h2>Picking up where we left off with
+          <span class="term-claudemd">CLAUDE.md</span></h2>
+        <p>
+          <span class="term-skills">Skills</span> are sort of like a
+          <span class="term-claudemd">CLAUDE.md</span> file, but designed for use
+          outside of codebases.
+        </p>
+        <table class="compare">
+          <thead>
+            <tr>
+              <th><span class="term-claudemd">CLAUDE.md</span></th>
+              <th><span class="term-skills">Skills</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Added to Claude Code context automatically on load</td>
+              <td>Skill title and summary always available to Claude Chat and Cowork</td>
+            </tr>
+            <tr>
+              <td>Lives in the repo, scoped to that codebase</td>
+              <td>Lives with your account or
+                <span class="term-projects">Projects</span></td>
+            </tr>
+            <tr>
+              <td>A single markdown file</td>
+              <td>A folder: <code>SKILL.md</code> plus any scripts or reference files</td>
+            </tr>
+            <tr>
+              <td>Can be shared between teammates on a GitHub repo</td>
+              <td>Can be shared with teammates or the whole emLab
+                team on the Claude app</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Slide 3: Connectors intro -->
       <section>
         <h2>Level 1: <span class="term-connectors">Connectors</span></h2>
         <p>
@@ -106,7 +180,7 @@
         </p>
       </section>
 
-      <!-- Slide 3: Connectors video. Served from the LFS media endpoint (Pages
+      <!-- Slide 4: Connectors video. Served from the LFS media endpoint (Pages
            doesn't serve LFS content); preload="none" so LFS bandwidth is only
            spent on play. Requires the repo to be public.
 
@@ -128,7 +202,7 @@
         </p>
       </section>
 
-      <!-- Slide 4: Connectors in use. The PNG isn't LFS-tracked, so it can be
+      <!-- Slide 5: Connectors in use. The PNG isn't LFS-tracked, so it can be
            served as a plain relative path from Pages. -->
       <section>
         <p>
@@ -142,7 +216,7 @@
         </div>
       </section>
 
-      <!-- Slide 5: Skills intro. Heading only — the README entry's body text
+      <!-- Slide 6: Skills intro. Heading only — the README entry's body text
            is unfinished ("A Claude"), so the copy is still to come. -->
       <section>
         <h2>Level 2: <span class="term-skills">Skills</span></h2>

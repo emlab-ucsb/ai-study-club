@@ -14,15 +14,29 @@ Or open it locally with:
 open 20260805-skills-demo/index.html
 ```
 
-# Slide descriptions (Claude input)
+# Slide descriptions (CLAUDE.md refers Claude here to build the .html)
 
-## Adapting Claude to your workflow (title slide)
+## Adapting Claude to your workflow with Skills (title slide)
 
 **Adapting Claude to your workflow** [plenty of spacing between words]
 
 Jordan Wingenroth [somewhat smaller font]
 
 08/05/2026 [smaller font]
+
+## Picking up where we left off with CLAUDE.md
+
+Claude Skills are sort of like a CLAUDE.md file, but optimized for use outside of codebases.
+
+Add a table comparing CLAUDE.md (left) and Skills. Use formatting described in this folder's CLAUDE.md.
+
+| CLAUDE.md | Skills |
+| --- | --- |
+| Added to Claude Code context automatically on load | Skill title and summary always available to Claude Chat and Cowork |
+| Lives in the repo, scoped to that codebase | Lives with your account or Projects |
+| A single markdown file | A folder: `SKILL.md` plus any scripts or reference files |
+| Can be shared between teammates on a GitHub repo | Can be shared with collaborators or the whole emLab team on the Claude app |
+
 
 ## Level 1: Connectors
 

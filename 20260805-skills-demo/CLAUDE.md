@@ -33,3 +33,4 @@ When asked to "make the updates" or similar:
 - Always boldface "Skills" and "Connectors", and color the text (no background
   highlights): Skills in the Claude logo coral `#D97757`, Connectors in mint
   `#3B9C7F`. Use the `.term-skills` / `.term-connectors` spans.
+  - Use similar formatting (with other colors from the Claude palette) for "CLAUDE.md" and "Projects"
