@@ -14,11 +14,16 @@ Or open it locally with:
 open 20260805-skills-demo/index.html
 ```
 
-The two videos currently point at local `../assets/*.mov` paths so the deck
-works offline while it's being written. Both need to go back to the
-`media.githubusercontent.com` LFS endpoint before publishing — GitHub Pages
-doesn't serve LFS content. Each video's slide comment in `index.html` carries
-the exact URL to restore.
+The five videos are served from the `media.githubusercontent.com` LFS endpoint
+rather than by relative path, because GitHub Pages doesn't serve LFS content.
+That only works while the repo is public and the `.mov` files are on `main`,
+so the deck's videos stay blank on a feature branch until it's merged.
+`preload="none"` keeps the metered LFS bandwidth to actual plays.
+
+Each video also has a `poster` — a first-frame JPEG in `assets/`, extracted
+with AVFoundation. Without one, `preload="none"` leaves a blank gray box until
+the viewer hits play. The posters aren't LFS-tracked, so they serve from Pages
+by relative path.
 
 # Slide descriptions (CLAUDE.md refers Claude here to build the .html)
 
@@ -65,7 +70,7 @@ Add a table comparing CLAUDE.md (left) and Skills. Use formatting described in t
 
 ## First steps
 
-Skills are located under the Customize menu. Claude comes with a library of Skills out of the box, but they are pretty generic. 
+Skills are located under the Customize menu. Claude comes with a library out of the box, but they are pretty generic. 
 
 [assets/skills_setup.mov] (match formatting currently in the HTML for connectors)
 
@@ -96,7 +101,7 @@ Skills are only as powerful as the tools they have to work with.
 
 ___
 
-Connectors (sometimes called MCPs^[footnote: Model Context Protocol]) are a straightforward way to put Claude in touch with your other software^[footnote: For content creation, Claude is set up best for using Microsoft Word, Excel, and PowerPoint. However, its Google Drive extension is great for searching and reading files, and its usually not too hard to convert output from one filetype to another]. (Footnotes appear along with the sentence that carries the markers.)
+Connectors (sometimes called MCPs^[footnote: Model Context Protocol]) are a straightforward way to put Claude in touch with your other software^[footnote: For content creation, Claude is set up best for using Microsoft Word, Excel, and PowerPoint. However, its Google Drive extension is great for searching and reading files, and it's usually not too hard to convert output from one filetype to another]. (Footnotes appear along with the sentence that carries the markers.)
 
 ### Connectors video slide
 

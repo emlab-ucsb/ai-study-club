@@ -105,14 +105,6 @@
       margin-top: 1.5em;
     }
 
-    /* A slide that is one centered sentence and nothing else. Reveal already
-       centers text; the wider margins keep the line length readable. */
-    .reveal .statement p {
-      text-align: center;
-      margin: 0 auto;
-      max-width: 80%;
-    }
-
     /* Title slide: airy spacing on the title, byline smaller than it, date
        smaller still. */
     .reveal .deck-title { word-spacing: 0.05em; }
@@ -243,10 +235,7 @@
            2100x1590 (~1.32:1); 500x379 keeps the aspect, sized down to sit
            comfortably under the heading and intro paragraph.
 
-           TEMPORARY: local path for offline authoring. Before publishing,
-           restore the LFS media endpoint:
-           https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/skills_setup.mov -->
-      <!-- slide-in fade-out: arrives from slide 4 the usual way, but fades
+           slide-in fade-out: arrives from slide 4 the usual way, but fades
            when leaving so the repeated heading on the next slide doesn't get
            dragged sideways. Each slide controls its own half of a boundary. -->
       <section data-transition="slide-in fade-out">
@@ -261,7 +250,7 @@
           preload="none"
           style="width: 500px; height: 379px;"
           poster="../assets/skills_setup_poster.jpg"
-          src="../assets/skills_setup.mov">
+          src="https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/skills_setup.mov">
         </video>
       </section>
 
@@ -269,11 +258,7 @@
            5->6 boundary have to fade: the outgoing slide fades out (set on
            slide 5) and this one fades in. Leaving forward to slide 7 slides as
            normal. Source is 1948x1538 (~1.27:1), so 500x395 matches the
-           footprint of the clip on slide 5.
-
-           TEMPORARY: local path for offline authoring. Before publishing,
-           restore the LFS media endpoint:
-           https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/random_star.mov -->
+           footprint of the clip on slide 5. -->
       <section data-transition="fade-in slide-out">
         <h2>First steps</h2>
         <p>
@@ -286,16 +271,12 @@
           preload="none"
           style="width: 500px; height: 395px;"
           poster="../assets/random_star_poster.jpg"
-          src="../assets/random_star.mov">
+          src="https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/random_star.mov">
         </video>
       </section>
 
       <!-- Slide 7: Improving. Source is 2148x1650 (~1.30:1), so 500x384 keeps
-           the aspect and matches the other clips' footprint.
-
-           TEMPORARY: local path for offline authoring. Before publishing,
-           restore the LFS media endpoint:
-           https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/skill_creator.mov -->
+           the aspect and matches the other clips' footprint. -->
       <section>
         <h2>Improving</h2>
         <p>
@@ -309,18 +290,14 @@
           preload="none"
           style="width: 500px; height: 384px;"
           poster="../assets/skill_creator_poster.jpg"
-          src="../assets/skill_creator.mov">
+          src="https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/skill_creator.mov">
         </video>
       </section>
 
       <!-- Slides 8-9: Run it back. Same trick as First steps — the heading and
            intro repeat verbatim and the boundary crossfades, so only the video
            swaps for the payoff line. Source is 2148x1650 (~1.30:1), so 500x384
-           matches the other clips.
-
-           TEMPORARY: local path for offline authoring. Before publishing,
-           restore the LFS media endpoint:
-           https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/improved_random_star.mov -->
+           matches the other clips. -->
       <section data-transition="slide-in fade-out">
         <h2>Run it back</h2>
         <p>
@@ -333,7 +310,7 @@
           preload="none"
           style="width: 500px; height: 384px;"
           poster="../assets/improved_random_star_poster.jpg"
-          src="../assets/improved_random_star.mov">
+          src="https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/improved_random_star.mov">
         </video>
       </section>
 
@@ -347,20 +324,7 @@
         <p class="payoff">Much better.</p>
       </section>
 
-      <!-- Slide 10: standalone statement, no heading. -->
-      <section class="statement center">
-        <p>
-          The most useful <span class="term-skills">Skills</span> strike a
-          balance between breadth of applicability and depth of knowledge.
-          Making <span class="term-skills">Skills</span> that fulfill a specific
-          need or play a meaningful role for a user or organization is where the
-          real magic happens, kind of like how
-          <span class="term-claudemd">CLAUDE.md</span> is customized for the
-          repo in which it lives.
-        </p>
-      </section>
-
-      <!-- Slide 11: Connectors intro -->
+      <!-- Slide 10: Connectors intro -->
       <section>
         <h2>Branching out: <span class="term-connectors">Connectors</span></h2>
         <p>
@@ -385,12 +349,10 @@
         </div>
       </section>
 
-      <!-- Slide 12: Connectors video.
-
-           TEMPORARY: local path for offline authoring. Before publishing,
-           restore the LFS media endpoint (Pages doesn't serve LFS content, and
-           preload="none" keeps metered LFS bandwidth to actual plays):
-           https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/connectors_setup.mov
+      <!-- Slide 11: Connectors video. Served from the LFS media endpoint —
+           Pages doesn't serve LFS content — with preload="none" so metered LFS
+           bandwidth is only spent on actual plays. Requires the repo to stay
+           public, and the asset to be on main.
 
            Sized explicitly rather than with r-stretch: r-stretch computes the
            box from videoWidth/videoHeight, which are 0 under preload="none",
@@ -403,7 +365,7 @@
           preload="none"
           style="width: 620px; height: 480px;"
           poster="../assets/connectors_setup_poster.jpg"
-          src="../assets/connectors_setup.mov">
+          src="https://media.githubusercontent.com/media/emlab-ucsb/ai-study-club/main/assets/connectors_setup.mov">
         </video>
         <p class="fragment footnote">
           If you haven't set up your connectors yet, clicking "Connect"
@@ -411,7 +373,7 @@
         </p>
       </section>
 
-      <!-- Slide 13: Connectors in use. The PNG isn't LFS-tracked, so it can be
+      <!-- Slide 12: Connectors in use. The PNG isn't LFS-tracked, so it can be
            served as a plain relative path from Pages. -->
       <section>
         <p>
