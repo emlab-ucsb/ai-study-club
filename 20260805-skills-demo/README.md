@@ -62,9 +62,10 @@ Add a table comparing CLAUDE.md (left) and Skills. Use formatting described in t
 Skills are located under the Customize menu. Claude comes with a library of Skills out of the box, but they are pretty generic. 
 
 [assets/skills_setup.mov] (match formatting currently in the HTML for connectors)
-___
 
-Creating Skills that are tailored to a specific user or organization is where the real magic happens, kind of like how CLAUDE.md is usually customized for the repo in which it lives.
+## No title
+
+[Center text] Creating Skills that are tailored to a specific user or organization is the .
 
 ## Upskilling: Connectors
 
