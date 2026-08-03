@@ -26,6 +26,9 @@ session needs rules of its own, add a `CLAUDE.md` inside that folder.
 
   Requires `bigrquery`, `ggplot2`, `patchwork`. No test suite.
 
+- `20260805-skills-demo/` — a Reveal.js slide deck (`index.html`, CDN-loaded,
+  no build step). Open the file in a browser or serve via GitHub Pages.
+
 ## Conventions
 
 - R style: `<-` for assignment, package-qualified calls (`ggplot2::aes()`), roxygen
@@ -34,4 +37,5 @@ session needs rules of its own, add a `CLAUDE.md` inside that folder.
 - Don't add dependencies to a demo project. Small enough to read in one sitting
   is the requirement.
 - Screen recordings and other large binaries go through Git LFS (`.gitattributes`
-  currently tracks `*.mov`).
+  currently tracks `*.mov` and `*.mp4`). Prefer `.mp4` for anything embedded in
+  a web page — Firefox won't play the QuickTime `.mov` container at all.

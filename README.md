@@ -12,6 +12,7 @@ behaviour* is the point, not the code.
 | Folder | Session | Topic |
 |---|---|---|
 | [20260722-claude-md-demo/](20260722-claude-md-demo/) | 2026-07-22 | How `CLAUDE.md` works — `/init`, editing the draft, and adding permissions |
+| [20260805-skills-demo/](20260805-skills-demo/) | 2026-08-05 | Skills — Reveal.js slide deck |
 
 ## Conventions
 
