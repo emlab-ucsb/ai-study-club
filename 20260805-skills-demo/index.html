@@ -24,7 +24,14 @@
     .reveal h3, .reveal h4,
     .reveal h5, .reveal h6      { text-transform: none; }
 
-    .reveal .footnote { font-size: 0.5em; opacity: 0.7; margin-top: 1.5em; }
+    /* Left-aligned rather than following reveal's centered default: centering
+       a wrapped, multi-line footnote makes the markers hard to scan. */
+    .reveal .footnote {
+      font-size: 0.5em;
+      opacity: 0.7;
+      margin-top: 1.5em;
+      text-align: left;
+    }
 
     /* Key terms: always bold, each in its own color from the Claude palette.
        Skills = Claude logo coral; Connectors = mint. */
@@ -213,8 +220,8 @@
 
       <!-- Slide 5: First steps. Same video treatment as the connectors clip
            below — explicit pixel size rather than r-stretch. Source is
-           2100x1590 (~1.32:1); 620x470 keeps the aspect and matches the
-           connectors clip's footprint.
+           2100x1590 (~1.32:1); 500x379 keeps the aspect, sized down to sit
+           comfortably under the heading and intro paragraph.
 
            TEMPORARY: local path for offline authoring. Before publishing,
            restore the LFS media endpoint:
@@ -223,14 +230,13 @@
         <h2>First steps</h2>
         <p>
           <span class="term-skills">Skills</span> are located under the
-          Customize menu. Claude comes with a library of
-          <span class="term-skills">Skills</span> out of the box, but they are
+          Customize menu. Claude comes with a library out of the box, but they are
           pretty generic.
         </p>
         <video
           controls
           preload="none"
-          style="width: 620px; height: 470px;"
+          style="width: 500px; height: 379px;"
           src="../assets/skills_setup.mov">
         </video>
       </section>
@@ -252,7 +258,7 @@
         <h2>Upskilling: <span class="term-connectors">Connectors</span></h2>
         <p>
           <span class="term-skills">Skills</span> are only as powerful as the
-          tools you put in their hands.
+          tools they have to work with.
         </p>
         <!-- Definition and its footnotes reveal together: the markers are
              only meaningful alongside the sentence that carries them. -->
@@ -264,8 +270,10 @@
           </p>
           <p class="footnote">
             <sup>1</sup> Model Context Protocol.<br>
-            <sup>2</sup> There's a connector for Google Drive, but not yet for
-            Google Docs, Sheets, or Slides.
+            <sup>2</sup> For content creation, Claude is set up best for using
+            Microsoft Word, Excel, and PowerPoint. However, its Google Drive
+            extension is great for searching and reading files, and it's usually
+            not too hard to convert output from one filetype to another.
           </p>
         </div>
       </section>

@@ -75,11 +75,11 @@ Skills are located under the Customize menu. Claude comes with a library of Skil
 
 ## Upskilling: Connectors
 
-Skills are only as powerful as the tools you put in their hands. 
+Skills are only as powerful as the tools they have to work with. 
 
 ___
 
-Connectors (sometimes called MCPs^[footnote: Model Context Protocol]) are a straightforward way to put Claude in touch with your other software^[footnote: there is a connector for Google Drive but not yet for Google Docs, Sheets, Slides]. (Footnotes appear along with the sentence that carries the markers.)
+Connectors (sometimes called MCPs^[footnote: Model Context Protocol]) are a straightforward way to put Claude in touch with your other software^[footnote: For content creation, Claude is set up best for using Microsoft Word, Excel, and PowerPoint. However, its Google Drive extension is great for searching and reading files, and its usually not too hard to convert output from one filetype to another]. (Footnotes appear along with the sentence that carries the markers.)
 
 ### Connectors video slide
 
