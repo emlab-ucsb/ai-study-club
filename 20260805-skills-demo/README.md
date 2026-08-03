@@ -16,7 +16,7 @@ open 20260805-skills-demo/index.html
 
 The five videos are served from the `media.githubusercontent.com` LFS endpoint
 rather than by relative path, because GitHub Pages doesn't serve LFS content.
-That only works while the repo is public and the `.mov` files are on `main`,
+That only works while the repo is public and the `.mp4` files are on `main`,
 so the deck's videos stay blank on a feature branch until it's merged.
 `preload="none"` keeps the metered LFS bandwidth to actual plays.
 
@@ -72,25 +72,25 @@ Add a table comparing CLAUDE.md (left) and Skills. Use formatting described in t
 
 Skills are located under the Customize menu. Claude comes with a library out of the box, but they are pretty generic. 
 
-[assets/skills_setup.mov] (match formatting currently in the HTML for connectors)
+[assets/skills_setup.mp4] (match formatting currently in the HTML for connectors)
 
 ## First steps
 
 There are many ways to create a skill but let's start simple. I googled "astronomy stars database" and the first result was SIMBAD, so...
 
-[random_star.mov]
+[random_star.mp4]
 
 ## Improving
 
 Not bad! But it took over 30 seconds. Some of that time was spent troubleshooting, which is good information to add to the skill using `skill-creator`.
 
-[skill_creator.mov]
+[skill_creator.mp4]
 
 ## Run it back
 
 Let's see how it runs now. I am also going to switch to a less powerful model, Sonnet, which failed to retrieve the data using the original version of the skill.
 
-[improved_random_star.mov]
+[improved_random_star.mp4]
 ___
 
 And then have the text "Much better." replace the video using the fade technique we used for "First steps".
@@ -107,7 +107,7 @@ Connectors (sometimes called MCPs^[footnote: Model Context Protocol]) are a stra
 
 First, navigate to the Connectors menu:
 
-[insert connectors_setup.mov, balance size with avoiding crowded text]
+[insert connectors_setup.mp4, balance size with avoiding crowded text]
 
 ___
 
