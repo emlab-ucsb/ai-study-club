@@ -14,6 +14,12 @@ Or open it locally with:
 open 20260805-skills-demo/index.html
 ```
 
+The two videos currently point at local `../assets/*.mov` paths so the deck
+works offline while it's being written. Both need to go back to the
+`media.githubusercontent.com` LFS endpoint before publishing — GitHub Pages
+doesn't serve LFS content. Each video's slide comment in `index.html` carries
+the exact URL to restore.
+
 # Slide descriptions (CLAUDE.md refers Claude here to build the .html)
 
 NOTE: '___' means have the text below 'appear' rather than switching to a new '##' slide
@@ -53,7 +59,7 @@ Add a table comparing CLAUDE.md (left) and Skills. Use formatting described in t
 | CLAUDE.md | Skills |
 | --- | --- |
 | Added to Claude Code context automatically on load | Skill title and summary always available to Claude Chat and Cowork |
-| Lives in the repo, scoped to that codebase | Lives with your account or Projects |
+| Lives in the repo, scoped to that codebase | Lives in your account, not accessed by Claude Code |
 | A single markdown file | A folder: `SKILL.md` plus any scripts or reference files |
 | Can be shared between teammates on a GitHub repo | Can be shared with individuals or the whole emLab team on the Claude app |
 
@@ -65,13 +71,15 @@ Skills are located under the Customize menu. Claude comes with a library of Skil
 
 ## No title
 
-[Center text] Creating Skills that are tailored to a specific user or organization is the .
+[Center text] Creating Skills tailored to a specific user or organization is where the real magic happens, kind of like how CLAUDE.md is customized for the repo in which it lives.
 
 ## Upskilling: Connectors
 
 Skills are only as powerful as the tools you put in their hands. 
 
-Connectors (sometimes called MCPs^[footnote: Model Context Protocol]) are a straightforward way to put Claude in touch with your other software^[add a footnote about how there is a connector for Google Drive but not yet for Google Docs, Sheets, Slides]. 
+___
+
+Connectors (sometimes called MCPs^[footnote: Model Context Protocol]) are a straightforward way to put Claude in touch with your other software^[footnote: there is a connector for Google Drive but not yet for Google Docs, Sheets, Slides]. (Footnotes appear along with the sentence that carries the markers.)
 
 ### Connectors video slide
 
