@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sky Map</title>
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #141a30;
+    --ink: #e8ecf8;
+    --dim: #8b94b8;
+    --accent: #ffd166;
+  }
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden;
+    background: var(--bg); color: var(--ink);
+    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; }
+  /* Column layout so the map takes whatever height the header and legend
+     don't: the whole thing fits the window with no scrolling. */
+  #wrap { max-width: 900px; margin: 0 auto; padding: 12px; height: 100%;
+    box-sizing: border-box; display: flex; flex-direction: column; }
+  h1 { font-size: 16px; font-weight: 600; margin: 4px 0 2px; }
+  #sub { font-size: 12px; color: var(--dim); margin-bottom: 8px; }
+  /* min-height:0 lets the flex item shrink below the SVG's intrinsic size —
+     without it the map would overflow the window instead of scaling down. */
+  #mapbox { position: relative; flex: 1; min-height: 0;
+    display: flex; justify-content: center; }
+  /* Height-driven and square, so the plot stays round inside its box. On a
+     window narrower than it is tall, max-width clamps it instead. */
+  svg { display: block; height: 100%; width: auto; max-width: 100%; background:
+    radial-gradient(ellipse at center, #101736 0%, #0b1020 75%); border-radius: 10px; }
+  .star { cursor: pointer; }
+  .star:hover { stroke: #fff; stroke-width: 1.5px; }
+  #tip { position: absolute; pointer-events: none; display: none; z-index: 10;
+    background: var(--panel); border: 1px solid #2a335c; border-radius: 8px;
+    padding: 8px 10px; font-size: 11.5px; line-height: 1.5; max-width: 260px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+  #tip .name { color: var(--accent); font-weight: 600; }
+  #tip .row span { color: var(--dim); }
+  #legend { font-size: 11px; color: var(--dim); margin-top: 8px;
+    display: flex; gap: 14px; flex-wrap: wrap; flex-shrink: 0; }
+  .sw { display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+    vertical-align: -1px; margin-right: 4px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1 id="title"></h1>
+  <div id="sub"></div>
+  <div id="mapbox">
+    <svg id="sky" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="tip"></div>
+  </div>
+  <div id="legend"></div>
+</div>
+<script>
+// DATA is injected by the skill at generation time. Shape:
+// { center: {main_id, ra, dec, otype_txt, sp_type, plx_value, pmra, pmdec, rvz_radvel, V},
+//   radius_deg: 1.5,
+//   neighbors: [{main_id, ra, dec, otype_txt, sp_type, plx_value, V}, ...] }
+const DATA = {"center": {"main_id": "IRAS 10553-6004", "ra": 164.34097183663, "dec": -60.34764372758001, "otype_txt": "Star", "sp_type": "M4", "plx_value": 0.2653, "pmra": -6.004, "pmdec": 2.723, "rvz_radvel": null, "V": 10.41}, "radius_deg": 1.5, "neighbors": [{"main_id": "HD  93943", "ra": 162.3518129228, "dec": -59.32378939865999, "otype_txt": "Double or Multiple Star", "sp_type": "B9.5IV/V", "plx_value": 4.1546, "V": 5.91}, {"main_id": "* T Car", "ra": 163.82175750963, "dec": -60.5170011018, "otype_txt": "High Proper Motion Star", "sp_type": "K0III", "plx_value": 11.6, "V": 5.92}, {"main_id": "HD  93737", "ra": 162.02252818761, "dec": -59.91916250641, "otype_txt": "Evolved Supergiant", "sp_type": "A0Ia/ab", "plx_value": 0.362, "V": 6.015}, {"main_id": "V* U Car", "ra": 164.45077781032, "dec": -59.73218985614999, "otype_txt": "Classical Cepheid Variable", "sp_type": "G5/8Iab", "plx_value": 0.553, "V": 6.11}, {"main_id": "HD  93943A", "ra": 162.35186189166663, "dec": -59.323783194444445, "otype_txt": "Star", "sp_type": null, "plx_value": null, "V": 6.12}, {"main_id": "HD  95324", "ra": 164.80836954699083, "dec": -61.320759347023056, "otype_txt": "Star", "sp_type": "B8IV", "plx_value": 8.5086, "V": 6.18}, {"main_id": "HD  93502", "ra": 161.57111025665, "dec": -60.6028723582, "otype_txt": "Spectroscopic Binary", "sp_type": "A0IV", "plx_value": 8.2835, "V": 6.268}, {"main_id": "HD  93695", "ra": 161.93465611606, "dec": -59.87525588476, "otype_txt": "Star", "sp_type": "B3V", "plx_value": 2.2264, "V": 6.47}, {"main_id": "V* V528 Car", "ra": 165.77564233419, "dec": -60.91072966987, "otype_txt": "Red Supergiant", "sp_type": "M2Ib:", "plx_value": 0.4504, "V": 6.57}, {"main_id": "HD  96248", "ra": 166.23986037786, "dec": -59.85890148784, "otype_txt": "Blue Supergiant", "sp_type": "B1Iab", "plx_value": 0.3974, "V": 6.571}, {"main_id": "HD  96446", "ra": 166.52425797035, "dec": -59.94987890678999, "otype_txt": "beta Cep Variable Candidate", "sp_type": "B2IIIp", "plx_value": 2.1572, "V": 6.69}, {"main_id": "HD  94173", "ra": 162.744255323, "dec": -59.95731248586, "otype_txt": "Star", "sp_type": "B8/9IV", "plx_value": 5.1795, "V": 6.79}, {"main_id": "HD  94144", "ra": 162.66674621073, "dec": -61.269546535889994, "otype_txt": "Star", "sp_type": "B4III", "plx_value": 2.4296, "V": 6.836}, {"main_id": "HD  95880", "ra": 165.69255677917, "dec": -59.74098945842, "otype_txt": "Star", "sp_type": "B3Ib/II", "plx_value": 0.4339, "V": 6.95}, {"main_id": "V* AG Car", "ra": 164.04824225602, "dec": -60.45355852034999, "otype_txt": "Wolf-Rayet", "sp_type": "WN11h", "plx_value": 0.1925, "V": 6.96}, {"main_id": "HD  94963", "ra": 164.14911138382, "dec": -61.70896883931, "otype_txt": "Emission-line Star", "sp_type": "O7II(f)", "plx_value": 0.3564, "V": 7.26}, {"main_id": "HD  93843", "ra": 162.15738139661, "dec": -60.223755135459996, "otype_txt": "Eruptive Variable", "sp_type": "O5III(fc)", "plx_value": 0.4157, "V": 7.33}, {"main_id": "HD  96193", "ra": 166.1210333861, "dec": -61.488314676259996, "otype_txt": "Star", "sp_type": "K3III", "plx_value": 6.5182, "V": 7.36}, {"main_id": "HD  93943B", "ra": 162.35133564166665, "dec": -59.32368318611111, "otype_txt": "Star", "sp_type": null, "plx_value": null, "V": 7.42}, {"main_id": "HD  96670", "ra": 166.80805957232, "dec": -59.87310569634, "otype_txt": "High Mass X-ray Binary", "sp_type": "O7V(f)n", "plx_value": 0.311, "V": 7.43}, {"main_id": "HD  94346", "ra": 163.01029283699, "dec": -61.4291642403, "otype_txt": "Spectroscopic Binary", "sp_type": "B6/7III", "plx_value": 1.3075, "V": 7.47}, {"main_id": "HD  96756", "ra": 166.92869989849, "dec": -59.67119882376001, "otype_txt": "Star", "sp_type": "K2II", "plx_value": 1.1454, "V": 7.51}, {"main_id": "HD  94493", "ra": 163.31291511755, "dec": -60.81477722627999, "otype_txt": "Blue Supergiant", "sp_type": "B0.5Iab/b", "plx_value": 0.4558, "V": 7.59}, {"main_id": "HD  96264", "ra": 166.23125619245, "dec": -61.051608560210006, "otype_txt": "Star", "sp_type": "O9.5III", "plx_value": 0.3292, "V": 7.62}, {"main_id": "HD  95290", "ra": 164.77366091332, "dec": -59.168456930660014, "otype_txt": "Blue Straggler Candidate", "sp_type": "B7III", "plx_value": 2.1336, "V": 7.68}, {"main_id": "HD  96261", "ra": 166.26368288457, "dec": -59.7136277341, "otype_txt": "Star", "sp_type": "B1Ib/II", "plx_value": 0.5222, "V": 7.71}, {"main_id": "HD  93873", "ra": 162.23008178817, "dec": -59.44677902149001, "otype_txt": "Star", "sp_type": "B1Ia/ab", "plx_value": 0.4364, "V": 7.76}, {"main_id": "HD  94559", "ra": 163.4231096748, "dec": -61.665503079370005, "otype_txt": "Star", "sp_type": "O9/B0II/III", "plx_value": 0.4053, "V": 7.81}, {"main_id": "HD  96159", "ra": 166.10704875885, "dec": -59.86835738229, "otype_txt": "Star", "sp_type": "B2II", "plx_value": 0.3941, "V": 7.84}, {"main_id": "HD  95933", "ra": 165.7695336287, "dec": -60.82484793228, "otype_txt": "Star", "sp_type": "F5Ib/II", "plx_value": 0.7148, "V": 7.86}, {"main_id": "HD  93683", "ra": 161.91199397158, "dec": -60.61785320536, "otype_txt": "Be Star", "sp_type": "O9V+B0V", "plx_value": 0.8857, "V": 7.87}, {"main_id": "HD  94598", "ra": 163.52219581138, "dec": -60.35290887903, "otype_txt": "High Proper Motion Star", "sp_type": "F5IV/Vp", "plx_value": 6.8969, "V": 7.88}, {"main_id": "HD  95687", "ra": 165.39899720846, "dec": -61.04883899591, "otype_txt": "Red Supergiant", "sp_type": "M2Iab", "plx_value": 0.3836, "V": 7.9}, {"main_id": "HD  96828", "ra": 167.04521282731, "dec": -60.246391706039994, "otype_txt": "Star", "sp_type": "A0II", "plx_value": 0.6077, "V": 7.93}, {"main_id": "HD  94230", "ra": 162.83625440121, "dec": -59.74388925704999, "otype_txt": "Star", "sp_type": "B1Ib", "plx_value": 0.3908, "V": 7.93}, {"main_id": "HD  95255", "ra": 164.69230966539, "dec": -60.86283122102, "otype_txt": "Star", "sp_type": "K3/4III", "plx_value": 0.7956, "V": 7.94}, {"main_id": "HD  95495", "ra": 165.0973277628, "dec": -58.98308872609, "otype_txt": "Star", "sp_type": "A0IV", "plx_value": 2.1679, "V": 7.98}, {"main_id": "HD  95588", "ra": 165.22455545752, "dec": -60.32548492373, "otype_txt": "Spectroscopic Binary", "sp_type": "K0III+A0/1", "plx_value": 1.1553, "V": 8}, {"main_id": "HD  95635", "ra": 165.29144746092, "dec": -61.22195150745001, "otype_txt": "Star", "sp_type": "B2/3II", "plx_value": 0.4187, "V": 8.06}, {"main_id": "HD  94245", "ra": 162.88450819543, "dec": -59.151690144910006, "otype_txt": "Star", "sp_type": "F0IV/V", "plx_value": 6.5921, "V": 8.07}, {"main_id": "HD  95540", "ra": 165.15495446721, "dec": -60.30403444329, "otype_txt": "Star", "sp_type": "B9Ib", "plx_value": 0.4932, "V": 8.1}, {"main_id": "HD  95707", "ra": 165.41377232622, "dec": -61.56208588164, "otype_txt": "Star", "sp_type": "B9Iab", "plx_value": 0.2646, "V": 8.11}, {"main_id": "HD  94682", "ra": 163.63033050594, "dec": -61.04598718637, "otype_txt": "Star", "sp_type": "K3III", "plx_value": 2.045, "V": 8.19}, {"main_id": "HD  93958", "ra": 162.3647263204, "dec": -60.294667510070006, "otype_txt": "Star", "sp_type": "F6Iab/b", "plx_value": 0.4215, "V": 8.21}, {"main_id": "HD  95634", "ra": 165.30598805076, "dec": -60.01001292957001, "otype_txt": "Star", "sp_type": "K0III", "plx_value": 3.2546, "V": 8.22}, {"main_id": "HD  96042", "ra": 165.91901712186, "dec": -59.43307955113999, "otype_txt": "Young Stellar Object", "sp_type": "B1V+", "plx_value": 0.3573, "V": 8.23}, {"main_id": "HD  96715", "ra": 166.88673635498, "dec": -59.963529000150004, "otype_txt": "Star", "sp_type": "O4V((f))z", "plx_value": 0.3914, "V": 8.28}, {"main_id": "HD  95291", "ra": 164.79778382986, "dec": -59.39815583583, "otype_txt": "Star", "sp_type": "B9.5V(pSi)", "plx_value": 2.1513, "V": 8.29}, {"main_id": "HD  93844", "ra": 162.16228256127, "dec": -61.14374745046, "otype_txt": "Emission-line Star", "sp_type": "B8V", "plx_value": 2.5582, "V": 8.3}, {"main_id": "HD  95931", "ra": 165.77020685827, "dec": -59.11152305417, "otype_txt": "Star", "sp_type": "A0IV/V", "plx_value": 2.1229, "V": 8.323}, {"main_id": "HD  96286", "ra": 166.28038944295, "dec": -59.95644066850001, "otype_txt": "Star", "sp_type": "B1Ib", "plx_value": 0.4452, "V": 8.37}, {"main_id": "HD  93621", "ra": 161.78481960161, "dec": -60.573375798940006, "otype_txt": "Star", "sp_type": "B8II", "plx_value": 1.3099, "V": 8.37}, {"main_id": "HD  94649", "ra": 163.59038442386, "dec": -60.76373621537, "otype_txt": "Star", "sp_type": "B9V", "plx_value": 3.0267, "V": 8.38}, {"main_id": "HD  95323", "ra": 164.82522652621, "dec": -60.21191204565, "otype_txt": "High Proper Motion Star", "sp_type": "F5V", "plx_value": 8.3642, "V": 8.4}, {"main_id": "HD  93911", "ra": 162.30686313048, "dec": -60.18425350297, "otype_txt": "Pulsating Variable", "sp_type": "B2II", "plx_value": 0.3142, "V": 8.45}, {"main_id": "HD  96492", "ra": 166.53218589988, "dec": -61.05445733853001, "otype_txt": "Star", "sp_type": "B8III/IV", "plx_value": 2.9919, "V": 8.46}, {"main_id": "HD  94394", "ra": 163.15211530385, "dec": -59.18237963343999, "otype_txt": "Star", "sp_type": "B8II/III", "plx_value": 1.8223, "V": 8.47}, {"main_id": "HD  95706", "ra": 165.43425361482, "dec": -60.32651035253, "otype_txt": "Star", "sp_type": "A3IV/V", "plx_value": 5.5585, "V": 8.47}, {"main_id": "HD  96671", "ra": 166.7978601876, "dec": -60.29636520883, "otype_txt": "Star", "sp_type": "B1/2Ib/II", "plx_value": 0.6577, "V": 8.48}, {"main_id": "V* V744 Car", "ra": 162.6723350511, "dec": -59.21272851281001, "otype_txt": "Eclipsing Binary", "sp_type": "B9IV", "plx_value": 1.3654, "V": 8.5}]};
+
+const svg = document.getElementById('sky');
+const tip = document.getElementById('tip');
+const W = 800, H = 800, PAD = 40;
+const c = DATA.center;
+const R = DATA.radius_deg;
+const cosd = Math.cos(c.dec * Math.PI / 180);
+
+// Gnomonic-ish local projection: x = -(ra - ra0)*cos(dec0) (east left), y = -(dec - dec0)
+function proj(ra, dec) {
+  let dra = ra - c.ra;
+  if (dra > 180) dra -= 360;
+  if (dra < -180) dra += 360;
+  const x = W/2 + (-dra * cosd / R) * (W/2 - PAD);
+  const y = H/2 + (-(dec - c.dec) / R) * (H/2 - PAD);
+  return [x, y];
+}
+
+// Spectral-type color (first letter of sp_type)
+function spColor(sp) {
+  const t = (sp || '').trim().charAt(0).toUpperCase();
+  return { O:'#9bb0ff', B:'#aabfff', A:'#cad7ff', F:'#f8f7ff',
+           G:'#fff4ea', K:'#ffd2a1', M:'#ffcc6f' }[t] || '#c7cede';
+}
+
+// Magnitude → radius (brighter = bigger). V may be null.
+function magR(v) {
+  if (v == null) return 2.2;
+  return Math.max(1.8, 11 - v * 0.85);
+}
+
+function el(name, attrs) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+// Grid: RA/Dec graticule rings + crosshair
+for (const f of [1/3, 2/3, 1]) {
+  svg.appendChild(el('circle', { cx: W/2, cy: H/2, r: f * (W/2 - PAD),
+    fill: 'none', stroke: '#26305a', 'stroke-width': 1,
+    'stroke-dasharray': f === 1 ? 'none' : '3,5' }));
+}
+svg.appendChild(el('line', { x1: PAD, y1: H/2, x2: W-PAD, y2: H/2, stroke: '#1c2547', 'stroke-width': 1 }));
+svg.appendChild(el('line', { x1: W/2, y1: PAD, x2: W/2, y2: H-PAD, stroke: '#1c2547', 'stroke-width': 1 }));
+// Cardinal labels (east left, per sky convention)
+const lbl = (x, y, t, anchor) => {
+  const e = el('text', { x, y, fill: '#5f6a94', 'font-size': 13, 'text-anchor': anchor });
+  e.textContent = t; svg.appendChild(e);
+};
+lbl(W/2, PAD - 12, 'N', 'middle');
+lbl(W/2, H - PAD + 24, 'S', 'middle');
+lbl(PAD - 14, H/2 + 4, 'E', 'end');
+lbl(W - PAD + 14, H/2 + 4, 'W', 'start');
+
+function fmt(v, digits, unit) {
+  return v == null ? null : v.toFixed(digits) + (unit || '');
+}
+function tipHTML(s, isCenter) {
+  const rows = [
+    ['Type', s.otype_txt],
+    ['Spectral', s.sp_type],
+    ['RA', fmt(s.ra, 5, '°')],
+    ['Dec', fmt(s.dec, 5, '°')],
+    ['Parallax', fmt(s.plx_value, 3, ' mas')],
+    ['V mag', fmt(s.V, 2)],
+  ];
+  if (isCenter) {
+    rows.push(['PM (RA, Dec)', (s.pmra == null && s.pmdec == null) ? null :
+      `${fmt(s.pmra, 2)}, ${fmt(s.pmdec, 2)} mas/yr`]);
+    rows.push(['Rad. vel.', fmt(s.rvz_radvel, 1, ' km/s')]);
+  }
+  return `<div class="name">${s.main_id}${isCenter ? ' ★' : ''}</div>` +
+    rows.filter(r => r[1] != null)
+        .map(r => `<div class="row"><span>${r[0]}:</span> ${r[1]}</div>`).join('');
+}
+
+function attachTip(node, star, isCenter) {
+  function placeTip(ev) {
+    const box = document.getElementById('mapbox').getBoundingClientRect();
+    tip.innerHTML = tipHTML(star, isCenter);
+    tip.style.display = 'block';
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    let x = ev.clientX - box.left + 14, y = ev.clientY - box.top + 14;
+    if (x + tw > box.width) x = ev.clientX - box.left - tw - 14;   // flip flush left of cursor
+    if (y + th > box.height) y = ev.clientY - box.top - th - 14;   // flip flush above cursor
+    tip.style.left = Math.max(0, x) + 'px';
+    tip.style.top = Math.max(0, y) + 'px';
+  }
+  node.addEventListener('mousemove', placeTip);
+  node.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+  node.addEventListener('click', placeTip); // touch fallback
+}
+svg.addEventListener('click', ev => { if (ev.target === svg) tip.style.display = 'none'; });
+
+// Neighbors (skip any duplicate of the center star)
+for (const s of DATA.neighbors) {
+  if (s.main_id === c.main_id) continue;
+  const [x, y] = proj(s.ra, s.dec);
+  const dot = el('circle', { cx: x, cy: y, r: magR(s.V), fill: spColor(s.sp_type),
+    class: 'star', opacity: 0.92 });
+  attachTip(dot, s, false);
+  svg.appendChild(dot);
+}
+
+// Center star: glow + marker
+const [cx, cy] = proj(c.ra, c.dec);
+svg.appendChild(el('circle', { cx, cy, r: magR(c.V) + 9, fill: 'none',
+  stroke: 'var(--accent)', 'stroke-width': 1.5, opacity: 0.9 }));
+const halo = el('circle', { cx, cy, r: magR(c.V) + 4, fill: '#ffd166', opacity: 0.25 });
+svg.appendChild(halo);
+const cdot = el('circle', { cx, cy, r: Math.max(magR(c.V), 4), fill: spColor(c.sp_type),
+  stroke: '#ffd166', 'stroke-width': 1.5, class: 'star' });
+attachTip(cdot, c, true);
+svg.appendChild(cdot);
+
+// Header + legend
+document.getElementById('title').textContent = c.main_id;
+document.getElementById('sub').textContent =
+  `Sky within ${R}° · ${DATA.neighbors.length} SIMBAD stars · hover (or tap) a star for details`;
+document.getElementById('legend').innerHTML =
+  ['O','B','A','F','G','K','M'].map(t =>
+    `<span><span class="sw" style="background:${spColor(t)}"></span>${t}</span>`
+  ).join('') + `<span>size ∝ brightness (V)</span>`;
+</script>
+</body>
+</html>

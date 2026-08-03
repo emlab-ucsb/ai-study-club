@@ -25,6 +25,13 @@ with AVFoundation. Without one, `preload="none"` leaves a blank gray box until
 the viewer hits play. The posters aren't LFS-tracked, so they serve from Pages
 by relative path.
 
+`sky-map.html` is a standalone page — no CDN, no dependencies — holding the
+interactive sky map the Skill generated for `IRAS 10553-6004`: an SVG plot of
+the 60 brightest SIMBAD objects within 1.5°, colored by spectral type and sized
+by V magnitude, with hover details. It's laid out to fit the window height, so
+the map scales with the browser rather than scrolling. The second "Run it back"
+slide links to it from the words "sky map".
+
 # Slide descriptions (CLAUDE.md refers Claude here to build the .html)
 
 NOTE: '___' means have the text below 'appear' rather than switching to a new '##' slide
@@ -94,6 +101,11 @@ Let's see how it runs now. I am also going to switch to a less powerful model, S
 ___
 
 And then have the text "Much better." replace the video using the fade technique we used for "First steps".
+
+Add a footnote at the bottom of the slide reading "I asked Claude Fable to make
+it fancy and now the skill creates a webpage with a sky map." — with "sky map"
+hyperlinked (in the theme's link blue) to `sky-map.html`, opening in a new tab
+so the deck keeps its place.
 
 ## Branching out: Connectors
 
