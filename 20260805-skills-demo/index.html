@@ -70,6 +70,19 @@
        the body font. 0.9em evens them out optically. */
     .reveal .compare code { font-size: 0.9em; }
 
+    /* Meme images: matched on height so the two sit the same in the deck
+       despite different aspects (400x400 and 945x609). max-* unset because
+       reveal.css caps `section img` at 95% of its container, which would
+       override the height and letterbox one of them. */
+    .reveal .meme {
+      height: 380px;
+      width: auto;
+      max-width: none;
+      max-height: none;
+      border: none;
+      box-shadow: none;
+    }
+
     /* Title slide: airy spacing on the title, byline smaller than it, date
        smaller still. */
     .reveal .deck-title { word-spacing: 0.05em; }
@@ -123,7 +136,32 @@
         <p class="date">08/05/2026</p>
       </section>
 
-      <!-- Slide 2: CLAUDE.md vs Skills. Table mirrors the README's four rows. -->
+      <!-- Slides 2-3: the "what is a skill?" setup and its payoff. Each slide
+           is a question with everything below the README's `___` revealed on
+           click, as a fragment — first the lowercase joke, then the same
+           question with the capital-S term and the real answer. -->
+      <section>
+        <h2>What is a skill?</h2>
+        <div class="fragment">
+          <p>It's something you are good at.</p>
+          <img class="meme" src="../assets/something-of-a-scientist.jpg"
+               alt="Willem Dafoe as Norman Osborn: &quot;You know, I'm something of a scientist myself&quot;">
+        </div>
+      </section>
+
+      <section>
+        <h2>What is a <span class="term-skills">Skill</span>?</h2>
+        <div class="fragment">
+          <p>
+            It's when Claude loads a set of specialized tools within a chat or
+            Cowork session.
+          </p>
+          <img class="meme" src="../assets/i-know-kung-fu.jpg"
+               alt="Neo from The Matrix: &quot;I know kung fu&quot;">
+        </div>
+      </section>
+
+      <!-- Slide 4: CLAUDE.md vs Skills. Table mirrors the README's four rows. -->
       <section>
         <h2>Picking up where we left off with
           <span class="term-claudemd">CLAUDE.md</span></h2>
@@ -162,9 +200,9 @@
         </table>
       </section>
 
-      <!-- Slide 3: Connectors intro -->
+      <!-- Slide 5: Connectors intro -->
       <section>
-        <h2>Level 1: <span class="term-connectors">Connectors</span></h2>
+        <h2>Upskilling: <span class="term-connectors">Connectors</span></h2>
         <p>
           <span class="term-skills">Skills</span> are only as powerful as the
           tools you put in their hands.
@@ -181,7 +219,7 @@
         </p>
       </section>
 
-      <!-- Slide 4: Connectors video. Served from the LFS media endpoint (Pages
+      <!-- Slide 6: Connectors video. Served from the LFS media endpoint (Pages
            doesn't serve LFS content); preload="none" so LFS bandwidth is only
            spent on play. Requires the repo to be public.
 
@@ -203,7 +241,7 @@
         </p>
       </section>
 
-      <!-- Slide 5: Connectors in use. The PNG isn't LFS-tracked, so it can be
+      <!-- Slide 7: Connectors in use. The PNG isn't LFS-tracked, so it can be
            served as a plain relative path from Pages. -->
       <section>
         <p>
@@ -217,7 +255,7 @@
         </div>
       </section>
 
-      <!-- Slide 6: Skills intro. Heading only — the README entry's body text
+      <!-- Slide 8: Skills intro. Heading only — the README entry's body text
            is unfinished ("A Claude"), so the copy is still to come. -->
       <section>
         <h2>Level 2: <span class="term-skills">Skills</span></h2>
