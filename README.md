@@ -13,7 +13,7 @@ behaviour* is the point, not the code.
 |---|---|---|
 | [20260722-claude-md-demo/](20260722-claude-md-demo/) | 2026-07-22 | How `CLAUDE.md` works — `/init`, editing the draft, and adding permissions |
 | [20260805-skills-demo/](20260805-skills-demo/) | 2026-08-05 | Skills — Reveal.js slide deck |
-|[20260818 slides](https://docs.google.com/presentation/d/10iO9bb8L3sihILLwMtUqfAtS3An2evc3Y0VqCI0IiEI/edit?usp=sharing) | 2026-08-18 | Non-coding uses of AI including literature review, help on tedious tasks, and beta-testing of capacity scoping |
+|[20260819 slides](https://docs.google.com/presentation/d/10iO9bb8L3sihILLwMtUqfAtS3An2evc3Y0VqCI0IiEI/edit?usp=sharing) | 2026-08-19 | Non-coding uses of AI including literature review, help on tedious tasks, and beta-testing of capacity scoping |
 
 ## Conventions
 
