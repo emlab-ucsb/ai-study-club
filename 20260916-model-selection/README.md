@@ -16,6 +16,7 @@ in a macOS `sandbox-exec` profile that:
   `ls` shows they exist),
 - hides the repo's `.git` entirely — its object store would otherwise be a side
   channel into whatever the other sessions had committed,
+- hides the state the CLI keeps outside the working directory (see below),
 - blocks writes anywhere except that session's own directory.
 
 ```sh
@@ -51,6 +52,42 @@ Results are written outside the sandbox so a run can't read its own transcript
 back as source material. Anything after the prompt file is handed to `claude`
 unchanged and overrides these defaults, e.g. `-p --output-format stream-json
 --verbose` for the full transcript rather than a summary.
+
+Note that the JSON result holds only the final message plus metrics — no tool
+calls, so nothing the run fetched or posted shows up there. The full record is
+the session transcript under `~/.claude/projects/`, keyed by the `session_id` in
+the JSON. Also check `subtype` before trusting a file: a run that hits
+`BUDGET_USD` ends with `error_max_budget_usd` and **no `result` key at all**, so
+a capped run leaves you metrics and no answer.
+
+## Sealing the side channels
+
+Blocking the sibling directories is the easy half. The CLI keeps per-session
+state outside the working directory, and every bit of it is a way around that:
+
+- `~/.claude/projects/<working-dir-slugged>/*.jsonl` — the full transcript of a
+  session: every edit, tool result and intermediate step, so rather more than
+  the git objects would give up. The slug is the absolute path with
+  non-alphanumerics replaced by dashes, i.e. computable, not secret.
+- `~/.claude/history.jsonl` — prompts, keyed by project path.
+- `~/.claude/file-history/` — snapshots of edited files.
+- `~/.claude.json` — a per-project record.
+
+`start.sh` denies reads on all of those for the *other* three models, plus the
+slugs for this directory and the repo root, which hold the sessions that
+designed the experiment and would tell a model it's one of four. Each session
+keeps read access to its own. Denying these leaves the CLI working normally;
+writes are still allowed, so transcripts are still recorded.
+
+Run the check before a batch:
+
+```sh
+./start.sh check
+```
+
+It builds each model's profile, attempts every blocked read from inside that
+sandbox, and exits non-zero if any returns data. This list will grow with CLI
+versions, so it's worth asserting rather than trusting.
 
 `spec.md` holds what's true for all four runs and *is* appended to each system
 prompt — mainly the sandbox notes, so no one burns turns diagnosing the missing
