@@ -1,0 +1,8 @@
+# Each model's sandboxed working directory stays untracked. Committing them
+# would let a later session read the others' work out of the git history
+# (`git show`, `git log -p`) even though the sandbox blocks the directories
+# themselves. Collect results with `git add -f` once every session is done.
+fable/
+opus/
+sonnet/
+haiku/
