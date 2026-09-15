@@ -8,12 +8,21 @@
 # The prompt file is opened as the session's first message, so every model is
 # handed byte-identical instructions.
 #
+# Pass -p/--print and the session runs unattended instead, writing its JSON
+# result to runs/<model>.json. All four at once:
+#
+#   for m in fable opus sonnet haiku; do ./start.sh "$m" prompts/refactor.md -p & done; wait
+#
 # Note: sandbox-exec is deprecated by Apple but still functional on Darwin 25.
 
 set -eu
 
 SESSION_DIR=$(cd "$(dirname "$0")" && pwd)
 MODELS="fable opus sonnet haiku"
+
+# Runaway cap for unattended runs. This build has no --max-turns, so the budget
+# is the only stop short of the model deciding it is finished.
+BUDGET_USD=5
 
 usage() {
   echo "usage: $(basename "$0") <fable|opus|sonnet|haiku> <prompt-file> [claude args...]" >&2
@@ -35,6 +44,11 @@ PROMPT=$(cat "$PROMPT_FILE")
 
 TARGET="$SESSION_DIR/$MODEL"
 [ -d "$TARGET" ] || { echo "missing directory: $TARGET" >&2; exit 1; }
+
+PRINT=0
+for arg in "$@"; do
+  case $arg in -p|--print) PRINT=1 ;; esac
+done
 
 # The git object store is a side channel into the other sessions' work: even
 # with their directories blocked, `git show` / `git log -p` would hand over
@@ -98,8 +112,39 @@ cat > "$PROFILE" <<PROFILE_END
     (subpath "/dev"))
 PROFILE_END
 
+# Defaults are placed in front of "$@", so anything given on the command line
+# comes later and wins.
+#
+# --model is set from the directory name in both modes: --print never offers the
+# in-session picker, and in interactive mode it closes off a mis-click that would
+# quietly run one model in another's directory.
+set -- --model "$MODEL" "$@"
+
+if [ "$PRINT" -eq 1 ]; then
+  # There is nobody present to answer a permission prompt. Letting prompts
+  # auto-deny instead would stop each model at a different arbitrary point and
+  # turn the comparison into one of permission luck, so approval is switched off
+  # and the sandbox above is what actually holds the line. It holds writes; the
+  # profile leaves the network open.
+  set -- --permission-mode bypassPermissions \
+         --output-format json \
+         --max-budget-usd "$BUDGET_USD" "$@"
+
+  # Results land outside the sandbox, one file per model: the session keeps its
+  # own directory for its actual work, and no run can read its own transcript
+  # back as though it were source material. This shell opens the redirect before
+  # sandbox-exec takes over, so the write is allowed.
+  mkdir -p "$SESSION_DIR/runs"
+  OUT="$SESSION_DIR/runs/$MODEL.json"
+  echo "$MODEL -> $OUT" >&2
+fi
+
 # The prompt goes last: claude reads a trailing positional argument as the first
 # message of the session.
 cd "$TARGET"
+if [ "$PRINT" -eq 1 ]; then
+  exec sandbox-exec -f "$PROFILE" claude --safe-mode \
+      --append-system-prompt-file "$SPEC" "$@" "$PROMPT" > "$OUT"
+fi
 exec sandbox-exec -f "$PROFILE" claude --safe-mode \
     --append-system-prompt-file "$SPEC" "$@" "$PROMPT"
