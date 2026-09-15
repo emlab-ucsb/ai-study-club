@@ -37,6 +37,12 @@ for m in $MODELS; do
     (subpath \"$SESSION_DIR/$m\")"
 done
 
+# Every session gets the same environment notes, so none of them waste turns
+# rediscovering the sandbox. Appended rather than placed in a CLAUDE.md, which
+# --safe-mode ignores.
+NOTES="$SESSION_DIR/sandbox-notes.md"
+[ -f "$NOTES" ] || { echo "missing notes file: $NOTES" >&2; exit 1; }
+
 PROFILE=$(mktemp -t claude-sandbox)
 trap 'rm -f "$PROFILE"' EXIT INT TERM
 
@@ -76,4 +82,5 @@ cat > "$PROFILE" <<PROFILE_END
 PROFILE_END
 
 cd "$TARGET"
-exec sandbox-exec -f "$PROFILE" claude --safe-mode "$@"
+exec sandbox-exec -f "$PROFILE" claude --safe-mode \
+    --append-system-prompt-file "$NOTES" "$@"
