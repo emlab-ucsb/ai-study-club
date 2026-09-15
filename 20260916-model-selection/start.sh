@@ -3,7 +3,10 @@
 # macOS sandbox that makes the three sibling directories opaque and keeps all
 # writes inside the directory the session started in.
 #
-#   ./start.sh opus [extra claude args...]
+#   ./start.sh opus prompts/refactor.md [extra claude args...]
+#
+# The prompt file is opened as the session's first message, so every model is
+# handed byte-identical instructions.
 #
 # Note: sandbox-exec is deprecated by Apple but still functional on Darwin 25.
 
@@ -12,11 +15,23 @@ set -eu
 SESSION_DIR=$(cd "$(dirname "$0")" && pwd)
 MODELS="fable opus sonnet haiku"
 
+usage() {
+  echo "usage: $(basename "$0") <fable|opus|sonnet|haiku> <prompt-file> [claude args...]" >&2
+  exit 1
+}
+
 MODEL=${1:-}
 case " $MODELS " in
   *" $MODEL "*) shift ;;
-  *) echo "usage: $(basename "$0") <fable|opus|sonnet|haiku> [claude args...]" >&2; exit 1 ;;
+  *) usage ;;
 esac
+
+PROMPT_FILE=${1:-}
+[ -n "$PROMPT_FILE" ] || usage
+shift
+[ -f "$PROMPT_FILE" ] || { echo "missing prompt file: $PROMPT_FILE" >&2; exit 1; }
+PROMPT=$(cat "$PROMPT_FILE")
+[ -n "$PROMPT" ] || { echo "empty prompt file: $PROMPT_FILE" >&2; exit 1; }
 
 TARGET="$SESSION_DIR/$MODEL"
 [ -d "$TARGET" ] || { echo "missing directory: $TARGET" >&2; exit 1; }
@@ -37,11 +52,13 @@ for m in $MODELS; do
     (subpath \"$SESSION_DIR/$m\")"
 done
 
-# Every session gets the same environment notes, so none of them waste turns
-# rediscovering the sandbox. Appended rather than placed in a CLAUDE.md, which
-# --safe-mode ignores.
-NOTES="$SESSION_DIR/sandbox-notes.md"
-[ -f "$NOTES" ] || { echo "missing notes file: $NOTES" >&2; exit 1; }
+# Every session gets the same spec, so none of them waste turns rediscovering
+# the sandbox. Appended rather than placed in a CLAUDE.md, which --safe-mode
+# ignores. The per-run task stays out of here and goes in as the first user
+# message instead -- a task delivered via the system prompt is an odd setup, and
+# this comparison shouldn't have to control for it.
+SPEC="$SESSION_DIR/spec.md"
+[ -f "$SPEC" ] || { echo "missing spec file: $SPEC" >&2; exit 1; }
 
 PROFILE=$(mktemp -t claude-sandbox)
 trap 'rm -f "$PROFILE"' EXIT INT TERM
@@ -81,6 +98,8 @@ cat > "$PROFILE" <<PROFILE_END
     (subpath "/dev"))
 PROFILE_END
 
+# The prompt goes last: claude reads a trailing positional argument as the first
+# message of the session.
 cd "$TARGET"
 exec sandbox-exec -f "$PROFILE" claude --safe-mode \
-    --append-system-prompt-file "$NOTES" "$@"
+    --append-system-prompt-file "$SPEC" "$@" "$PROMPT"

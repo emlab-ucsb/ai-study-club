@@ -9,8 +9,8 @@ so the meeting can compare the four transcripts without anyone having peeked at
 the others first.
 
 `start.sh` opens a `claude --safe-mode` session in one model's subdirectory
-(`fable/`, `opus/`, `sonnet/`, `haiku/`), wrapped in a macOS `sandbox-exec`
-profile that:
+(`fable/`, `opus/`, `sonnet/`, `haiku/`) on a prompt read from a file, wrapped
+in a macOS `sandbox-exec` profile that:
 
 - makes the three sibling directories unreadable (metadata still visible, so
   `ls` shows they exist),
@@ -19,13 +19,18 @@ profile that:
 - blocks writes anywhere except that session's own directory.
 
 ```sh
-./start.sh opus            # then pick the model in-session and paste the prompt
-./start.sh haiku
+./start.sh opus prompts/refactor.md     # then pick the model in-session
+./start.sh haiku prompts/refactor.md
 ```
 
-`sandbox-notes.md` is appended to each session's system prompt so no one burns
-turns diagnosing the missing git or the unreadable siblings. It's appended
-rather than put in a `CLAUDE.md`, which `--safe-mode` ignores.
+The prompt file is passed as the session's first message, so every model gets
+byte-identical instructions. A task delivered through the system prompt would be
+an odd setup and one more thing the comparison would have to control for.
+
+`spec.md` holds what's true for all four runs and *is* appended to each system
+prompt — mainly the sandbox notes, so no one burns turns diagnosing the missing
+git or the unreadable siblings. It's appended rather than put in a `CLAUDE.md`,
+which `--safe-mode` ignores.
 
 The four working directories are gitignored for the same reason `.git` is
 blocked. Collect the results with `git add -f` once every run is finished.

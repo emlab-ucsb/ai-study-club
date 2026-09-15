@@ -1,4 +1,10 @@
-# Environment notes
+# Session spec
+
+This file is appended to every session's system prompt. It holds what is true
+for all four runs; the task itself arrives separately, as the first message of
+the session.
+
+## Environment
 
 This session runs inside a macOS `sandbox-exec` profile. The restrictions below
 are deliberate and are not faults to diagnose or work around.
