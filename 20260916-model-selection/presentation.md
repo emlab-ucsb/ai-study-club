@@ -113,7 +113,7 @@ Ultimately, there is no published explanation of how Anthropic gets to the perce
 
 ## Model tiers
 
-There are four levels of Claude. The fancier models burn usage faster.
+There are four levels of Claude.
 
 Current versions are:
 
@@ -158,5 +158,62 @@ ___
 
 ## Working efficiently
 
+**Keep conversations short.**
+___
 
+Every prompt re-reads the whole conversation above it, so the twentieth message costs far more than the first.
+___
 
+When the topic changes, start over: `/clear` in Claude Code, or a new chat in the app.
+
+[bold line as a lead-in above the body text, the rest appearing one at a time]
+
+## Working efficiently
+
+**Give it less to read.**
+___
+
+- **Name the file or folder you mean.** A vague prompt sends Claude hunting around your whole project first.
+___
+- **Attach the table, not the 200-page report** it came in.
+___
+- **If efficiency is key, disable connectors you don't use.** Every one that is switched on is described in the context window, every turn.
+___
+
+`/context` shows you what is actually filling it.
+
+[bullets with the same accent dots as the outline slide]
+
+## Working efficiently
+
+**Match the effort to the task.**
+___
+
+`/effort` in Claude Code sets how hard the model thinks before it answers: `low`, `medium`, `high`, `xhigh`, `max`.
+___
+
+`high` is the default, and most editing, formatting, and lookup work needs no more than that. Save `xhigh` and `max` for genuinely hard reasoning.*
+
+[footnote: *The magic words came first — developers noticed years ago that writing "think hard", or "ultrathink", into a prompt really did buy the model a bigger thinking budget. They are proper commands now.]
+
+## Working efficiently
+
+**Write the standing context down once.**
+___
+
+**CLAUDE.md** in Claude Code, **Projects** in the app: the facts about your work that Claude would otherwise burn usage rediscovering in each new session.
+___
+
+Keep it short — it is re-read on every turn, so a bloated CLAUDE.md is a tax you pay continuously.
+
+## Working efficiently
+
+**⚠️ Cowork is a usage hog.**
+___
+
+It is at its most expensive when it drives your computer or your Chrome browser: every step it takes, it takes a screenshot and looks at it, and an image costs many times what the same information in plain text would.
+___
+
+It is also working unattended, so nobody is watching the meter.
+
+[warning card — coral border and tint.]
