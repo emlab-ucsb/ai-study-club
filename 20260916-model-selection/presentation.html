@@ -96,6 +96,98 @@
       border: none;
       border-radius: 2px;
     }
+
+    /* Content slides (everything past the title) share one heading style:
+       Space Grotesk, mint accent, a short underline rule instead of the
+       title slide's centered one. */
+    .reveal h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.3em;
+      color: var(--accent-2);
+      letter-spacing: -0.005em;
+      margin-bottom: 0.7em;
+    }
+
+    /* Outline slide: a plain list read as a set of stops on the talk, each
+       one picked out with an accent-colored marker instead of a default
+       bullet glyph. */
+    .reveal .outline {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      text-align: left;
+      max-width: 640px;
+      margin-inline: auto;
+    }
+    .reveal .outline li {
+      position: relative;
+      padding-left: 1.4em;
+      margin: 0.55em 0;
+      font-size: 1.05em;
+    }
+    .reveal .outline li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.42em;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    /* "Two months in": two stat callouts pinned to opposite corners of the
+       slide, per the README's "upper left / lower right, in text boxes"
+       instruction. The section is stretched to the full 700px canvas height
+       and split into the heading plus a flexed body — the boxes pin to that
+       body's corners (not the section's), so they land clear of the heading
+       instead of on top of it, and the intro text sits centered in the
+       space between them rather than running underneath either box. */
+    .reveal .slides section.stats { text-align: center; }
+    .reveal .stats-body {
+      position: relative;
+      height: 220px;
+      margin: 0.8em 0;
+    }
+    .reveal .stat-box {
+      position: absolute;
+      max-width: 280px;
+      padding: 0.5em 0.9em;
+      border-radius: 14px;
+      background: rgba(244, 241, 255, 0.06);
+      border: 1px solid rgba(244, 241, 255, 0.14);
+      backdrop-filter: blur(6px);
+    }
+    .reveal .stat-box.top-left     { top: 0; left: 10%; text-align: left; }
+    .reveal .stat-box.bottom-right { bottom: 0; right: 10%; text-align: right; }
+    .reveal .stat-number {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5em;
+      line-height: 1.1;
+    }
+    .stat-box.top-left     .stat-number { color: var(--accent); }
+    .stat-box.bottom-right .stat-number { color: var(--accent-2); }
+    .reveal .stat-label {
+      display: block;
+      font-size: 0.6em;
+      color: var(--ink-dim);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-top: 0.15em;
+    }
+    .reveal .stats-intro {
+      max-width: 560px;
+      margin: 0 auto;
+      color: var(--ink);
+    }
+    .reveal .stats-footnote {
+      color: var(--ink-dim);
+      font-style: italic;
+      margin-top: 0.6em;
+    }
   </style>
 </head>
 <body>
@@ -113,6 +205,38 @@
         <p class="byline">Jordan Wingenroth</p>
         <p class="subline">Claude Study Club</p>
         <p class="date">September 16, 2026</p>
+      </section>
+
+      <!-- Slide 2: Outline. -->
+      <section>
+        <h2>Outline</h2>
+        <ul class="outline">
+          <li class="fragment">Two months in</li>
+          <li class="fragment">Usage limits</li>
+          <li class="fragment">Available model tiers</li>
+          <li class="fragment">Changing effort level</li>
+          <li class="fragment">Choosing the appropriate model</li>
+        </ul>
+      </section>
+
+      <!-- Slide 3: Two months in. Figures pinned to opposite corners per the
+           README's "upper left / lower right, text boxes, stylish" note. -->
+      <section class="stats">
+        <h2>Two months in</h2>
+        <p class="stats-intro">
+          Since our team account opened in mid-July, emLab has engaged in
+        </p>
+        <div class="stats-body">
+          <div class="stat-box top-left">
+            <span class="stat-number">1,400</span>
+            <span class="stat-label">Claude Code sessions</span>
+          </div>
+          <div class="stat-box bottom-right">
+            <span class="stat-number">1,000</span>
+            <span class="stat-label">Chat conversations</span>
+          </div>
+        </div>
+        <p class="stats-footnote">&hellip;and counting</p>
       </section>
 
     </div>
