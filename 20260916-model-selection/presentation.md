@@ -110,7 +110,9 @@ Ultimately, there is no published explanation of how Anthropic gets to the perce
 
 ## Model tiers
 
-There are four levels of Claude. Current versions are:
+There are four levels of Claude. 
+
+Current versions are:
 
 **Fable 5.1** — newest and most capable
 
