@@ -76,7 +76,7 @@ ___
 
 Claude uses a system of 
 
-**5-hour session limits** and **7-day weekly limits.** [all one line, underline bolded text, make sure it is centered]
+**5-hour session limits** and **7-day weekly limits.** [all one line, underline bolded text, make sure it is centered, no paragraph break before it.]
 ___
 
 How to view them depends on which platform you are using. 
