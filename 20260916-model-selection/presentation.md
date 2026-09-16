@@ -55,7 +55,9 @@ and
 
 ...and counting
 
-[Format it with the figures in text boxes, upper left and lower right. Make it look stylish.]
+*The contents stay private — the admin panel only reports summary statistics like these.*
+
+[Format it with the figures in text boxes, upper left and lower right. Make it look stylish. Set the privacy line as a small footnote under the tallies.]
 
 ## Two months in
 

@@ -220,6 +220,15 @@
       color: var(--ink);
       margin-top: 0.6em;
     }
+    /* Aside under the tallies: smaller and dimmed so it reads as a
+       footnote rather than another line of the slide, but not so small it
+       disappears from the back of a projected room. */
+    .reveal .stats-aside {
+      font-size: 0.55em;
+      color: var(--ink-dim);
+      max-width: 620px;
+      margin: 0.8em auto 0;
+    }
 
     /* Held title: a real heading that lives outside any <section>, as a
        direct child of .slides. Reveal's transition CSS only ever targets
@@ -393,6 +402,10 @@
           </div>
         </div>
         <p class="stats-footnote">&hellip;and counting</p>
+        <p class="stats-aside">
+          The contents stay private &mdash; the admin panel only reports
+          summary statistics like these.
+        </p>
       </section>
 
       <section class="stats title-held" data-title-group="two-months-in">
