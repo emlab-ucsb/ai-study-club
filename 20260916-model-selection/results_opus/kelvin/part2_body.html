@@ -1,0 +1,204 @@
+<header class="masthead">
+  <div>
+    <div class="kicker">Ocean physics · El Niño 2026</div>
+    <h1>A foot of ocean is crossing the Pacific</h1>
+    <p class="dek">A Kelvin wave is a slow, basin-wide bulge of warm water — hundreds of miles wide, about a foot tall,
+      moving east at roughly walking pace. It is the machinery that builds an El Niño. One launched in the western
+      Pacific this spring, and it is now rounding Mexico on its way to California.</p>
+    <div class="dateline">Updated 16 September 2026 · Sources listed at the end</div>
+  </div>
+  <button class="theme" id="themeBtn" type="button" aria-pressed="false">◐ Dark mode</button>
+</header>
+
+<section id="what">
+  <h2>What it is</h2>
+  <h3>Not a wave you can surf, or run from</h3>
+  <p>A <strong>Kelvin wave</strong> is a large-scale wave trapped against a boundary — the equator, or a coastline —
+    by the Earth's rotation. Because the Coriolis force vanishes at the equator and reverses sign across it, the
+    equator acts like an invisible wall on both sides: a disturbance launched there cannot spread away, so it runs
+    east along the waveguide instead, keeping its shape for thousands of miles. The same trapping happens against a
+    coast, which is why the Pacific's waves take a right turn at South America and hug the Americas northward.</p>
+  <p>There are two families. The <strong>oceanic</strong> Kelvin wave is a pulse of warm water and a depressed
+    thermocline, crossing the Pacific in about two months. The <strong>atmospheric</strong> (convectively coupled)
+    Kelvin wave is a band of thunderstorms circling the tropics roughly five times faster, seeding rainfall bursts
+    and tropical cyclones. Both are the same physics; only the fluid differs.</p>
+
+  <div class="kpis">
+    <div class="kpi"><div class="l">Speed, oceanic wave</div><div class="v">2–3<span class="u">m/s</span></div>
+      <div class="d">About 6 mph — a brisk walk. Roughly two months to cross the Pacific.</div></div>
+    <div class="kpi"><div class="l">Height at the surface</div><div class="v">~12<span class="u">in</span></div>
+      <div class="d">A bulge hundreds of miles wide and thousands long. Invisible from a boat.</div></div>
+    <div class="kpi"><div class="l">Thermocline displacement</div><div class="v">Tens<span class="u">of metres</span></div>
+      <div class="d">The real signal is subsurface: it pushes the warm/cold boundary down.</div></div>
+    <div class="kpi"><div class="l">Speed, atmospheric wave</div><div class="v">11–14<span class="u">m/s</span></div>
+      <div class="d">Convectively coupled Kelvin waves — rain and storms, not water level.</div></div>
+    <div class="kpi"><div class="l">For contrast: a tsunami</div><div class="v">~200<span class="u">m/s</span></div>
+      <div class="d">Jet-liner speed, minutes to hours of warning. A Kelvin wave takes months.</div></div>
+  </div>
+</section>
+
+<section id="anatomy">
+  <h2>Anatomy</h2>
+  <div class="card">
+    <p class="fig-title">What the wave actually does to the Pacific</p>
+    <p class="fig-sub">A cross-section along the equator, from Indonesia to South America. Vertical scale is
+      exaggerated about 30,000×: the ocean here is 4 km deep and 15,000 km wide. Switch between the two states.</p>
+    <div class="toggles" role="group" aria-label="Ocean state">
+      <button type="button" id="stNormal" aria-pressed="true">Normal / La Niña state</button>
+      <button type="button" id="stWave" aria-pressed="false">Downwelling Kelvin wave passing</button>
+    </div>
+    <figure><svg id="xsec" viewBox="0 0 1000 430" role="img"
+      aria-label="Cross-section of the equatorial Pacific showing the thermocline tilting as a downwelling Kelvin wave crosses"></svg></figure>
+    <p class="note" id="xsecNote"></p>
+  </div>
+</section>
+
+<section id="news">
+  <h2>The news, September 2026</h2>
+  <h3>The wave is two weeks from California</h3>
+  <p>A very strong El Niño is now established — the WMO put the odds of it lasting through February 2027 at close to
+    100% on 3 September, and NOAA's Climate Prediction Center gives better than 90% odds of a very strong event
+    through the winter. The weekly Niño&nbsp;3.4 index reached <strong>+2.7&nbsp;°C</strong> in mid-August. That warmth
+    was delivered by a sequence of downwelling Kelvin waves, and the latest one is now a <em>coastal-trapped</em> wave
+    running north along Mexico at about 6 mph. Forecasters expect it off Southern California in <strong>early
+    October</strong>.</p>
+
+  <div class="card hero">
+    <div class="num">10–14<small>inches</small></div>
+    <div class="cap">Projected sea level above normal along the California coast once the wave arrives — roughly 6 to 12
+      inches of it from the wave itself, on top of an El Niño-elevated Pacific. It then takes three to six months to
+      relax, which puts it squarely on top of winter king tides.</div>
+  </div>
+</section>
+
+<section id="journey">
+  <h2>Where it has been</h2>
+  <div class="card">
+    <p class="fig-title">The wave's route: 15,000 km west to east, then a right turn north</p>
+    <p class="fig-sub">Launched by westerly wind bursts over the western Pacific warm pool in March, the wave crossed
+      the basin along the equatorial waveguide, hit South America in May, and has been travelling north as a
+      coastal-trapped wave since. Hover any stop for details.</p>
+    <figure><svg id="pacmap" class="mapsvg" role="img"
+      aria-label="Map of the Pacific showing the Kelvin wave route from the western Pacific warm pool east to Peru, then north along the Americas to California"></svg></figure>
+    <p class="note">Route is schematic: the equatorial leg follows the waveguide within a few degrees of the equator;
+      the coastal leg follows the shelf. Dates are the reported or projected arrival at each stop.</p>
+  </div>
+
+  <div class="card">
+    <p class="fig-title">Sea level above normal at the wave's leading edge</p>
+    <p class="fig-sub">Filled markers are reported observations; the band shows the reported range where one was given.
+      Everything after early October is forecast.</p>
+    <div class="legend" id="journeyKey"></div>
+    <figure><svg id="journeyChart" role="img"
+      aria-label="Line chart of sea level anomaly in inches above normal at the Kelvin wave's leading edge, March 2026 through February 2027"></svg></figure>
+    <details class="tbl"><summary>Table view</summary><div id="journeyTable"></div></details>
+    <p class="note">Anomalies are measured at different places as the wave advances — this traces the leading edge, not
+      a fixed point. Interpolated months are marked "est." in the table.</p>
+  </div>
+</section>
+
+<section id="stack">
+  <h2>Why a foot matters</h2>
+  <h3>Sea level is a stack, and the wave goes on top</h3>
+  <p>A foot of extra water sounds survivable until you remember that coastal flooding is not driven by average sea
+    level — it is driven by the <em>sum</em> of everything happening at once. The Kelvin wave does not replace the
+    king tide or the winter storm; it raises the floor underneath them. A common coastal-engineering rule of thumb is
+    that every four inches of added water roughly doubles how often a low-lying area floods.</p>
+
+  <div class="card">
+    <p class="fig-title">Inches above a normal high tide on the Southern California coast</p>
+    <p class="fig-sub">Three moments in the same season. The scale across the top is the same inches axis, relabelled
+      with the four-inch doubling rule of thumb.</p>
+    <div class="legend" id="stackLegend"></div>
+    <figure><svg id="stackChart" role="img"
+      aria-label="Stacked bar chart of contributions to Southern California coastal water level across three dates"></svg></figure>
+    <details class="tbl"><summary>Table view</summary><div id="stackTable"></div></details>
+    <p class="note">King-tide figure is the usual ≈1 ft by which California's highest astronomical tides exceed a
+      typical high tide; the wave contribution is decayed to the middle of its 3–6 month relaxation. Storm surge and
+      wave run-up during an actual winter storm sit on top of all three layers and are not shown.</p>
+  </div>
+</section>
+
+<section id="strength">
+  <h2>How big is this one</h2>
+  <div class="card">
+    <p class="fig-title">Peak Niño 3.4 temperature anomaly, super El Niño events since 1982</p>
+    <p class="fig-sub">Models are clustering above +3 °C for late 2026 — beyond the top of the conventional
+      intensity scale. Fifteen forecast models reach or exceed it.</p>
+    <figure><svg id="eventsChart" role="img"
+      aria-label="Bar chart comparing peak Nino 3.4 anomalies of major El Nino events, with 2026 to 2027 forecast highest"></svg></figure>
+    <details class="tbl"><summary>Table view</summary><div id="eventsTable"></div></details>
+    <p class="note">Historical values are peak three-month Oceanic Niño Index. The 2026–27 value is the forecast
+      central estimate, not an observation.</p>
+  </div>
+</section>
+
+<section id="global">
+  <h2>Where the effects land</h2>
+  <h3>The wave is local; the El Niño it builds is not</h3>
+  <p>The Kelvin wave's direct effect — elevated sea level — is confined to the eastern Pacific rim. But by shutting
+    off cold upwelling it warms the eastern Pacific, and that warmth relocates the tropics' main rainfall engine
+    thousands of miles east. Everything downstream of that shift moves with it: the Asian monsoon, the Atlantic
+    hurricane season, the Panama Canal's water supply.</p>
+
+  <div class="card">
+    <p class="fig-title">Expected 2026–27 El Niño signal, by region</p>
+    <p class="fig-sub">Direction of the seasonal rainfall signal. Hover or focus any marker for detail; every marker
+      is also labelled in the table below.</p>
+    <div class="legend" id="worldLegend"></div>
+    <figure><svg id="worldmap" class="mapsvg" role="img"
+      aria-label="World map marking regions expected to be drier or wetter than normal during the 2026 to 2027 El Nino"></svg></figure>
+    <details class="tbl" open><summary>Table view</summary><div id="worldTable"></div></details>
+    <p class="note">Seasonal signals are probabilistic, not guarantees, and several regions flip sign between seasons —
+      El Niño typically suppresses East Africa's summer rains while boosting its October–December short rains.</p>
+  </div>
+</section>
+
+<section id="atmos">
+  <h2>The other Kelvin wave</h2>
+  <div class="two">
+    <div class="card">
+      <p class="fig-title">Oceanic Kelvin wave</p>
+      <p class="fig-sub" style="margin-bottom:10px">In the water. Months.</p>
+      <p style="font-size:14px;margin:0">A depression of the thermocline carrying warm water east along the equator at
+        2–3 m/s. Launched by westerly wind bursts, tracked by satellite altimeters and the TAO/TRITON buoy array.
+        Consequence: sea level, sea surface temperature, and — over a season — El Niño itself.</p>
+    </div>
+    <div class="card">
+      <p class="fig-title">Atmospheric Kelvin wave</p>
+      <p class="fig-sub" style="margin-bottom:10px">In the air. Days.</p>
+      <p style="font-size:14px;margin:0">A convectively coupled band of thunderstorms moving east at 11–14 m/s
+        (occasionally up to 30). One of the largest sources of day-to-day rainfall variability in the tropics, a
+        building block of the Madden–Julian Oscillation, and a known trigger for tropical cyclone formation.
+        Consequence: which week it rains.</p>
+    </div>
+  </div>
+  <p>They are coupled. The wind bursts that launch oceanic Kelvin waves often ride along with the MJO and its
+    atmospheric Kelvin waves — which is why a week of thunderstorms near Indonesia can end, two months later, as a
+    foot of extra water in Malibu.</p>
+</section>
+
+<section id="sources">
+  <h2>Sources</h2>
+  <div class="sources">
+    <ol>
+      <li>The Weather Channel — <a href="https://weather.com/2026/09/12/safety/floods/el-nino-kelvin-wave-california-sea-levels-flooding-winter-fall">El Niño drives Kelvin wave closer to California</a> (12 Sep 2026)</li>
+      <li>CBS Los Angeles — <a href="https://www.cbsnews.com/losangeles/news/southern-california-el-nino-kelvin-wave-phenomenon/">El Niño could bring rare "Kelvin wave" phenomenon to Southern California</a></li>
+      <li>KTLA — <a href="https://ktla.com/news/california/coastal-flooding-threat-kelvin-waves-california/">This little-known ocean phenomenon has California forecasters concerned</a></li>
+      <li>CNN — <a href="https://www.cnn.com/climate/el-nino-california-sea-levels-coastal-flooding">Sudden sea level rise, tied to El Niño, is about to hit the California coast</a></li>
+      <li>NASA JPL / Sentinel-6 Michael Freilich — <a href="https://www.jpl.nasa.gov/images/pia26710-international-sea-level-satellite-observes-el-nino-precursor/">International sea level satellite observes El Niño precursor</a></li>
+      <li>NOAA Climate Prediction Center — <a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml">ENSO diagnostic discussion</a></li>
+      <li>IRI, Columbia — <a href="https://iri.columbia.edu/our-expertise/climate/forecasts/enso/current/">ENSO forecast quick look, August 2026</a></li>
+      <li>The Conversation — <a href="https://theconversation.com/2026s-el-nino-is-shaping-up-to-be-a-doozy-its-already-affecting-global-shipping-fish-behavior-and-heat-291490">2026's El Niño is shaping up to be a doozy</a></li>
+      <li>World Resources Institute — <a href="https://www.wri.org/insights/super-el-nino-impacts-explained">2026 super El Niño impacts, explained</a></li>
+      <li>Moody's — <a href="https://www.moodys.com/web/en/us/insights/insurance/2026-north-atlantic-hurricane-season-update-strong-el-nino-expected-to-suppress-peak-season-activity.html">2026 North Atlantic hurricane season update</a> · NOAA AOML — <a href="https://www.aoml.noaa.gov/how-does-el-nino-impact-atlantic-hurricane-season/">How El Niño affects Atlantic hurricanes</a></li>
+      <li>Wikipedia — <a href="https://en.wikipedia.org/wiki/2026%E2%80%932027_El_Ni%C3%B1o_event">2026–2027 El Niño event</a></li>
+      <li>Baranowski et al. (2016), <em>JGR Atmospheres</em> — <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015JD024150">Impact of atmospheric convectively coupled equatorial Kelvin waves on upper ocean variability</a> (CCKW phase speeds)</li>
+      <li>Coastlines are Natural Earth 1:110m land, equirectangular projection.</li>
+    </ol>
+    <p class="note">Built 16 September 2026. Where a figure is a forecast, an interpolation, or a rule of thumb, the
+      chart says so. Nothing here is an official forecast product — consult NOAA CPC and the National Weather Service
+      for operational guidance.</p>
+  </div>
+</section>
+</div>

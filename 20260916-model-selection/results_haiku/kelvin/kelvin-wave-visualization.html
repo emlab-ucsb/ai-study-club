@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelvin Wave: Path, Timing & Impacts</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #1f2937;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            color: white;
+            border-radius: 12px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .card h2 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: #0369a1;
+            border-bottom: 3px solid #0284c7;
+            padding-bottom: 10px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .map-container {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(to bottom, #e0f2fe 0%, #f0f9ff 100%);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #0284c7;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: #f8fafc;
+            border-left: 4px solid #0284c7;
+            border-radius: 4px;
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: #0369a1;
+            min-width: 120px;
+        }
+
+        .timeline-location {
+            flex: 1;
+        }
+
+        .timeline-impact {
+            font-size: 0.9em;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .impacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .impact-box {
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .impact-box h3 {
+            font-size: 0.95em;
+            color: #d97706;
+            margin-bottom: 8px;
+        }
+
+        .impact-box p {
+            font-size: 0.85em;
+            color: #64748b;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            border-radius: 8px;
+            border: 1px solid #0284c7;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #0369a1;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .info-text {
+            background: #ecfdf5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .info-text strong {
+            color: #059669;
+        }
+
+        .wave-icon {
+            font-size: 3em;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .wave-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌊 Kelvin Waves: An Ocean Phenomenon</h1>
+            <p>Tracking a massive planetary-scale wave moving toward North America</p>
+        </header>
+
+        <div class="card full-width">
+            <h2>What is a Kelvin Wave?</h2>
+            <p style="margin-bottom: 15px;">
+                A <strong>Kelvin wave</strong> is an extremely large ocean wave that spans thousands of miles across the tropical Pacific.
+                It's not a breaking wave or tsunami, but rather a movement of warm water and heat that travels beneath the ocean surface.
+                When east-moving, it can raise sea levels along coasts and influence weather patterns globally.
+            </p>
+            <div class="info-text">
+                <strong>Key Fact:</strong> A Kelvin wave takes 2-3 months to cross the tropical Pacific. The current wave originated near the equator
+                and is moving northward along the North American coast, expected to reach California by late October 2026.
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>📍 Current Path & Location</h2>
+                <div class="map-container">
+                    <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Ocean background -->
+                        <rect width="600" height="400" fill="#e0f2fe"/>
+
+                        <!-- Simplified coastlines -->
+                        <path d="M 550 50 L 580 100 L 570 200 L 575 350 L 600 400" stroke="#1e40af" stroke-width="3" fill="none"/>
+
+                        <!-- Mexico coast -->
+                        <path d="M 480 150 L 500 180 L 490 250" stroke="#1e40af" stroke-width="3" fill="none"/>
+
+                        <!-- Kelvin wave path (animated arc) -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#0284c7"/>
+                            </marker>
+                        </defs>
+
+                        <!-- Path line -->
+                        <path d="M 350 180 Q 420 150 500 130 Q 550 120 580 100" stroke="#0284c7" stroke-width="3" fill="none" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+
+                        <!-- Origin point (equatorial Pacific) -->
+                        <circle cx="350" cy="180" r="8" fill="#fbbf24"/>
+                        <text x="350" y="210" text-anchor="middle" font-size="12" fill="#1e40af" font-weight="600">Origin</text>
+
+                        <!-- Current position (Mexico coast area) -->
+                        <circle cx="500" cy="130" r="10" fill="#0284c7" opacity="0.7"/>
+                        <circle cx="500" cy="130" r="10" fill="none" stroke="#0284c7" stroke-width="2"/>
+                        <circle cx="500" cy="130" r="10" fill="none" stroke="#0284c7" stroke-width="2" opacity="0.3" r="15"/>
+                        <text x="500" y="50" text-anchor="middle" font-size="12" fill="#0284c7" font-weight="600">Sept 2026</text>
+
+                        <!-- California target (destination) -->
+                        <circle cx="575" cy="90" r="8" fill="#dc2626"/>
+                        <text x="575" y="20" text-anchor="middle" font-size="12" fill="#991b1b" font-weight="600">Expected Oct 2026</text>
+
+                        <!-- Labels -->
+                        <text x="300" y="30" font-size="14" font-weight="600" fill="#0369a1">Equatorial Pacific</text>
+                        <text x="520" y="380" font-size="14" font-weight="600" fill="#0369a1">California Coast</text>
+
+                        <!-- Distance indicator -->
+                        <text x="300" y="350" font-size="11" fill="#64748b">Wave propagating northeastward at ~2,000 km/month</text>
+                    </svg>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fbbf24;"></div>
+                        <span>Origin (Equator)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #0284c7;"></div>
+                        <span>Current Position</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #dc2626;"></div>
+                        <span>Projected Arrival</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📅 Timeline of Arrival</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">Sept 2026</div>
+                        <div>
+                            <div class="timeline-location"><strong>Mexico Coast</strong></div>
+                            <div class="timeline-impact">Wave detected, moving northward</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Oct 2026</div>
+                        <div>
+                            <div class="timeline-location"><strong>Southern California</strong></div>
+                            <div class="timeline-impact">Sea level rise of 6-12 inches (15-30 cm)</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Oct-Nov 2026</div>
+                        <div>
+                            <div class="timeline-location"><strong>Bay Area & Central Coast</strong></div>
+                            <div class="timeline-impact">Elevated water levels and coastal flooding risk</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">Nov-Dec 2026</div>
+                        <div>
+                            <div class="timeline-location"><strong>Pacific Northwest</strong></div>
+                            <div class="timeline-impact">Secondary impacts from wave dissipation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>📊 Expected Sea Level Rise by Region</h2>
+                <div class="chart-container">
+                    <canvas id="seaLevelChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚠️ Key Impacts & Concerns</h2>
+                <div class="impacts-grid">
+                    <div class="impact-box">
+                        <h3>🌊 Coastal Flooding</h3>
+                        <p>Higher tides combined with Kelvin wave elevation increase flood risk in low-lying coastal areas</p>
+                    </div>
+                    <div class="impact-box">
+                        <h3>🏖️ Beach Erosion</h3>
+                        <p>Elevated sea levels accelerate erosion of beaches and coastal bluffs, especially in California</p>
+                    </div>
+                    <div class="impact-box">
+                        <h3>🐟 Marine Ecosystems</h3>
+                        <p>Warmer waters disrupt fish distribution and suppress nutrient-rich upwelling that feeds food chains</p>
+                    </div>
+                    <div class="impact-box">
+                        <h3>🌡️ Ocean Temperature</h3>
+                        <p>Wave carries warm water, raising coastal temperatures and intensifying El Niño effects</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card full-width">
+            <h2>🔗 Connection to El Niño</h2>
+            <p style="margin-bottom: 15px;">
+                Kelvin waves are intimately connected to El Niño, a climate pattern that affects global weather. When a warm (downwelling)
+                Kelvin wave travels eastward across the Pacific, it can:
+            </p>
+            <ul style="margin-left: 20px; margin-bottom: 15px;">
+                <li style="margin-bottom: 10px;">Transport subsurface heat toward the coast, contributing to El Niño development or strengthening</li>
+                <li style="margin-bottom: 10px;">Suppress the cold-water upwelling that normally brings nutrient-rich deep water to the surface</li>
+                <li style="margin-bottom: 10px;">Influence rainfall patterns and atmospheric circulation across the Pacific basin</li>
+                <li style="margin-bottom: 10px;">Affect global temperature and precipitation patterns for months</li>
+            </ul>
+            <div class="info-text">
+                <strong>Current Situation:</strong> Scientists are closely monitoring this Kelvin wave because it could contribute to
+                continued El Niño warming and intensify coastal hazards already exacerbated by climate change and previous storms.
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>📈 Sea Level Rise Statistics</h2>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value">6-12"</div>
+                        <div class="stat-label">Expected rise (15-30 cm)</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">2-3 mo</div>
+                        <div class="stat-label">Cross time (equator to coast)</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">1000s km</div>
+                        <div class="stat-label">Wave width</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">~200m</div>
+                        <div class="stat-label">Wave depth (subsurface)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🛡️ What You Should Know</h2>
+                <ul style="margin-left: 20px;">
+                    <li style="margin-bottom: 12px;"><strong>Not a tsunami:</strong> Kelvin waves travel underwater slowly with minimal surface disturbance</li>
+                    <li style="margin-bottom: 12px;"><strong>Predictable:</strong> Scientists can forecast its arrival with reasonable accuracy</li>
+                    <li style="margin-bottom: 12px;"><strong>Compounding effects:</strong> Most dangerous when combined with storm surge, high tide, or heavy rain</li>
+                    <li style="margin-bottom: 12px;"><strong>Regional impact:</strong> Affects coastal communities most; inland areas unaffected</li>
+                    <li style="margin-bottom: 12px;"><strong>Multi-month duration:</strong> Effects persist as wave passes and gradually dissipates</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer style="text-align: center; margin-top: 40px; padding: 20px; color: #64748b; border-top: 1px solid #e5e7eb;">
+            <p>Data sources: NOAA, National Weather Service, Climate.gov | Visualization as of September 2026</p>
+        </footer>
+    </div>
+
+    <script>
+        // Sea Level Rise Chart
+        const ctx = document.getElementById('seaLevelChart').getContext('2d');
+
+        const locations = [
+            'Baja California',
+            'Southern CA',
+            'Central Coast',
+            'Bay Area',
+            'Pacific Northwest'
+        ];
+
+        const riseValues = [8, 10, 9, 7, 4];
+        const riseValuesHigh = [15, 20, 18, 14, 9];
+        const colors = ['#0284c7', '#0369a1', '#075985', '#0c4a6e', '#082f49'];
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: locations,
+                datasets: [
+                    {
+                        label: 'Conservative Estimate (cm)',
+                        data: riseValues,
+                        backgroundColor: colors,
+                        borderRadius: 4,
+                        borderSkipped: false
+                    },
+                    {
+                        label: 'High Estimate (cm)',
+                        data: riseValuesHigh,
+                        backgroundColor: colors.map(c => c + '66'),
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.x + ' cm';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 25,
+                        ticks: {
+                            callback: function(value) {
+                                return value + ' cm';
+                            }
+                        },
+                        grid: {
+                            color: '#e5e7eb'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

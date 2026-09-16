@@ -226,5 +226,7 @@ It is also working unattended, so nobody is watching the meter.
 
 [On this slide, start with showing the `id.md` prompt, then have the responses from the `results_x` subfolders appear one by one, in ascending order by tier]
 
+## Kelvin
 
+[]
 
