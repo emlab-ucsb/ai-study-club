@@ -79,7 +79,7 @@ Claude uses a system of
 
 and 
 
-**weekly limits.**
+**7-day weekly limits.**
 
 How to view them depends on which platform you are using. 
 
