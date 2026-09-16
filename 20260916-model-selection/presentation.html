@@ -283,6 +283,18 @@
     }
     .reveal .flush-left .slide-text { margin: 0 0 2em; }
 
+    /* "Working efficiently": the two definitions are wider than the
+       640px .flush-left default and get a visible gap between them
+       rather than relying on .slide-text's own bottom margin, so the
+       Token/Context window blocks read as separate paragraphs instead
+       of running together. */
+    .reveal .definitions .flush-left {
+      max-width: 780px;
+    }
+    .reveal .definitions .flush-left + .flush-left {
+      margin-top: 1.4em;
+    }
+
     /* "Usage limits" slide 1: a numbered pair of limit types, styled to
        match .outline's dot markers but with the number itself in the
        badge instead of a plain bullet. */
@@ -438,6 +450,20 @@
     .reveal .tier-use {
       font-size: 0.72em;
       line-height: 1.35;
+    }
+
+    /* "Working efficiently": definitions, each revealed as a fragment.
+       A generic footnote style for the context-window definition's asterisk —
+       smaller and dimmed like .stats-aside, but sitting inline under its own
+       paragraph rather than pinned to a corner, since this slide doesn't
+       share that layout. No max-width/auto margin of its own — it fills its
+       flush-left parent so its left edge lines up with the paragraph above
+       instead of centering a narrower box inside a wider one. */
+    .reveal .footnote {
+      font-size: 0.55em;
+      color: var(--ink-dim);
+      margin: 0.4em 0 0;
+      text-align: left;
     }
   </style>
 </head>
@@ -654,6 +680,30 @@
             <span class="model-chip haiku">Haiku 4.5</span>
             <span class="tier-use">Focused on cost-effectiveness and instant responses, but sometimes prone to hallucination</span>
           </div>
+        </div>
+      </section>
+
+      <!-- Slide 10: Working efficiently, definitions. -->
+      <section class="definitions">
+        <h2>Working efficiently</h2>
+        <p class="slide-text">First, some definitions:</p>
+        <p class="slide-text fragment flush-left">
+          <strong>Token:</strong> Large language models (LLMs) are trained
+          on and work with text in units of a few characters each&mdash;about
+          4 on average per token including spaces and punctuation.
+        </p>
+        <div class="fragment flush-left">
+          <p class="slide-text">
+            <strong>Context window:</strong> When you write the first prompt
+            of a conversation, the LLM reads a bunch of other text and files
+            alongside it. For subsequent prompts it also remembers the whole
+            conversation, including file reads and writes.*
+          </p>
+          <p class="footnote">
+            *until it runs out of space, but frontier models have space for
+            1,000,000+ tokens in their context window, the equivalent of
+            around 2,000 pages.
+          </p>
         </div>
       </section>
 

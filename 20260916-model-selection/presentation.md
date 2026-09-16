@@ -151,7 +151,7 @@ Consider starting with:
 First, some definitions:
 ___
 
-**Token:** Large language models (LLMs) are trained on and work with text in units of a few characters each—about 4 on average per token including spaces and punctuation.
+**Token:** Large language models (LLMs) are trained on and work with text in units of a few characters each—about 4 on average per token including spaces and punctuation. [left justify]
 ___
 
-**Context window:** When you write the first prompt of a conversation, the LLM reads a bunch of other text and files alongside it. This includes system prompts and CLAUDE.md files, attachments, and available tools (such as looking up files in your project or searching the internet). For subsequent prompts as a conversation continues, it also keeps the whole conversation in its context window until it runs out of space*[footnote: *Frontier models have space for 1,000,000+ tokens in their context window, the equivalent of around 2,000 pages].
+**Context window:** When you write the first prompt of a conversation, the LLM reads a bunch of other text and files alongside it. For subsequent prompts it also remembers the whole conversation, including file reads and writes.*[footnote: *until it runs out of space, but frontier models have space for 1,000,000+ tokens in their context window, the equivalent of around 2,000 pages]. [left justify]
