@@ -1,8 +1,9 @@
 #!/bin/sh
 # Run one prompt past several Claude models, each sealed off from the others.
 #
-#   ./start.sh opus prompts/refactor.md [extra claude args...]
-#   ./start.sh all  prompts/refactor.md [extra claude args...]
+#   ./start.sh opus    prompts/refactor.md [extra claude args...]
+#   ./start.sh all     prompts/refactor.md [extra claude args...]
+#   ./start.sh nofable prompts/refactor.md [extra claude args...]
 #   ./start.sh check
 #
 # Sessions do not run in this repo. Each one works in a throwaway directory
@@ -35,6 +36,7 @@ CLAUDE_STATE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 usage() {
   echo "usage: $(basename "$0") <fable|opus|sonnet|haiku> <prompt-file> [claude args...]" >&2
   echo "       $(basename "$0") all <prompt-file> [claude args...]" >&2
+  echo "       $(basename "$0") nofable <prompt-file> [claude args...]" >&2
   echo "       $(basename "$0") check" >&2
   exit 1
 }
@@ -253,10 +255,11 @@ summarize() {
   printf '%-22s turns=%-4s $%s' "${_st:-unknown}" "${_tn:-?}" "${_cost:-?}"
 }
 
-# Run every model on one prompt, at the same time.
+# Run a set of models on one prompt, at the same time.
 run_all() {
-  _prompt=$1
-  shift
+  _models=$1
+  _prompt=$2
+  shift 2
   [ -f "$_prompt" ] || { echo "missing prompt file: $_prompt" >&2; exit 1; }
   _task=$(task_of "$_prompt")
 
@@ -266,17 +269,17 @@ run_all() {
     echo "$_chk" >&2
     exit 1
   fi
-  echo "sandbox check passed -- launching $_task on: $MODELS"
+  echo "sandbox check passed -- launching $_task on: $_models"
 
-  # One root for the batch, so each session has three populated siblings to be
-  # sealed off from. Exported, so the children share it rather than each making
-  # their own; this shell owns it and cleans it up.
+  # One root for the batch, so each session has its siblings to be sealed off
+  # from. Exported, so the children share it rather than each making their own;
+  # this shell owns it and cleans it up.
   RUN_ROOT=$(make_root)
   export RUN_ROOT
   trap 'rm -rf "$RUN_ROOT"' EXIT INT TERM
 
   _pids=""
-  for _model in $MODELS; do
+  for _model in $_models; do
     "$0" "$_model" "$_prompt" -p "$@" &
     _pids="$_pids $_model:$!"
   done
@@ -312,10 +315,19 @@ run_all() {
 }
 
 MODEL=${1:-}
-if [ "$MODEL" = "all" ]; then
+if [ "$MODEL" = "all" ] || [ "$MODEL" = "nofable" ]; then
+  # Letters still come from the full four-model list, so nofable leaves a/ empty
+  # rather than shifting everyone up a directory: its three runs get the same
+  # working directories, and the same sandbox shape, an `all` batch would give
+  # them, and the two batches stay comparable.
+  BATCH=""
+  for _m in $MODELS; do
+    [ "$MODEL" = "nofable" ] && [ "$_m" = "fable" ] && continue
+    BATCH="${BATCH:+$BATCH }$_m"
+  done
   shift
   [ -n "${1:-}" ] || usage
-  run_all "$@"
+  run_all "$BATCH" "$@"
   exit 0
 fi
 if [ "$MODEL" = "check" ]; then
