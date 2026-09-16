@@ -5,17 +5,21 @@
 #
 #   ./start.sh opus prompts/refactor.md [extra claude args...]
 #
-# The prompt file is opened as the session's first message, so every model is
-# handed byte-identical instructions.
+# The session runs in <model>/<prompt-file-basename>/ -- opus/refactor/ for the
+# line above -- so a model writes its output there without being told to, and a
+# second task does not land on top of the first. The prompt file is opened as
+# the session's first message, so every model is handed byte-identical
+# instructions; its name reaches the model only as the working directory.
 #
 # Pass -p/--print and the session runs unattended instead, writing its JSON
-# result to runs/<model>.json. All four at once:
+# result to runs/<task>/<model>.json. All four at once:
 #
 #   for m in fable opus sonnet haiku; do ./start.sh "$m" prompts/refactor.md -p & done; wait
 #
-# `./start.sh check` runs every read the sandbox is supposed to block and reports
-# any that succeed. Worth running before a batch: the list of places the CLI
-# keeps session state outside the working directory grows with CLI versions.
+# `./start.sh check [prompt-file]` runs every read the sandbox is supposed to
+# block and reports any that succeed. Worth running before a batch: the list of
+# places the CLI keeps session state outside the working directory grows with
+# CLI versions.
 #
 # Note: sandbox-exec is deprecated by Apple but still functional on Darwin 25.
 
@@ -34,7 +38,7 @@ CLAUDE_STATE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 
 usage() {
   echo "usage: $(basename "$0") <fable|opus|sonnet|haiku> <prompt-file> [claude args...]" >&2
-  echo "       $(basename "$0") check" >&2
+  echo "       $(basename "$0") check [prompt-file]" >&2
   exit 1
 }
 
@@ -49,6 +53,16 @@ slug() {
   printf '%s' "$1" | sed 's/[^A-Za-z0-9]/-/g'
 }
 
+# task_of <prompt-file> -- the subdirectory a run of that prompt works in.
+task_of() {
+  _t=$(basename "$1")
+  _t=${_t%.*}
+  case $_t in
+    ""|*/*) echo "bad prompt file name: $1" >&2; exit 1 ;;
+  esac
+  printf '%s' "$_t"
+}
+
 # Directories a session must not read the contents of, but may still see listed.
 # The loop variable is _m rather than m: sh has no locals, and these run
 # un-piped in check(), where clobbering the caller's loop variable would quietly
@@ -59,21 +73,9 @@ sibling_dirs() {
   done
 }
 
-# Paths a session must not see at all. The sibling directories being sealed off
-# is not enough on its own: the CLI writes a full transcript of every session --
-# every edit, tool result and intermediate step, so rather more than the git
-# objects give up -- to a projects/ subdirectory named after the working
-# directory, and that name is computable rather than secret.
+# Paths a session must not see at all, beyond the transcript store that
+# write_profile denies wholesale.
 hidden_paths() {
-  for _m in $MODELS; do
-    [ "$_m" = "$1" ] || echo "$CLAUDE_STATE/projects/$(slug "$SESSION_DIR/$_m")"
-  done
-
-  # The sessions that built the harness, which discuss the experiment itself
-  # and would tell a model it is being compared against three others.
-  echo "$CLAUDE_STATE/projects/$(slug "$SESSION_DIR")"
-  echo "$CLAUDE_STATE/projects/$(slug "$REPO_DIR")"
-
   # Prompt history is keyed by project path, file-history holds snapshots of
   # edited files, and .claude.json carries a per-project record. Denying reads
   # on all three leaves the CLI working; writes are still permitted.
@@ -85,11 +87,11 @@ hidden_paths() {
   [ -n "$GIT_DIR" ] && echo "$GIT_DIR"
 }
 
-# write_profile <model> <path>
+# write_profile <model> <run-dir> <path>
 write_profile() {
   _model=$1
-  _out=$2
-  _target="$SESSION_DIR/$_model"
+  _run=$2
+  _out=$3
 
   _deny_data=""
   sibling_dirs "$_model" | while IFS= read -r _p; do
@@ -99,9 +101,7 @@ write_profile() {
 
   # subpath throughout, including for the plain files: it covers a regular file
   # as well as literal does, and unlike literal it still covers a directory that
-  # does not exist when the profile is written. A model that has not run yet has
-  # no transcript directory, and that is exactly when a literal rule would leave
-  # the one it later creates readable by everyone else.
+  # does not exist when the profile is written.
   hidden_paths "$_model" | while IFS= read -r _p; do
     printf '\n    (subpath "%s")' "$_p"
   done > "$_out.all"
@@ -118,20 +118,32 @@ write_profile() {
 (deny file-read-data$_deny_data)
 (allow file-read-metadata)
 
-;; Hidden outright, metadata included. These are the routes around the rule
-;; above -- the git object store, and the state the CLI keeps under its own
-;; config directory. Leaving the git directory merely unreadable still lets
-;; stat(2) find it, at which point the CLI injects a branch/status/recent-commits
-;; section into the system prompt.
+;; Hidden outright, metadata included. The git object store, and the state the
+;; CLI keeps under its own config directory. Leaving the git directory merely
+;; unreadable still lets stat(2) find it, at which point the CLI injects a
+;; branch/status/recent-commits section into the system prompt.
 (deny file-read*$_deny_all)
 
+;; The transcript store is denied wholesale and this session's own directory
+;; allowed back, rather than the three rivals being named one by one. A
+;; transcript directory is named after the working directory, so naming them
+;; individually only holds while every session runs where this script expects;
+;; point a run one directory deeper and the enumerated names quietly stop
+;; matching anything, with no error to notice. Ordering is load-bearing --
+;; last match wins, so the allow must follow the deny or a session loses
+;; access to its own transcript.
+(deny file-read*
+    (subpath "$CLAUDE_STATE/projects"))
+(allow file-read*
+    (subpath "$CLAUDE_STATE/projects/$(slug "$_run")"))
+
 ;; --- writes ------------------------------------------------------------
-;; Nothing is writable except this session's own directory and the state the
-;; CLI needs to run. Combined with the read rules above, git is unusable from
+;; Nothing is writable except this run's own directory and the state the CLI
+;; needs to run. Combined with the read rules above, git is unusable from
 ;; inside the sandbox — collect results from outside it.
 (deny file-write*)
 (allow file-write*
-    (subpath "$_target")
+    (subpath "$_run")
     (subpath "$HOME/.claude")
     (subpath "$HOME/.local/state/claude")
     (subpath "$HOME/.local/share/claude")
@@ -148,6 +160,7 @@ PROFILE_END
 # anything that comes back with data. A path that does not exist yet is called
 # out separately: nothing to read is not the same as being unable to read.
 check() {
+  _task=${1:-check}
   _probe=$(mktemp -t claude-probe)
   _profile=$(mktemp -t claude-sandbox)
   _paths=$(mktemp -t claude-paths)
@@ -171,7 +184,9 @@ PROBE_END
   _failed=0
   for m in $MODELS; do
     echo "$m:"
-    write_profile "$m" "$_profile"
+    _run="$SESSION_DIR/$m/$_task"
+    _own="$CLAUDE_STATE/projects/$(slug "$_run")"
+    write_profile "$m" "$_run" "$_profile"
     { sibling_dirs "$m"; hidden_paths "$m"; } > "$_paths"
 
     # Absent paths are reported from out here, where they are still visible.
@@ -191,11 +206,36 @@ PROBE_END
     _result=$(printf '%s' "$_present" | sandbox-exec -f "$_profile" sh "$_probe")
     echo "$_result"
     case $_result in *LEAK*) _failed=1 ;; esac
+
+    # Every transcript directory on the machine, not just this session's four:
+    # the rule denies the whole store, so anything readable here is a hole.
+    _others=$(find "$CLAUDE_STATE/projects" -type d -mindepth 1 -maxdepth 1 ! -path "$_own" 2>/dev/null || true)
+    _sweep=$(printf '%s\n' "$_others" | sandbox-exec -f "$_profile" sh "$_probe")
+    _n=$(printf '%s\n' "$_others" | grep -c . || true)
+    _leaks=$(printf '%s\n' "$_sweep" | grep LEAK || true)
+    if [ -n "$_leaks" ]; then
+      echo "$_leaks"
+      _failed=1
+    else
+      echo "  blocked  all $_n transcript directories under projects/"
+    fi
+
+    # The allow rule has to survive the deny above it, or the session cannot
+    # read back its own transcript. Only testable once the run has one.
+    if [ -d "$_own" ]; then
+      _mine=$(printf '%s\n' "$_own" | sandbox-exec -f "$_profile" sh "$_probe")
+      case $_mine in
+        *LEAK*) echo "  own      $_own (readable, as intended)" ;;
+        *)      echo "  BROKEN   $_own (own transcript unreadable)"; _failed=1 ;;
+      esac
+    else
+      echo "  own      $_own (no transcript yet)"
+    fi
   done
 
   if [ "$_failed" -eq 1 ]; then
     echo "" >&2
-    echo "readable paths found -- do not run the batch until they are denied" >&2
+    echo "sandbox is not holding -- do not run the batch" >&2
     exit 1
   fi
   echo ""
@@ -203,7 +243,14 @@ PROBE_END
 }
 
 MODEL=${1:-}
-[ "$MODEL" = "check" ] && { check; exit 0; }
+if [ "$MODEL" = "check" ]; then
+  if [ -n "${2:-}" ]; then
+    check "$(task_of "$2")"
+  else
+    check
+  fi
+  exit 0
+fi
 case " $MODELS " in
   *" $MODEL "*) shift ;;
   *) usage ;;
@@ -216,8 +263,13 @@ shift
 PROMPT=$(cat "$PROMPT_FILE")
 [ -n "$PROMPT" ] || { echo "empty prompt file: $PROMPT_FILE" >&2; exit 1; }
 
+TASK=$(task_of "$PROMPT_FILE")
 TARGET="$SESSION_DIR/$MODEL"
 [ -d "$TARGET" ] || { echo "missing directory: $TARGET" >&2; exit 1; }
+
+# One directory per task, so a second prompt does not land on top of the first.
+RUN_DIR="$TARGET/$TASK"
+mkdir -p "$RUN_DIR"
 
 PRINT=0
 for arg in "$@"; do
@@ -234,7 +286,7 @@ SPEC="$SESSION_DIR/spec.md"
 
 PROFILE=$(mktemp -t claude-sandbox)
 trap 'rm -f "$PROFILE"' EXIT INT TERM
-write_profile "$MODEL" "$PROFILE"
+write_profile "$MODEL" "$RUN_DIR" "$PROFILE"
 
 # Defaults are placed in front of "$@", so anything given on the command line
 # comes later and wins.
@@ -254,19 +306,19 @@ if [ "$PRINT" -eq 1 ]; then
          --output-format json \
          --max-budget-usd "$BUDGET_USD" "$@"
 
-  # Results land outside the sandbox, one file per model: the session keeps its
-  # own directory for its actual work, and no run can read its own transcript
-  # back as though it were source material. This shell opens the redirect before
-  # sandbox-exec takes over, so the write is allowed.
-  mkdir -p "$SESSION_DIR/runs"
-  OUT="$SESSION_DIR/runs/$MODEL.json"
+  # Results land outside the sandbox, one file per model per task: the session
+  # keeps its own directory for its actual work, and no run can read its own
+  # transcript back as though it were source material. This shell opens the
+  # redirect before sandbox-exec takes over, so the write is allowed.
+  mkdir -p "$SESSION_DIR/runs/$TASK"
+  OUT="$SESSION_DIR/runs/$TASK/$MODEL.json"
   echo "$MODEL -> $OUT" >&2
 fi
 
 # The prompt goes last: claude reads a trailing positional argument as the first
 # message of the session. </dev/null keeps print mode from spending three
 # seconds waiting on a stdin that is never coming.
-cd "$TARGET"
+cd "$RUN_DIR"
 if [ "$PRINT" -eq 1 ]; then
   exec sandbox-exec -f "$PROFILE" claude --safe-mode \
       --append-system-prompt-file "$SPEC" "$@" "$PROMPT" </dev/null > "$OUT"

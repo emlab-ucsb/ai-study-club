@@ -30,11 +30,17 @@ an odd setup and one more thing the comparison would have to control for. The
 model itself comes from the directory name, so a session can't end up running in
 the wrong folder.
 
+Each run works in `<model>/<prompt-basename>/` — `opus/refactor/` for the lines
+above. The session's working directory *is* the task folder, so a model writes
+its output there without being told to, and a second task doesn't land on top of
+the first. The prompt file's name reaches the model only that way; its contents
+are the whole message.
+
 ## Unattended runs
 
 Add `-p` and the session runs to completion on its own, writing its JSON result
-— final message, cost, duration, turn count — to `runs/<model>.json`. All four
-in parallel:
+— final message, cost, duration, turn count — to `runs/<task>/<model>.json`. All
+four in parallel:
 
 ```sh
 for m in fable opus sonnet haiku; do ./start.sh "$m" prompts/refactor.md -p & done; wait
@@ -73,21 +79,36 @@ state outside the working directory, and every bit of it is a way around that:
 - `~/.claude/file-history/` — snapshots of edited files.
 - `~/.claude.json` — a per-project record.
 
-`start.sh` denies reads on all of those for the *other* three models, plus the
-slugs for this directory and the repo root, which hold the sessions that
-designed the experiment and would tell a model it's one of four. Each session
-keeps read access to its own. Denying these leaves the CLI working normally;
-writes are still allowed, so transcripts are still recorded.
+The transcript store is denied *wholesale* and the run's own directory allowed
+back, rather than the three rivals being named one by one. Naming them
+individually only holds while every session runs exactly where the script
+expects: a transcript directory is named after the working directory, and
+`subpath` matches containment rather than string prefix, so moving a run one
+folder deeper leaves the enumerated names matching nothing — silently, with no
+error to notice. Ordering is load-bearing, since the last matching rule wins:
+
+```
+(deny  file-read* (subpath ".../projects"))
+(allow file-read* (subpath ".../projects/<this run's slug>"))
+```
+
+Reversed, the deny swallows the allow and a session loses access to its own
+transcript. Prompt history, file snapshots and `.claude.json` are denied
+outright, to every session including its own. All of it leaves the CLI working
+normally; writes are untouched, so transcripts are still recorded.
 
 Run the check before a batch:
 
 ```sh
-./start.sh check
+./start.sh check [prompt-file]
 ```
 
-It builds each model's profile, attempts every blocked read from inside that
-sandbox, and exits non-zero if any returns data. This list will grow with CLI
-versions, so it's worth asserting rather than trusting.
+It builds each model's profile and, from inside that sandbox, attempts every
+blocked read plus a sweep of *every* transcript directory on the machine — not
+just this session's four — exiting non-zero if any returns data. It also checks
+the other direction, that the run can still read its own transcript, which only
+works once that run has one. Pass the prompt file to check the paths a real run
+of that task will use.
 
 `spec.md` holds what's true for all four runs and *is* appended to each system
 prompt — mainly the sandbox notes, so no one burns turns diagnosing the missing
