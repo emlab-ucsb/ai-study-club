@@ -39,7 +39,7 @@ ___
 ___
 - Available model tiers
 ___
-- Changing effort level
+- Efficiency tricks
 ___
 - Choosing the appropriate model
 
