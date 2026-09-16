@@ -39,12 +39,31 @@ are the whole message.
 ## Unattended runs
 
 Add `-p` and the session runs to completion on its own, writing its JSON result
-— final message, cost, duration, turn count — to `runs/<task>/<model>.json`. All
+— final message, cost, duration, turn count — to `tasks/<task>/<model>.json`. All
 four in parallel:
 
 ```sh
-for m in fable opus sonnet haiku; do ./start.sh "$m" prompts/refactor.md -p & done; wait
+./start.sh all prompts/refactor.md
 ```
+
+`all` runs `check` first and refuses to launch if the sandbox isn't holding,
+then starts the four together. Parallel is the better experimental choice as
+well as the faster one: same hour, same API conditions, so whatever drifts
+drifts for everyone equally. It waits on each run by pid rather than using a
+bare `wait`, which reports success whichever way the children went, and prints
+how each one ended:
+
+```
+probe:
+  fable   exit=0   success   turns=2   $0.5316645
+  opus    exit=0   success   turns=2   $0.2643825
+  sonnet  exit=0   success   turns=2   $0.1402604
+  haiku   exit=0   success   turns=2   $0.0152119
+```
+
+Anything other than four clean successes exits non-zero — a run stopped by the
+budget cap or a subscription limit leaves a plausible-looking file with no
+answer in it.
 
 Nobody is present to answer permission prompts in this mode, so it turns
 approval off (`--permission-mode bypassPermissions`) and leans on the sandbox

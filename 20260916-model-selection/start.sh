@@ -12,9 +12,13 @@
 # instructions; its name reaches the model only as the working directory.
 #
 # Pass -p/--print and the session runs unattended instead, writing its JSON
-# result to runs/<task>/<model>.json. All four at once:
+# result to tasks/<task>/<model>.json. All four at once:
 #
-#   for m in fable opus sonnet haiku; do ./start.sh "$m" prompts/refactor.md -p & done; wait
+#   ./start.sh all prompts/refactor.md [extra claude args...]
+#
+# which checks the sandbox first, refuses to launch if it is not holding, runs
+# the four in parallel -- same hour, same API conditions, so whatever drifts
+# drifts for everyone -- and reports how each one ended.
 #
 # `./start.sh check [prompt-file]` runs every read the sandbox is supposed to
 # block and reports any that succeed. Worth running before a batch: the list of
@@ -38,6 +42,7 @@ CLAUDE_STATE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 
 usage() {
   echo "usage: $(basename "$0") <fable|opus|sonnet|haiku> <prompt-file> [claude args...]" >&2
+  echo "       $(basename "$0") all <prompt-file> [claude args...]" >&2
   echo "       $(basename "$0") check [prompt-file]" >&2
   exit 1
 }
@@ -242,7 +247,81 @@ PROBE_END
   echo "all blocked"
 }
 
+# How a finished run ended, read back out of its result file. The JSON the CLI
+# writes is a single compact line, so sed is enough and the harness stays
+# dependency-free.
+summarize() {
+  if [ ! -f "$1" ]; then
+    printf 'no result file'
+    return
+  fi
+  _st=$(sed -n 's/.*"subtype":"\([^"]*\)".*/\1/p' "$1")
+  _tn=$(sed -n 's/.*"num_turns":\([0-9]*\).*/\1/p' "$1")
+  _cost=$(sed -n 's/.*"total_cost_usd":\([0-9.]*\).*/\1/p' "$1")
+  printf '%-22s turns=%-4s $%s' "${_st:-unknown}" "${_tn:-?}" "${_cost:-?}"
+}
+
+# Run every model on one prompt, at the same time.
+run_all() {
+  _prompt=$1
+  shift
+  [ -f "$_prompt" ] || { echo "missing prompt file: $_prompt" >&2; exit 1; }
+  _task=$(task_of "$_prompt")
+
+  # A batch is the worst time to discover the sandbox has stopped holding, so
+  # it is asserted first and the whole thing refuses to start if it has. The
+  # subshell is deliberate: check() exits rather than returns.
+  if ! _chk=$(check "$_task" 2>&1); then
+    echo "$_chk" >&2
+    exit 1
+  fi
+  echo "sandbox check passed -- launching $_task on: $MODELS"
+
+  _pids=""
+  for _model in $MODELS; do
+    "$0" "$_model" "$_prompt" -p "$@" &
+    _pids="$_pids $_model:$!"
+  done
+
+  # Bare `wait` reports success whichever way the children went, which would
+  # hide a run that died on the budget cap or a subscription limit. Each child
+  # is waited on by pid so its status survives.
+  _fail=0
+  _report=""
+  for _entry in $_pids; do
+    _who=${_entry%%:*}
+    _pid=${_entry#*:}
+    if wait "$_pid"; then
+      _rc=0
+    else
+      _rc=$?
+      _fail=1
+    fi
+    _out="$SESSION_DIR/tasks/$_task/$_who.json"
+    _line=$(printf '  %-7s exit=%-3s %s' "$_who" "$_rc" "$(summarize "$_out")")
+    case $_line in *success*) ;; *) _fail=1 ;; esac
+    _report="$_report$_line
+"
+  done
+
+  echo ""
+  echo "$_task:"
+  printf '%s' "$_report"
+  echo ""
+  echo "results: $SESSION_DIR/tasks/$_task/"
+
+  # Anything other than four clean successes is worth stopping over: a capped or
+  # limit-stopped run writes a plausible-looking file with no answer in it.
+  [ "$_fail" -eq 0 ] || { echo "not every run finished cleanly" >&2; exit 1; }
+}
+
 MODEL=${1:-}
+if [ "$MODEL" = "all" ]; then
+  shift
+  [ -n "${1:-}" ] || usage
+  run_all "$@"
+  exit 0
+fi
 if [ "$MODEL" = "check" ]; then
   if [ -n "${2:-}" ]; then
     check "$(task_of "$2")"
@@ -310,8 +389,8 @@ if [ "$PRINT" -eq 1 ]; then
   # keeps its own directory for its actual work, and no run can read its own
   # transcript back as though it were source material. This shell opens the
   # redirect before sandbox-exec takes over, so the write is allowed.
-  mkdir -p "$SESSION_DIR/runs/$TASK"
-  OUT="$SESSION_DIR/runs/$TASK/$MODEL.json"
+  mkdir -p "$SESSION_DIR/tasks/$TASK"
+  OUT="$SESSION_DIR/tasks/$TASK/$MODEL.json"
   echo "$MODEL -> $OUT" >&2
 fi
 
