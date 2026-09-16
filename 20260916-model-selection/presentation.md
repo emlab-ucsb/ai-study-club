@@ -180,6 +180,7 @@ ___
 - **If efficiency is key, disable connectors you don't use.** Every one that is switched on is described in the context window every turn.
 ___
 - **Batch tasks.** If you have a few clear and related goals, putting them all in one prompt may help Claude economize. 
+___
 
 In Claude Code, `/context` shows you what is actually taking up space.
 
@@ -190,12 +191,15 @@ In Claude Code, `/context` shows you what is actually taking up space.
 **Match the effort to the task.**
 ___
 
-`/effort` in Claude Code sets how hard the model thinks before it answers: `low`, `medium`, `high`, `xhigh`, `max`.
+`/effort` in Claude Code sets how hard the model thinks before it answers: `low`, `medium`, `high`, `xhigh`, `max`.*
 ___
 
-`high` is the default, and most editing, formatting, and lookup work needs no more than that. Save `xhigh` and `max` for genuinely hard reasoning.*
+`high` is the default but often not necessary. Save `xhigh` and `max` for huge, challenging projects.
+___
 
-[footnote: *For early LLMs, just writing "think hard", or "ultrathink" into their prompt led them to produce better results—the inspiration for the "effort" setting.]
+Effort is displayed by the model name in the Chat and Cowork apps.
+
+[footnote appears simultaneously with asterisk above: *For early LLMs, just writing "think hard", or "ultrathink" into their prompt led them to produce better results—the inspiration for the "effort" setting. `/ultrathink` still works too.]
 
 ## Working efficiently
 

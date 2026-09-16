@@ -788,7 +788,7 @@
             economize.
           </li>
         </ul>
-        <p class="slide-text fragment" data-fragment-index="3" style="margin-top: 1.2em;">
+        <p class="slide-text fragment" data-fragment-index="4" style="margin-top: 1.2em;">
           In Claude Code, <code>/context</code> shows you what is actually
           taking up space.
         </p>
@@ -797,25 +797,26 @@
       <section class="title-held" data-title-group="working-efficiently">
         <h2>Working efficiently</h2>
         <p class="lede">Match the effort to the task.</p>
-        <p class="slide-text fragment">
+        <p class="slide-text fragment" data-fragment-index="0">
           <code>/effort</code> in Claude Code sets how hard the model thinks
           before it answers: <code>low</code>, <code>medium</code>,
-          <code>high</code>, <code>xhigh</code>, <code>max</code>.
+          <code>high</code>, <code>xhigh</code>, <code>max</code>.*
         </p>
-        <div class="fragment">
-          <p class="slide-text">
-            <code>high</code> is the default, and most editing, formatting,
-            and lookup work needs no more than that. Save <code>xhigh</code>
-            and <code>max</code> for genuinely hard reasoning.*
+        <p class="slide-text fragment" data-fragment-index="1">
+          <code>high</code> is the default but often not necessary. Save
+          <code>xhigh</code> and <code>max</code> for huge, challenging
+          projects.
+        </p>
+        <p class="slide-text fragment" data-fragment-index="2">
+          Effort is displayed by the model name in the Chat and Cowork apps.
+        </p>
+        <div class="footnote-box">
+          <p class="footnote fragment" data-fragment-index="0">
+            *For early LLMs, just writing &ldquo;think hard,&rdquo; or
+            &ldquo;ultrathink&rdquo; into their prompt led them to produce
+            better results&mdash;the inspiration for the &ldquo;effort&rdquo;
+            setting. <code>/ultrathink</code> still works too.
           </p>
-          <div class="footnote-box">
-            <p class="footnote">
-              *For early LLMs, just writing &ldquo;think hard,&rdquo; or
-              &ldquo;ultrathink&rdquo; into their prompt led them to produce
-              better results&mdash;the inspiration for the &ldquo;effort&rdquo;
-              setting.
-            </p>
-          </div>
         </div>
       </section>
 
