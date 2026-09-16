@@ -194,7 +194,7 @@ ___
 
 `high` is the default, and most editing, formatting, and lookup work needs no more than that. Save `xhigh` and `max` for genuinely hard reasoning.*
 
-[footnote: *The magic words came first — developers noticed years ago that writing "think hard", or "ultrathink", into a prompt really did buy the model a bigger thinking budget. They are proper commands now.]
+[footnote: *For early LLMs, just writing "think hard", or "ultrathink" into their prompt led them to produce better results—the inspiration for the "effort" setting.]
 
 ## Working efficiently
 
@@ -212,7 +212,6 @@ Keep it short — it is re-read on every turn, so a bloated CLAUDE.md is a tax y
 ___
 
 It is at its most expensive when it drives your computer or your Chrome browser: every step it takes, it takes a screenshot and looks at it, and an image costs many times what the same information in plain text would.
-___
 
 It is also working unattended, so nobody is watching the meter.
 
