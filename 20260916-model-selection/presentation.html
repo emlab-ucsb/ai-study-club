@@ -269,7 +269,7 @@
        reveal.css's default on .slides), just capped to a readable width. */
     .reveal .slide-text {
       max-width: 700px;
-      margin: 0 auto 1em;
+      margin: 0 auto 2em;
     }
 
     /* Overrides the centered default for a block that should read flush
@@ -281,7 +281,7 @@
       max-width: 640px;
       margin: 0 auto;
     }
-    .reveal .flush-left .slide-text { margin: 0 0 1em; }
+    .reveal .flush-left .slide-text { margin: 0 0 2em; }
 
     /* "Usage limits" slide 1: a numbered pair of limit types, styled to
        match .outline's dot markers but with the number itself in the
@@ -457,7 +457,7 @@
 
       <section class="title-held" data-title-group="usage-limits">
         <h2>Usage limits</h2>
-        <p class="slide-text">
+        <p class="slide-text" style="margin-bottom: 1em;">
           On Claude Code, you can type <code>/usage</code>.
         </p>
         <img class="menu-shot portrait" src="../assets/usage_menu.png"
@@ -466,7 +466,7 @@
 
       <section class="title-held" data-title-group="usage-limits">
         <h2>Usage limits</h2>
-        <p class="slide-text">
+        <p class="slide-text" style="margin-bottom: 1em;">
           In the Chat and Cowork apps, it is a page in the settings menu
           accessed by clicking your name in the lower left.
         </p>
@@ -477,9 +477,9 @@
       <section class="title-held" data-title-group="usage-limits">
         <h2>Usage limits</h2>
         <p class="slide-text">
-          Every individual user has their own limit. Before, we all shared
-          the extra usage credits. But now, your usage doesn't affect
-          availability for others at all.
+          Every individual user has their own limit. Unlike the shared
+          extra usage credits, now your usage doesn't affect availability
+          for others at all.
         </p>
         <p class="slide-text fragment">
           Usage of Chat, Code, and Cowork all deduct from the same limit,

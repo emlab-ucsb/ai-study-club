@@ -85,17 +85,17 @@ How to view them depends on which platform you are using.
 
 On Claude Code, you can type `/usage`.
 
-[`assets/usage_menu.png`]
+[`assets/usage_menu.png`, 1em instead of 2em before the image]
 
 ## Usage limits
 
 In the Chat and Cowork apps, it is a page in the settings menu accessed by clicking your name in the lower left.
 
-[`assets/app_usage_menu.png`]
+[`assets/app_usage_menu.png`, 1em instead of 2em before the image]
 
 ## Usage limits
 
-Every individual user has their own limit. Before, we all shared the extra usage credits. But now, your usage doesn't affect availability for others at all.
+Every individual user has their own limit. Unlike the shared extra usage credits, now your usage doesn't affect availability for others at all.
 ___
 
 Usage of Chat, Code, and Cowork all deduct from the same limit, although they may have different per-token rates. 
