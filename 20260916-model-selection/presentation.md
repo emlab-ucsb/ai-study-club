@@ -138,10 +138,10 @@ Consider starting with:
 
 [on the click advance after Fable appears, gray it out, including the card background color, and have text appear below it saying "No longer available on our plan 😭". Then have the annotation disappear when Opus shows up, but keep the gray Fable card and use case info text.]
 
-**Opus 5** — Complex agentic coding, data exploration, and statistical modeling
+**Opus 5** — Complex agentic coding, data exploration, statistical modeling, tasks with creative or visual elements
 
 **Sonnet 5** — Sufficient for most text creation and editing, administrative tasks, and code development
 
-**Haiku 4.5** — Focused on cost-effectiveness and instant responses, but can be error-prone
+**Haiku 4.5** — Focused on cost-effectiveness and instant responses, but old and sometimes prone to hallucination
 
 [Condensed from the use-case table in Anthropic's docs. Table-style rows, each name in a chip filled with its color from the slide before, rows appearing one at a time.]
