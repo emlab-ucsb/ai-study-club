@@ -102,6 +102,8 @@ Usage of Chat, Code, and Cowork all deduct from the same limit, although they ma
 
 ## Usage limits
 
+Across the platforms, the higher-tier models burn usage faster, but the relative rates aren't know.
+
 Ultimately, there is no published explanation of how Anthropic gets to the percent value you see in the menu.
 
 [add a shrug emoji or something?]
