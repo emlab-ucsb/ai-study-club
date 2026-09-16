@@ -44,21 +44,35 @@
       filter: blur(80px);
       pointer-events: none;
       z-index: 0;
+      /* Slide-driven drift: driftBlooms() below sets a new transform on
+         every slide change, and this transition is what turns that jump
+         into a slow glide. transform rather than top/left so the motion
+         stays on the compositor — nine blurred elements animating layout
+         properties would stutter on weaker hardware. Just a hair slower
+         than reveal's own 0.8s slide so the wash settles right after the
+         content lands. */
+      transition: transform 1s cubic-bezier(0.22, 0.61, 0.36, 1);
+      will-change: transform;
     }
-    /* Nine blooms scattered across the viewport (percent-based, so they
-       stay spread out at any window size) cycling through all four brand
-       colors — coral, teal, brand purple, Fable blue. Sizes, positions and
-       opacities are all off-grid on purpose: matching any two would read as
-       a pattern instead of an organic wash. */
-    .glow-1 { width: 260px; height: 260px; top: 2%;  left: 6%;  background: var(--accent);         opacity: 0.26; }
-    .glow-2 { width: 200px; height: 200px; top: 12%; left: 72%; background: var(--claude-purple);  opacity: 0.21; }
-    .glow-3 { width: 340px; height: 340px; top: 38%; left: 33%; background: #6E93F0;               opacity: 0.17; }
-    .glow-4 { width: 280px; height: 280px; top: 58%; left: 82%; background: var(--accent-2);       opacity: 0.25; }
-    .glow-5 { width: 380px; height: 380px; top: 78%; left: 12%; background: var(--accent);         opacity: 0.20; }
-    .glow-6 { width: 220px; height: 220px; top: -6%; left: 46%; background: var(--accent-2);       opacity: 0.23; }
-    .glow-7 { width: 300px; height: 300px; top: 88%; left: 58%; background: var(--claude-purple);  opacity: 0.24; }
-    .glow-8 { width: 240px; height: 240px; top: 24%; left: -4%; background: #6E93F0;               opacity: 0.19; }
-    .glow-9 { width: 200px; height: 200px; top: 48%; left: 62%; background: var(--accent);         opacity: 0.16; }
+    /* Fourteen blooms scattered across the viewport (percent-based, so
+       they stay spread out at any window size) cycling through all four
+       brand colors — coral, teal, brand purple, Fable blue. Sizes,
+       positions and opacities are all off-grid on purpose: matching any
+       two would read as a pattern instead of an organic wash. */
+    .glow-1  { width: 260px; height: 260px; top: 2%;  left: 6%;  background: var(--accent);         opacity: 0.34; }
+    .glow-2  { width: 200px; height: 200px; top: 12%; left: 72%; background: var(--claude-purple);  opacity: 0.29; }
+    .glow-3  { width: 340px; height: 340px; top: 38%; left: 33%; background: #6E93F0;               opacity: 0.25; }
+    .glow-4  { width: 280px; height: 280px; top: 58%; left: 82%; background: var(--accent-2);       opacity: 0.33; }
+    .glow-5  { width: 380px; height: 380px; top: 78%; left: 12%; background: var(--accent);         opacity: 0.28; }
+    .glow-6  { width: 220px; height: 220px; top: -6%; left: 46%; background: var(--accent-2);       opacity: 0.31; }
+    .glow-7  { width: 300px; height: 300px; top: 88%; left: 58%; background: var(--claude-purple);  opacity: 0.32; }
+    .glow-8  { width: 240px; height: 240px; top: 24%; left: -4%; background: #6E93F0;               opacity: 0.27; }
+    .glow-9  { width: 200px; height: 200px; top: 48%; left: 62%; background: var(--accent);         opacity: 0.24; }
+    .glow-10 { width: 180px; height: 180px; top: 66%; left: 40%; background: var(--claude-purple);  opacity: 0.26; }
+    .glow-11 { width: 320px; height: 320px; top: 6%;  left: 88%; background: var(--accent-2);       opacity: 0.23; }
+    .glow-12 { width: 230px; height: 230px; top: 30%; left: 18%; background: #6E93F0;               opacity: 0.30; }
+    .glow-13 { width: 270px; height: 270px; top: 84%; left: 84%; background: var(--accent);         opacity: 0.25; }
+    .glow-14 { width: 190px; height: 190px; top: 22%; left: 52%; background: var(--claude-purple);  opacity: 0.22; }
 
     .reveal .slides section { z-index: 1; }
 
@@ -321,6 +335,11 @@
   <div class="glow glow-7"></div>
   <div class="glow glow-8"></div>
   <div class="glow glow-9"></div>
+  <div class="glow glow-10"></div>
+  <div class="glow glow-11"></div>
+  <div class="glow glow-12"></div>
+  <div class="glow glow-13"></div>
+  <div class="glow glow-14"></div>
 
   <div class="reveal">
     <div class="slides">
@@ -473,8 +492,32 @@
         if (el) el.classList.add('visible');
       }
     }
-    Reveal.on('ready', function (event) { syncHeldTitle(event.currentSlide); });
-    Reveal.on('slidechanged', function (event) { syncHeldTitle(event.currentSlide); });
+    // Drift every bloom to a new spot on each slide change. The offset is a
+    // deterministic function of (slide index, bloom index), so a given slide
+    // always looks the same — rehearsal matches the talk, and stepping back
+    // returns the wash to where it was. Range is ±240px — a real sweep
+    // under the blur, and with fourteen blooms there's always color left
+    // behind wherever one has drifted away from.
+    function driftBlooms(index) {
+      document.querySelectorAll('.glow').forEach(function (el, i) {
+        var seed = Math.sin((index + 1) * 12.9898 + (i + 1) * 78.233) * 43758.5453;
+        var frac = seed - Math.floor(seed);
+        var seed2 = Math.sin((index + 1) * 39.3467 + (i + 1) * 11.135) * 24634.6345;
+        var frac2 = seed2 - Math.floor(seed2);
+        var dx = Math.round((frac  - 0.5) * 480);
+        var dy = Math.round((frac2 - 0.5) * 480);
+        el.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+      });
+    }
+
+    Reveal.on('ready', function (event) {
+      syncHeldTitle(event.currentSlide);
+      driftBlooms(event.indexh);
+    });
+    Reveal.on('slidechanged', function (event) {
+      syncHeldTitle(event.currentSlide);
+      driftBlooms(event.indexh);
+    });
   </script>
 </body>
 </html>

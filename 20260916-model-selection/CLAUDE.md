@@ -13,7 +13,12 @@ carry these choices forward rather than reverting to the older style:
   orbs (coral `--accent` `#e2632c`, teal `--accent-2` `#1f9c82`, both
   deepened from their original dark-theme values for contrast on white) at
   low opacity fixed behind the slides. Reuse the `.glow` pattern for new
-  slides rather than inventing a different decoration.
+  slides rather than inventing a different decoration. There are fourteen
+  of them scattered off-grid, and **they drift on every slide change**
+  (`driftBlooms()` in the script block, deterministic per slide index, via
+  a `transform` transition on `.glow`). Don't animate `top`/`left` or add
+  continuous keyframes — slide-driven was a deliberate choice over ambient
+  motion (calmer behind projected text, cheaper to render).
 - **Type**: Space Grotesk for headings/byline, Inter for body text (both
   Google Fonts, loaded via the `<link>` in `<head>`).
 - **Brand-name color coding**: when a model name appears as a callout word
