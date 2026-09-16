@@ -344,9 +344,12 @@ PROMPT=$(cat "$PROMPT_FILE")
 
 TASK=$(task_of "$PROMPT_FILE")
 TARGET="$SESSION_DIR/$MODEL"
-[ -d "$TARGET" ] || { echo "missing directory: $TARGET" >&2; exit 1; }
 
 # One directory per task, so a second prompt does not land on top of the first.
+# The model directory is created here too rather than being required up front:
+# the four are gitignored, so a fresh clone has none of them, and the model name
+# is already checked against $MODELS above -- a guard here would only catch a
+# directory someone had deleted, which is not an error worth stopping for.
 RUN_DIR="$TARGET/$TASK"
 mkdir -p "$RUN_DIR"
 
