@@ -70,16 +70,11 @@ provided by Anthropic as a welcome bonus.
 ## Usage limits
 
 Now that we have used up the extra credits, those usage warnings carry a bit more weight. 
-
-## Usage limits
+___
 
 Claude uses a system of 
 
-**5-hour session limits** 
-
-and 
-
-**7-day weekly limits.**
+**5-hour session limits** and **7-day weekly limits.** [all one line]
 
 How to view them depends on which platform you are using. 
 
