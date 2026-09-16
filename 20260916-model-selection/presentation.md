@@ -179,8 +179,9 @@ ___
 ___
 - **If efficiency is key, disable connectors you don't use.** Every one that is switched on is described in the context window every turn.
 ___
+- **Batch tasks.** If you have a few clear and related goals, putting them all in one prompt may help Claude economize. 
 
-`/context` shows you what is actually filling it.
+In Claude Code, `/context` shows you what is actually taking up space.
 
 [bullets with the same accent dots as the outline slide]
 
