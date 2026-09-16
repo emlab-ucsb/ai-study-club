@@ -104,3 +104,7 @@ Ultimately, there is no published explanation of how Anthropic gets to the perce
 
 [add a shrug emoji or something?]
 
+## Available model tiers
+
+Lorem ipsum
+
