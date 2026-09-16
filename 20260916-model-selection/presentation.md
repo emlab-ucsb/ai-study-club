@@ -53,9 +53,9 @@ and
 
 **1,255 Chat and Cowork conversations**
 
-...and counting
+...and counting^[asterisk with footnote:*The contents of which are private. The admin panel just shows summary stats.*]
 
-*(The contents of which are private, the analytics panel just shows summary stats)*
+
 
 [Format it with the figures in text boxes, upper left and lower right. Make it look stylish. Set the privacy line as a small footnote under the tallies, bottom left.]
 
