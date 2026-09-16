@@ -81,7 +81,7 @@ Claude uses a system of
 **5-hour session limits** and **7-day weekly limits.** [all one line, underline bolded text, make sure it is centered, no paragraph break before it.]
 ___
 
-How to view them depends on which platform you are using. 
+How to view their status depends on which platform you are using. 
 
 ## Usage limits
 
@@ -113,7 +113,7 @@ Ultimately, there is no published explanation of how Anthropic gets to the perce
 
 ## Model tiers
 
-There are four levels of Claude. 
+There are four levels of Claude. The fancier models burn usage faster.
 
 Current versions are:
 
@@ -154,4 +154,9 @@ ___
 **Token:** Large language models (LLMs) are trained on and work with text in units of a few characters each—about 4 on average per token including spaces and punctuation. [left justify]
 ___
 
-**Context window:** When you write the first prompt of a conversation, the LLM reads a bunch of other text and files alongside it. For subsequent prompts it also remembers the whole conversation, including file reads and writes.*[footnote: *until it runs out of space, but frontier models have space for 1,000,000+ tokens in their context window, the equivalent of around 2,000 pages]. [left justify]
+**Context window:** When you write the first prompt of a conversation, the LLM reads a bunch of other text and files alongside it. For subsequent prompts, it remembers the whole conversation, including file reads and writes.*[footnote: *until it runs out of space, but frontier models have room for 1,000,000+ tokens in their context window, the equivalent of around 2,000 pages]. [left justify]
+
+## Working efficiently
+
+
+
