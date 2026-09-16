@@ -47,11 +47,11 @@ ___
 
 Since our team account opened in mid-July, emLab has engaged in
 
-**1,400 Claude Code sessions**
+**1,372 Code sessions**
 
 and 
 
-**1,000 chat conversations**
+**1,255 Chat and Cowork conversations**
 
 ...and counting
 
