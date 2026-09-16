@@ -302,6 +302,13 @@
     }
     .reveal .menu-shot.portrait  { width: 300px; height: 416px; }
     .reveal .menu-shot.landscape { width: 620px; height: 409px; }
+
+    /* The closing shrug — the punchline for "there's no published
+       explanation," so it's sized to land as one, not just a big emoji. */
+    .reveal .shrug {
+      font-size: 2.2em;
+      margin-top: 0.5em;
+    }
   </style>
 </head>
 <body>
@@ -394,9 +401,9 @@
         </p>
         <div class="fragment">
           <p class="slide-text">Claude uses a system of</p>
-          <p class="slide-text" style="white-space: nowrap;">
-            <strong>5-hour session limits</strong> and
-            <strong>7-day weekly limits.</strong>
+          <p class="slide-text" style="white-space: nowrap; text-align: center; max-width: none; width: max-content; margin-left: auto; margin-right: auto;">
+            <strong style="text-decoration: underline;">5-hour session limits</strong> and
+            <strong style="text-decoration: underline;">7-day weekly limits.</strong>
           </p>
         </div>
         <p class="slide-text fragment">
@@ -430,14 +437,9 @@
           the extra usage credits. But now, your usage doesn't affect
           availability for others at all.
         </p>
-      </section>
-
-      <section class="title-held" data-title-group="usage-limits">
-        <h2>Usage limits</h2>
-        <p class="slide-text">
+        <p class="slide-text fragment">
           Usage of Chat, Code, and Cowork all deduct from the same limit,
-          although they have different per-token rates. It is also rumored
-          that usage burns faster during peak hours.
+          although they may have different per-token rates.
         </p>
       </section>
 
@@ -447,6 +449,7 @@
           Ultimately, there is no published explanation of how Anthropic
           gets to the percent value you see in the menu.
         </p>
+        <p class="shrug" aria-hidden="true">🤷</p>
       </section>
 
     </div>

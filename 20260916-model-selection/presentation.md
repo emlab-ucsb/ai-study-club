@@ -74,7 +74,7 @@ ___
 
 Claude uses a system of 
 
-**5-hour session limits** and **7-day weekly limits.** [all one line]
+**5-hour session limits** and **7-day weekly limits.** [all one line, underline bolded text, make sure it is centered]
 ___
 
 How to view them depends on which platform you are using. 
@@ -94,11 +94,13 @@ In the Chat and Cowork apps, it is a page in the settings menu accessed by click
 ## Usage limits
 
 Every individual user has their own limit. Before, we all shared the extra usage credits. But now, your usage doesn't affect availability for others at all.
+___
 
-## Usage limits
-
-Usage of Chat, Code, and Cowork all deduct from the same limit, although they have different per-token rates. It is also rumored that usage burns faster during peak hours. 
+Usage of Chat, Code, and Cowork all deduct from the same limit, although they may have different per-token rates. 
 
 ## Usage limits
 
 Ultimately, there is no published explanation of how Anthropic gets to the percent value you see in the menu.
+
+[add a shrug emoji or something?]
+
