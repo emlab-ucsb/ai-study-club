@@ -361,10 +361,10 @@
       text-align: left;
       color: var(--ink);
     }
-    .reveal .model-card.fable  { background: #6E93F0; }
-    .reveal .model-card.opus   { background: #D97757; }
-    .reveal .model-card.sonnet { background: #F0EEE6; }
-    .reveal .model-card.haiku  { background: #CFDBD0; }
+    .reveal .model-card.fable,  .reveal .model-chip.fable  { background: #6E93F0; }
+    .reveal .model-card.opus,   .reveal .model-chip.opus   { background: #D97757; }
+    .reveal .model-card.sonnet, .reveal .model-chip.sonnet { background: #F0EEE6; }
+    .reveal .model-card.haiku,  .reveal .model-chip.haiku  { background: #CFDBD0; }
     .reveal .model-name {
       display: block;
       font-family: 'Space Grotesk', sans-serif;
@@ -374,6 +374,70 @@
       display: block;
       font-size: 0.62em;
       margin-top: 0.1em;
+    }
+
+    /* Model tiers slide 2: the use-case table from Anthropic's docs, cut to
+       one line per model. A flex row per model rather than a real <table> or
+       a grid — each row has to be a single fragment element to appear on its
+       own, and a grid row wrapper would need display:contents, which reveal's
+       opacity-based fragments can't act on. The fixed chip width is what
+       keeps the use-case column aligned without one. The table is sized to
+       its longest row rather than to a fixed width, so it centers on itself
+       instead of leaving the short rows adrift in a wide box; the cap is
+       what makes an over-long row wrap instead of running off the canvas. */
+    .reveal .tier-table {
+      width: max-content;
+      max-width: 840px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .reveal .tier-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.55em;
+      margin-bottom: 0.5em;
+    }
+    /* Fable's row alone is wrapped, so it can carry a second fragment step of
+       its own: the row arrives in full color, then this wrapper's step dims
+       it. Grayscale rather than opacity alone — at 45% the blue chip would
+       still read as blue, and the point is that it's switched off. */
+    .reveal .tier-inner {
+      display: flex;
+      align-items: center;
+      gap: 0.55em;
+      transition: filter 0.4s ease, opacity 0.4s ease;
+    }
+    .reveal .fragment.custom.dim-out.visible {
+      filter: grayscale(1);
+      opacity: 0.45;
+    }
+    /* Out of flow, so the rows below don't shift when it comes and goes. It
+       overlaps where the Opus row will land, which is free real estate: the
+       annotation is gone by the step that reveals Opus. */
+    .reveal .tier-annot {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 0.35em;
+      font-size: 0.62em;
+      color: var(--ink-dim);
+      white-space: nowrap;
+    }
+    .reveal .model-chip {
+      flex: none;
+      width: 200px;
+      padding: 0.3em 0;
+      border-radius: 12px;
+      text-align: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.8em;
+      color: var(--ink);
+    }
+    .reveal .tier-use {
+      font-size: 0.72em;
+      line-height: 1.35;
     }
   </style>
 </head>
@@ -401,6 +465,7 @@
            the rest of a slide's content. -->
       <h2 class="held-title" id="held-title-two-months-in">Two months in</h2>
       <h2 class="held-title" id="held-title-usage-limits">Usage limits</h2>
+      <h2 class="held-title" id="held-title-model-tiers">Model tiers</h2>
 
       <!-- Slide 1: title. -->
       <section class="center">
@@ -420,7 +485,8 @@
           <li class="fragment">Usage limits</li>
           <li class="fragment">Model tiers</li>
           <li class="fragment">Efficiency tricks</li>
-          <li class="fragment">Choosing the appropriate model</li>
+          <li class="fragment">Use cases</li>
+          <li class="fragment">Live demo??</li>
         </ul>
       </section>
 
@@ -526,15 +592,18 @@
           Across the platforms, the higher-tier models burn usage faster,
           but the relative rates aren't known.
         </p>
-        <p class="slide-text">
-          Ultimately, there is no published explanation of how Anthropic
-          gets to the percent value you see in the menu.
-        </p>
-        <p class="shrug" aria-hidden="true">🤷</p>
+        <div class="fragment">
+          <p class="slide-text">
+            Ultimately, there is no published explanation of how Anthropic
+            gets to the percent value you see in the menu.
+          </p>
+          <p class="shrug" aria-hidden="true">🤷</p>
+        </div>
       </section>
 
-      <!-- Slide 8: Model tiers, the four models in the picker. -->
-      <section>
+      <!-- Slides 8-9: Model tiers, held title (same mechanism as the groups
+           above). -->
+      <section class="title-held" data-title-group="model-tiers">
         <h2>Model tiers</h2>
         <p class="slide-text">There are four levels of Claude.</p>
         <p class="slide-text">Current versions are:</p>
@@ -556,10 +625,36 @@
             <span class="model-note">Fastest and lightest</span>
           </div>
         </div>
-        <p class="slide-text fragment" style="margin-top: 1em;">
+        <p class="slide-text fragment" style="margin-top: 2em;">
           There is also a restricted model called Mythos, which Fable is
           built on.
         </p>
+      </section>
+
+      <section class="title-held" data-title-group="model-tiers">
+        <h2>Model tiers</h2>
+        <p class="slide-text">Consider starting with:</p>
+        <div class="tier-table">
+          <div class="tier-row fragment" data-fragment-index="0">
+            <div class="tier-inner fragment custom dim-out" data-fragment-index="1">
+              <span class="model-chip fable">Fable 5.1</span>
+              <span class="tier-use">Deep research and math questions, autonomous improvement of large model codebases</span>
+            </div>
+            <span class="tier-annot fragment fade-in-then-out" data-fragment-index="1">No longer available on our plan 😭</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="2">
+            <span class="model-chip opus">Opus 5</span>
+            <span class="tier-use">Complex agentic coding, data exploration, and statistical modeling</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="3">
+            <span class="model-chip sonnet">Sonnet 5</span>
+            <span class="tier-use">Sufficient for most text creation and editing, administrative tasks, and code development</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="4">
+            <span class="model-chip haiku">Haiku 4.5</span>
+            <span class="tier-use">Focused on cost-effectiveness and instant responses, but can be error-prone</span>
+          </div>
+        </div>
       </section>
 
     </div>

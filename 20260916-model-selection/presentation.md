@@ -41,7 +41,9 @@ ___
 ___
 - Efficiency tricks
 ___
-- Choosing the appropriate model
+- Use cases
+___
+- Live demo??
 
 ## Two months in
 
@@ -103,6 +105,7 @@ Usage of Chat, Code, and Cowork all deduct from the same limit, although they ma
 ## Usage limits
 
 Across the platforms, the higher-tier models burn usage faster, but the relative rates aren't know.
+___
 
 Ultimately, there is no published explanation of how Anthropic gets to the percent value you see in the menu.
 
@@ -127,3 +130,18 @@ ___
 
 There is also a restricted model called Mythos, which Fable is built on.
 
+## Model tiers
+
+Consider starting with:
+
+**Fable 5.1** — Deep research and math questions, autonomous improvement of large model codebases
+
+[on the click advance after Fable appears, gray it out, including the card background color, and have text appear below it saying "No longer available on our plan 😭". Then have the annotation disappear when Opus shows up, but keep the gray Fable card and use case info text.]
+
+**Opus 5** — Complex agentic coding, data exploration, and statistical modeling
+
+**Sonnet 5** — Sufficient for most text creation and editing, administrative tasks, and code development
+
+**Haiku 4.5** — Focused on cost-effectiveness and instant responses, but can be error-prone
+
+[Condensed from the use-case table in Anthropic's docs. Table-style rows, each name in a chip filled with its color from the slide before, rows appearing one at a time.]
