@@ -142,6 +142,6 @@ Consider starting with:
 
 **Sonnet 5** — Sufficient for most text creation and editing, administrative tasks, and code development
 
-**Haiku 4.5** — Focused on cost-effectiveness and instant responses, but old and sometimes prone to hallucination
+**Haiku 4.5** — Focused on cost-effectiveness and instant responses, but sometimes prone to hallucination
 
 [Condensed from the use-case table in Anthropic's docs. Table-style rows, each name in a chip filled with its color from the slide before, rows appearing one at a time.]
