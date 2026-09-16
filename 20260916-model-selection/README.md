@@ -11,7 +11,7 @@ the others first.
 `start.sh` opens a `claude --safe-mode` session wrapped in a macOS
 `sandbox-exec` profile. Sessions do **not** run in this repo: each works in a
 throwaway directory under `$TMPDIR` named after a letter — `a/`, `b/`, `c/`,
-`d/` — and its output is copied back to `<model>/<task>/` here once it exits.
+`d/` — and its output is copied back to `results_<model>/<task>/` here once it exits.
 The profile:
 
 - makes the three sibling letter directories unreadable and unwritable
@@ -38,8 +38,8 @@ model itself comes from the directory name, so a session can't end up running in
 the wrong folder.
 
 A model writes into its working directory without being told to, and
-`start.sh` copies what it finds there into `<model>/<prompt-basename>/` —
-`opus/refactor/` for the lines above — so a second task doesn't land on top of
+`start.sh` copies what it finds there into `results_<model>/<prompt-basename>/` —
+`results_opus/refactor/` for the lines above — so a second task doesn't land on top of
 the first. The copy happens out here, after the sandbox is gone; a session can
 never write into the repo itself.
 

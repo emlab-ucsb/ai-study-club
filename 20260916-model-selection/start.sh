@@ -7,7 +7,7 @@
 #
 # Sessions do not run in this repo. Each one works in a throwaway directory
 # under $TMPDIR named after a letter -- a/, b/, c/, d/ -- and its output is
-# copied back to <model>/<task>/ here once it exits. Nothing a session can see
+# copied back to results_<model>/<task>/ here once it exits. Nothing a session can see
 # names the repo, the task or which model it is, so nothing points it at the
 # published results of earlier runs; the repo itself is unreadable from inside
 # the sandbox, `.git` included.
@@ -306,7 +306,7 @@ run_all() {
   printf '%s' "$_report"
   echo ""
   echo "results:  $SESSION_DIR/tasks/$_task/"
-  echo "output:   $SESSION_DIR/<model>/$_task/"
+  echo "output:   $SESSION_DIR/results_<model>/$_task/"
 
   [ "$_fail" -eq 0 ] || { echo "not every run finished cleanly" >&2; exit 1; }
 }
@@ -400,7 +400,7 @@ fi
 
 # Collect whatever the session produced. Copied from out here, after the
 # sandbox is gone -- the session could never write to the repo itself.
-DEST="$SESSION_DIR/$MODEL/$TASK"
+DEST="$SESSION_DIR/results_$MODEL/$TASK"
 mkdir -p "$DEST"
 if [ -n "$(ls -A "$RUN_DIR" 2>/dev/null)" ]; then
   cp -R "$RUN_DIR/." "$DEST/"
