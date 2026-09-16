@@ -808,7 +808,8 @@
           projects.
         </p>
         <p class="slide-text fragment" data-fragment-index="2">
-          Effort is displayed by the model name in the Chat and Cowork apps.
+          Effort is displayed next to the model name in the Chat and Cowork
+          apps.
         </p>
         <div class="footnote-box">
           <p class="footnote fragment" data-fragment-index="0">
@@ -844,12 +845,44 @@
           <p class="lede">⚠️ Cowork is a usage hog.</p>
           <p class="slide-text fragment">
             It is at its most expensive when it drives your computer or your
-            Chrome browser: every step it takes, it takes a screenshot and
+            Chrome browser: for many actions, it takes a screenshot and
             looks at it, and an image costs many times what the same
             information in plain text would.
             <br><br>
             It is also working unattended, so nobody is watching the meter.
           </p>
+        </div>
+      </section>
+
+      <!-- "Actual tasks": the harness's id.md prompt run against all four
+           models (see prompts/id.md and results_<model>/id/), responses
+           revealed ascending by tier. Each is trimmed to its identifying
+           line for slide legibility — Fable's raw answer runs three
+           paragraphs plus a link, Haiku's is a labeled multi-line block;
+           the untrimmed text lives in the results_<model>/id/ files. -->
+      <section>
+        <h2>Actual tasks</h2>
+        <p class="slide-text" style="font-style: italic;">
+          &ldquo;What model are you? Write your reply in a text
+          file.&rdquo;
+        </p>
+        <div class="tier-table">
+          <div class="tier-row fragment" data-fragment-index="0">
+            <span class="model-chip haiku">Haiku 4.5</span>
+            <span class="tier-use">&ldquo;Model: Claude Haiku 4.5&rdquo;</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="1">
+            <span class="model-chip sonnet">Sonnet 5</span>
+            <span class="tier-use">&ldquo;I am Sonnet 5&hellip;built by Anthropic.&rdquo;</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="2">
+            <span class="model-chip opus">Opus 5</span>
+            <span class="tier-use">&ldquo;I am Claude Opus 5&hellip;running as Claude Code.&rdquo;</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="3">
+            <span class="model-chip fable">Fable 5.1</span>
+            <span class="tier-use">&ldquo;I am Claude Fable 5.1&hellip;made by Anthropic.&rdquo;</span>
+          </div>
         </div>
       </section>
 

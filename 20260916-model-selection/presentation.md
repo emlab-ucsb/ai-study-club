@@ -197,7 +197,7 @@ ___
 `high` is the default but often not necessary. Save `xhigh` and `max` for huge, challenging projects.
 ___
 
-Effort is displayed by the model name in the Chat and Cowork apps.
+Effort is displayed next to the model name in the Chat and Cowork apps.
 
 [footnote appears simultaneously with asterisk above: *For early LLMs, just writing "think hard", or "ultrathink" into their prompt led them to produce better results—the inspiration for the "effort" setting. `/ultrathink` still works too.]
 
@@ -216,8 +216,15 @@ Keep it short — it is re-read on every turn, so a bloated CLAUDE.md is a tax y
 **⚠️ Cowork is a usage hog.**
 ___
 
-It is at its most expensive when it drives your computer or your Chrome browser: every step it takes, it takes a screenshot and looks at it, and an image costs many times what the same information in plain text would.
+It is at its most expensive when it drives your computer or your Chrome browser: for many actions, it takes a screenshot and looks at it, and an image costs many times what the same information in plain text would.
 
 It is also working unattended, so nobody is watching the meter.
 
 [warning card — coral border and tint.]
+
+## Actual tasks
+
+[On this slide, start with showing the `id.md` prompt, then have the responses from the `results_x` subfolders appear one by one, in ascending order by tier]
+
+
+
