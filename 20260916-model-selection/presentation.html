@@ -342,6 +342,39 @@
       font-size: 2.2em;
       margin-top: 0.5em;
     }
+
+    /* "Model tiers": one card per model, filled with that model's own icon
+       color from the claude.ai model picker rather than the deck's accents —
+       the color coding is the slide. Text stays --ink on all four: white on
+       the blue and the coral only clears ~3:1, while ink clears ~5:1 on
+       every fill, which is the side to err on for a projector. */
+    .reveal .model-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.4em;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .reveal .model-card {
+      border-radius: 16px;
+      padding: 0.5em 0.7em;
+      text-align: left;
+      color: var(--ink);
+    }
+    .reveal .model-card.fable  { background: #6E93F0; }
+    .reveal .model-card.opus   { background: #D97757; }
+    .reveal .model-card.sonnet { background: #F0EEE6; }
+    .reveal .model-card.haiku  { background: #CFDBD0; }
+    .reveal .model-name {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+    }
+    .reveal .model-note {
+      display: block;
+      font-size: 0.62em;
+      margin-top: 0.1em;
+    }
   </style>
 </head>
 <body>
@@ -498,6 +531,30 @@
           gets to the percent value you see in the menu.
         </p>
         <p class="shrug" aria-hidden="true">🤷</p>
+      </section>
+
+      <!-- Slide 8: Model tiers, the four models in the picker. -->
+      <section>
+        <h2>Model tiers</h2>
+        <p class="slide-text">The picker offers four models:</p>
+        <div class="model-grid">
+          <div class="model-card fable">
+            <span class="model-name">Fable 5.1</span>
+            <span class="model-note">Newest and most capable</span>
+          </div>
+          <div class="model-card opus">
+            <span class="model-name">Opus 5</span>
+            <span class="model-note">Heavy lifting and deep reasoning</span>
+          </div>
+          <div class="model-card sonnet">
+            <span class="model-name">Sonnet 5</span>
+            <span class="model-note">The balanced default</span>
+          </div>
+          <div class="model-card haiku">
+            <span class="model-name">Haiku 4.5</span>
+            <span class="model-note">Fastest and lightest</span>
+          </div>
+        </div>
       </section>
 
     </div>

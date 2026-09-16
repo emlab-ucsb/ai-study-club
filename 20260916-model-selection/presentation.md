@@ -37,7 +37,7 @@ ___
 ___
 - Usage limits
 ___
-- Available model tiers
+- Model tiers
 ___
 - Efficiency tricks
 ___
@@ -108,7 +108,19 @@ Ultimately, there is no published explanation of how Anthropic gets to the perce
 
 [add a shrug emoji or something?]
 
-## Available model tiers
+## Model tiers
 
-Lorem ipsum
+There are four levels of Claude. Current versions are:
+
+**Fable 5.1** — newest and most capable
+
+**Opus 5** — heavy lifting and deep reasoning
+
+**Sonnet 5** — the balanced default
+
+**Haiku 4.5** — fastest and lightest
+
+[Four boxes in a 2x2 grid, each filled with that model's icon color from the Claude website.]
+
+There is also a restricted model called Mythos, which Fable is built on.
 
