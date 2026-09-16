@@ -123,6 +123,7 @@ Current versions are:
 **Haiku 4.5** — fastest and lightest
 
 [Four boxes in a 2x2 grid, each filled with that model's icon color from the Claude website.]
+___
 
 There is also a restricted model called Mythos, which Fable is built on.
 
