@@ -94,3 +94,13 @@ On Claude Code, you can type `/usage`.
 In the Chat and Cowork apps, it is a page in the settings menu accessed by clicking your name in the lower left.
 
 [`assets/app_usage_menu.png`]
+
+## Usage limits
+
+Every individual user has their own limit. Before, we all shared the extra usage credits. But now, your usage doesn't affect availability for others at all.
+___
+
+Usage of Chat, Code, and Cowork all deduct from the same limit, although they have different per-token rates. It is also rumored that usage burns faster during peak hours. 
+___
+
+Ultimately, there is no published explanation of how Anthropic gets to the percent value you see in the menu.
