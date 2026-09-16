@@ -7,11 +7,13 @@ its own visual identity — deliberately **not** matching that deck's cream/
 near-black Claude palette. Jordan likes the current look; when adding slides,
 carry these choices forward rather than reverting to the older style:
 
-- **Dark, glowy aesthetic**: radial gradient background (`--bg-top`
-  `#1b1035` → `--bg-bottom` `#0a0716`), plus two blurred `.glow` orbs
-  (coral `--accent` `#ff8a5c`, mint `--accent-2` `#7dd3c0`) fixed to the
-  viewport behind the slides. Reuse the `.glow` pattern for new slides rather
-  than inventing a different decoration.
+- **Light, glowy aesthetic** (flipped from an earlier dark version — Jordan
+  asked for light background / darker text): radial gradient background
+  (`--bg-top` `#fbf8ff` → `--bg-bottom` `#ffffff`), plus two blurred `.glow`
+  orbs (coral `--accent` `#e2632c`, teal `--accent-2` `#1f9c82`, both
+  deepened from their original dark-theme values for contrast on white) at
+  low opacity fixed behind the slides. Reuse the `.glow` pattern for new
+  slides rather than inventing a different decoration.
 - **Type**: Space Grotesk for headings/byline, Inter for body text (both
   Google Fonts, loaded via the `<link>` in `<head>`).
 - **Brand-name color coding**: when a model name appears as a callout word
@@ -19,6 +21,12 @@ carry these choices forward rather than reverting to the older style:
   color rather than the deck's accent colors — e.g. Fable's app-icon blue
   `#6E93F0`. Look up the right hex per model rather than reusing one color for
   all of them.
+- **Slide headings (`<h2>`, including the held-title overlay) match body
+  text** — plain `--ink`, no accent color. The title slide's date still uses
+  `--claude-purple` (`#7c6bc4`, Claude's brand "heather purple" darkened for
+  contrast on a light background, same rationale `20260805-skills-demo`
+  uses). Don't recolor headings — that was tried and reverted; purple is
+  reserved for the date only.
 - **No Reveal theme CSS is loaded** — only `reveal.css` (the structural
   stylesheet), not `theme/*.css`. That's intentional (lets the custom palette
   above apply cleanly), but it means `.reveal` gets no base `font-size` from

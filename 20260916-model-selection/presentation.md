@@ -56,3 +56,41 @@ and
 ...and counting
 
 [Format it with the figures in text boxes, upper left and lower right. Make it look stylish.]
+
+## Two months in
+
+We have done much of that within our individual usage limits, but we have also taken advantage of
+
+**$2,500 in extra usage credits**
+
+provided by Anthropic as a welcome bonus.
+
+[Match formatting to prior slide, put box center and use Fable blue for value, no italics for text at bottom of text box, match beginning including splitting into at least two lines.]
+
+## Usage limits
+
+Now that we have used up the extra credits, those usage warnings carry a bit more weight. 
+
+## Usage limits
+
+Claude uses a system of 
+
+**5-hour session limits** 
+
+and 
+
+**weekly limits.**
+
+How to view them depends on which platform you are using. 
+
+## Usage limits
+
+On Claude Code, you can type `/usage`.
+
+[`assets/usage_menu.png`]
+
+## Usage limits
+
+In the Chat and Cowork apps, it is a page in the settings menu accessed by clicking your name in the lower left.
+
+[`assets/app_usage_menu.png`]
