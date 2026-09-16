@@ -177,7 +177,7 @@ ___
 ___
 - **Attach the table, not the 200-page report** it came in.
 ___
-- **If efficiency is key, disable connectors you don't use.** Every one that is switched on is described in the context window, every turn.
+- **If efficiency is key, disable connectors you don't use.** Every one that is switched on is described in the context window every turn.
 ___
 
 `/context` shows you what is actually filling it.

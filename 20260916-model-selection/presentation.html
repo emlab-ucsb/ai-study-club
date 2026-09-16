@@ -726,9 +726,9 @@
         </div>
       </section>
 
-      <!-- Slides 10-14: Working efficiently, held title (same mechanism as
+      <!-- Slides 10-15: Working efficiently, held title (same mechanism as
            the groups above — worth using now that the heading repeats across
-           five slides rather than sitting on one). -->
+           six slides rather than sitting on one). -->
       <section class="definitions title-held" data-title-group="working-efficiently">
         <h2>Working efficiently</h2>
         <p class="slide-text">First, some definitions:</p>
@@ -757,9 +757,7 @@
         <p class="lede">Keep conversations short.</p>
         <p class="slide-text fragment">
           Every prompt re-reads the whole conversation above it, so the
-          twentieth message costs far more than the first &mdash; and the
-          answers get worse too, as the details that matter are buried among
-          the ones that don't.
+          twentieth message costs far more than the first.
         </p>
         <p class="slide-text fragment">
           When the topic changes, start over: <code>/clear</code> in Claude
@@ -780,9 +778,9 @@
             came in.
           </li>
           <li class="fragment">
-            <strong>Turn off connectors you aren't using.</strong> Every one
-            that is switched on is described in the context window, every
-            turn.
+            <strong>If efficiency is key, disable connectors you don't
+            use.</strong> Every one that is switched on is described in the
+            context window every turn.
           </li>
         </ul>
         <p class="slide-text fragment" style="margin-top: 1.2em;">
@@ -820,8 +818,8 @@
         <p class="lede">Write the standing context down once.</p>
         <p class="slide-text fragment">
           <strong>CLAUDE.md</strong> in Claude Code, <strong>Projects</strong>
-          in the app: the facts about your work you would otherwise retype
-          every session.
+          in the app: the facts about your work that Claude would otherwise
+          burn usage rediscovering in each new session.
         </p>
         <p class="slide-text fragment">
           Keep it short &mdash; it is re-read on every turn, so a bloated
@@ -829,13 +827,14 @@
         </p>
       </section>
 
-      <!-- Slide 15: the closing warning. Its own heading rather than a sixth
-           "Working efficiently", so it breaks out of the held-title group and
-           lands as a separate beat. -->
-      <section>
-        <h2>⚠️ A warning</h2>
+      <!-- The closing warning. Stays inside the held-title group, so the
+           tinted card is the only thing marking it out as a different kind
+           of statement — hence the ⚠️ sitting in the card's lede rather than
+           in a heading it no longer has to itself. -->
+      <section class="title-held" data-title-group="working-efficiently">
+        <h2>Working efficiently</h2>
         <div class="warning-card">
-          <p class="lede">Cowork is a usage hog.</p>
+          <p class="lede">⚠️ Cowork is a usage hog.</p>
           <p class="slide-text fragment">
             It is at its most expensive when it drives your computer or your
             Chrome browser: every step it takes, it takes a screenshot and
