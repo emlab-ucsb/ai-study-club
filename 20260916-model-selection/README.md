@@ -8,16 +8,23 @@ A harness for running the *same* prompt past several Claude models side by side,
 so the meeting can compare the four transcripts without anyone having peeked at
 the others first.
 
-`start.sh` opens a `claude --safe-mode` session in one model's subdirectory
-(`fable/`, `opus/`, `sonnet/`, `haiku/`) on a prompt read from a file, wrapped
-in a macOS `sandbox-exec` profile that:
+`start.sh` opens a `claude --safe-mode` session wrapped in a macOS
+`sandbox-exec` profile. Sessions do **not** run in this repo: each works in a
+throwaway directory under `$TMPDIR` named after a letter — `a/`, `b/`, `c/`,
+`d/` — and its output is copied back to `<model>/<task>/` here once it exits.
+The profile:
 
-- makes the three sibling directories unreadable (metadata still visible, so
-  `ls` shows they exist),
-- hides the repo's `.git` entirely — its object store would otherwise be a side
-  channel into whatever the other sessions had committed,
+- makes the three sibling letter directories unreadable and unwritable
+  (metadata still visible, so `ls` one level up shows they exist),
+- hides this **entire repository**, `.git` included — the other models'
+  collected results, the harness that explains the experiment, and the object
+  store all go behind one rule,
 - hides the state the CLI keeps outside the working directory (see below),
-- blocks writes anywhere except that session's own directory.
+- blocks writes anywhere except that session's own letter directory.
+
+Nothing a session can see names the repo, the task, or which model it is. The
+prompt is passed as the first message and `spec.md` as appended system-prompt
+text, both read out here, so neither needs to be readable from in there.
 
 ```sh
 ./start.sh opus prompts/refactor.md
@@ -30,11 +37,11 @@ an odd setup and one more thing the comparison would have to control for. The
 model itself comes from the directory name, so a session can't end up running in
 the wrong folder.
 
-Each run works in `<model>/<prompt-basename>/` — `opus/refactor/` for the lines
-above. The session's working directory *is* the task folder, so a model writes
-its output there without being told to, and a second task doesn't land on top of
-the first. The prompt file's name reaches the model only that way; its contents
-are the whole message.
+A model writes into its working directory without being told to, and
+`start.sh` copies what it finds there into `<model>/<prompt-basename>/` —
+`opus/refactor/` for the lines above — so a second task doesn't land on top of
+the first. The copy happens out here, after the sandbox is gone; a session can
+never write into the repo itself.
 
 ## Unattended runs
 
@@ -116,23 +123,38 @@ transcript. Prompt history, file snapshots and `.claude.json` are denied
 outright, to every session including its own. All of it leaves the CLI working
 normally; writes are untouched, so transcripts are still recorded.
 
-Run the check before a batch:
+Run the check before a batch — `all` runs it for you and refuses to launch if
+it fails:
 
 ```sh
-./start.sh check [prompt-file]
+./start.sh check
 ```
 
-It builds each model's profile and, from inside that sandbox, attempts every
-blocked read plus a sweep of *every* transcript directory on the machine — not
-just this session's four — exiting non-zero if any returns data. It also checks
-the other direction, that the run can still read its own transcript, which only
-works once that run has one. Pass the prompt file to check the paths a real run
-of that task will use.
+It builds a throwaway batch root, plants a file in each letter directory so a
+blocked read is distinguishable from an empty one, then from inside each
+model's sandbox attempts every blocked read plus a sweep of *every* transcript
+directory on the machine — exiting non-zero if any returns data. It also checks
+the other direction, that a session can still write its own directory: a run
+that can't is a broken sandbox failing in a way that looks like the model's
+fault.
 
-`spec.md` holds what's true for all four runs and *is* appended to each system
-prompt — mainly the sandbox notes, so no one burns turns diagnosing the missing
-git or the unreadable siblings. It's appended rather than put in a `CLAUDE.md`,
-which `--safe-mode` ignores.
+`spec.md` holds what's true for all four runs and is appended to each system
+prompt as text — mainly the sandbox notes, so no one burns turns diagnosing the
+missing git or the unreadable siblings. It's appended rather than put in a
+`CLAUDE.md`, which `--safe-mode` ignores.
 
-The four working directories are gitignored for the same reason `.git` is
-blocked. Collect the results with `git add -f` once every run is finished.
+## Publishing the results
+
+Nothing is gitignored. Results are meant to be committed and read afterwards —
+a comparison nobody can revisit isn't worth much.
+
+That's safe because sessions run outside the repo and can't read it. What
+they *can* still do is reach the network, and the remote is public, so a session
+that knew this repo existed could fetch published results from an earlier batch.
+It doesn't know: its working directory is a letter under `$TMPDIR`, and nothing
+in its environment names the repo. The sequencing rule that follows is simply
+**collect and push after a batch finishes, never while runs are in flight**.
+
+Worth being straight about the limit: that's obscurity, not a boundary. The real
+boundary would be blocking egress except the API, and SBPL can't express that
+reliably — host filtering via DNS isn't something to trust.

@@ -1,0 +1,1 @@
+I am Claude Opus 5 (model ID: claude-opus-5), made by Anthropic, running as Claude Code.
