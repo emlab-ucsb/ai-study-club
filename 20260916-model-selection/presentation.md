@@ -55,9 +55,9 @@ and
 
 ...and counting
 
-*The contents stay private — the admin panel only reports summary statistics like these.*
+*(The contents of which are private, the analytics panel just shows summary stats)*
 
-[Format it with the figures in text boxes, upper left and lower right. Make it look stylish. Set the privacy line as a small footnote under the tallies.]
+[Format it with the figures in text boxes, upper left and lower right. Make it look stylish. Set the privacy line as a small footnote under the tallies, bottom left.]
 
 ## Two months in
 

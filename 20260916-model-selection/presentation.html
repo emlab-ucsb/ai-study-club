@@ -168,7 +168,7 @@
        body's corners (not the section's), so they land clear of the heading
        instead of on top of it, and the intro text sits centered in the
        space between them rather than running underneath either box. */
-    .reveal .slides section.stats { text-align: center; }
+    .reveal .slides section.stats { text-align: center; height: 100%; }
     .reveal .stats-body {
       position: relative;
       height: 220px;
@@ -224,10 +224,16 @@
        footnote rather than another line of the slide, but not so small it
        disappears from the back of a projected room. */
     .reveal .stats-aside {
+      position: absolute;
+      bottom: 0.4em;
+      left: 10%;
+      right: 0;
       font-size: 0.55em;
       color: var(--ink-dim);
-      max-width: 620px;
-      margin: 0.8em auto 0;
+      max-width: none;
+      margin: 0;
+      text-align: left;
+      white-space: nowrap;
     }
 
     /* Held title: a real heading that lives outside any <section>, as a
@@ -403,8 +409,7 @@
         </div>
         <p class="stats-footnote">&hellip;and counting</p>
         <p class="stats-aside">
-          The contents stay private &mdash; the admin panel only reports
-          summary statistics like these.
+          (The contents of which are private, the analytics panel just shows summary stats)
         </p>
       </section>
 
