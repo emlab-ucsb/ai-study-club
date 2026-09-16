@@ -23,4 +23,10 @@ Ground rules, adapted from `20260805-skills-demo/CLAUDE.md`:
 
 ## Title slide
 
-*Budget, 
+*How to create fabulous work without using Fable*
+
+Jordan Wingenroth
+
+Claude Study Club
+
+September 16, 2026

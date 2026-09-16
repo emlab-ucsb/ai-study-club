@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Selection — emLab AI Study Club</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-top: #1b1035;
+      --bg-bottom: #0a0716;
+      --accent: #ff8a5c;
+      --accent-2: #7dd3c0;
+      --ink: #f4f1ff;
+      --ink-dim: #b8b0d9;
+    }
+
+    body {
+      background: radial-gradient(circle at 20% 15%, var(--bg-top), var(--bg-bottom) 65%);
+    }
+
+    .reveal-viewport { background: var(--bg-bottom); }
+    /* reveal.css itself sets no base font-size — only the (unused) theme
+       files do — so without this the deck inherits the browser default and
+       reads tiny once Reveal scales the 960x700 canvas up to a projector.
+       34px sits between the browser-default look (too small on a projector)
+       and 52px (too large) — landed on by direct feedback. */
+    .reveal          { color: var(--ink); font-family: 'Inter', sans-serif; font-size: 34px; }
+
+    /* Soft glowing orbs behind the title, purely decorative. Fixed to the
+       viewport rather than the slide so they don't scale oddly with reveal's
+       zoom transform. */
+    .glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-1 {
+      width: 420px; height: 420px;
+      top: -120px; right: -100px;
+      background: var(--accent);
+      opacity: 0.35;
+    }
+    .glow-2 {
+      width: 360px; height: 360px;
+      bottom: -140px; left: -80px;
+      background: var(--accent-2);
+      opacity: 0.25;
+    }
+
+    .reveal .slides section { z-index: 1; }
+
+    .reveal .deck-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.85em;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      max-width: 940px;
+      margin: 0 auto 0.7em;
+    }
+
+    /* The one word doing the work of the joke gets Fable's own brand blue,
+       matched from the model's app icon. */
+    .deck-title .highlight { color: #6E93F0; }
+
+    .reveal .byline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3em;
+      font-weight: 500;
+      color: var(--ink);
+      margin: 0.2em 0;
+    }
+    .reveal .subline {
+      font-size: 1em;
+      color: var(--ink-dim);
+      margin: 0.2em 0 0;
+    }
+    .reveal .date {
+      font-size: 0.85em;
+      color: var(--accent-2);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-top: 1.5em;
+    }
+
+    .reveal .rule {
+      width: 64px;
+      height: 3px;
+      margin: 1.1em auto;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border: none;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Slide 1: title. -->
+      <section class="center">
+        <h1 class="deck-title">How to create fabulous work
+          without using <span class="highlight">Fable</span></h1>
+        <hr class="rule">
+        <p class="byline">Jordan Wingenroth</p>
+        <p class="subline">Claude Study Club</p>
+        <p class="date">September 16, 2026</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({ hash: true, center: false });
+  </script>
+</body>
+</html>
