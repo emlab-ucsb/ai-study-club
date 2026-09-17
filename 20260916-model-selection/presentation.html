@@ -507,6 +507,44 @@
     .reveal .warning-card .lede { margin: 0 0 0.7em; color: var(--accent); }
     .reveal .warning-card .slide-text { max-width: none; margin: 0 0 0.8em; }
     .reveal .warning-card .slide-text:last-child { margin-bottom: 0; }
+
+    /* "Kelvin": the harness's runtime stats table (cost/tokens/wall clock
+       per model). A real <table> rather than the tier-table flex rows above
+       — those exist to keep one fragment per row, but this slide reveals
+       all at once and the data genuinely lines up in columns. */
+    .reveal .stats-table {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      font-size: 0.62em;
+    }
+    .reveal .stats-table th,
+    .reveal .stats-table td {
+      padding: 0.5em 0.7em;
+      text-align: left;
+      border-bottom: 1px solid rgba(32, 26, 53, 0.12);
+    }
+    .reveal .stats-table th {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.9em;
+      color: var(--ink-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .reveal .stats-table td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .reveal .stats-table a { color: var(--accent-2); }
+    /* Smaller inline chip than the 200px .model-chip original, so it fits a
+       table cell instead of a fixed-width tier row. */
+    .reveal .stats-table .model-chip {
+      display: inline-block;
+      width: auto;
+      padding: 0.25em 0.7em;
+    }
   </style>
 </head>
 <body>
@@ -798,9 +836,10 @@
         <h2>Working efficiently</h2>
         <p class="lede">Match the effort to the task.</p>
         <p class="slide-text fragment" data-fragment-index="0">
-          <code>/effort</code> in Claude Code sets how hard the model thinks
-          before it answers: <code>low</code>, <code>medium</code>,
-          <code>high</code>, <code>xhigh</code>, <code>max</code>.*
+          <code>/effort</code> sets how hard the model thinks before it
+          answers: <code>low</code>, <code>medium</code>, <code>high</code>,
+          <code>xhigh</code>, <code>max</code>.* Effort can be customized
+          for all models except Haiku.
         </p>
         <p class="slide-text fragment" data-fragment-index="1">
           <code>high</code> is the default but often not necessary. Save
@@ -884,6 +923,67 @@
             <span class="tier-use">&ldquo;I am Claude Fable 5.1&hellip;made by Anthropic.&rdquo;</span>
           </div>
         </div>
+      </section>
+
+      <!-- "Kelvin": runtime stats from tasks/kelvin/<model>.json for the
+           kelvin.md prompt (build a Kelvin-wave explainer/visualization),
+           linking each model's actual output under results_<model>/kelvin/.
+           Token counts sum input + cache-write + cache-read + output from
+           each file's "usage" block; wall clock is duration_ms. Opus hit
+           the harness's $5 per-run budget cap (terminal_reason
+           "budget_exhausted") before it finished, so its numbers reflect a
+           cut-off run, not a completed one — flagged rather than hidden. -->
+      <section>
+        <h2>Kelvin</h2>
+        <p class="slide-text" style="margin-bottom: 0.8em;">
+          Same real task, run against all four models: build an interactive
+          page explaining this month's Kelvin wave news.
+        </p>
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th class="num">Cost</th>
+              <th class="num">Tokens</th>
+              <th class="num">Wall clock</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="model-chip haiku">Haiku 4.5</span></td>
+              <td class="num">$0.12</td>
+              <td class="num">120K</td>
+              <td class="num">1m 15s</td>
+              <td><a href="results_haiku/kelvin/kelvin-wave-visualization.html">view</a></td>
+            </tr>
+            <tr>
+              <td><span class="model-chip sonnet">Sonnet 5</span></td>
+              <td class="num">$0.60</td>
+              <td class="num">549K</td>
+              <td class="num">4m 29s</td>
+              <td><a href="results_sonnet/kelvin/kelvin_wave_2026.html">view</a></td>
+            </tr>
+            <tr>
+              <td><span class="model-chip opus">Opus 5</span></td>
+              <td class="num">$5.09*</td>
+              <td class="num">3.64M</td>
+              <td class="num">23m 20s*</td>
+              <td><a href="results_opus/kelvin/kelvin-wave.html">view</a></td>
+            </tr>
+            <tr>
+              <td><span class="model-chip fable">Fable 5.1</span></td>
+              <td class="num">$3.70</td>
+              <td class="num">753K</td>
+              <td class="num">8m 37s</td>
+              <td><a href="results_fable/kelvin/kelvin-wave-2026.html">view</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="footnote" style="max-width: 900px; margin: 0.8em auto 0;">
+          *Opus hit the harness's $5 per-run budget cap and was cut off
+          mid-task &mdash; its row is an incomplete run, not a finished one. Also, note that costs are calculated from tokens at the model-specific rate. They are deducted from usage caps, not actually billed.
+        </p>
       </section>
 
     </div>

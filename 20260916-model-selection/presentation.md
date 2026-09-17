@@ -191,7 +191,7 @@ In Claude Code, `/context` shows you what is actually taking up space.
 **Match the effort to the task.**
 ___
 
-`/effort` in Claude Code sets how hard the model thinks before it answers: `low`, `medium`, `high`, `xhigh`, `max`.*
+`/effort` sets how hard the model thinks before it answers: `low`, `medium`, `high`, `xhigh`, `max`.* Effort can be customized for all models except Haiku.
 ___
 
 `high` is the default but often not necessary. Save `xhigh` and `max` for huge, challenging projects.
@@ -228,5 +228,5 @@ It is also working unattended, so nobody is watching the meter.
 
 ## Kelvin
 
-[]
+[On this slide, add a table with the runtime stats (cost, number of tokens, wall clock runtime) and a link to the resulting HTML for the kelvin.md task.]
 
