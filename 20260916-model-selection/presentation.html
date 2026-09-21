@@ -235,7 +235,8 @@
       text-align: left;
       white-space: nowrap;
     }
-    .reveal .stats-aside-mark {
+    .reveal .stats-aside-mark,
+    .reveal .footnote-mark {
       position: relative;
       top: -0.2em;
     }
@@ -491,6 +492,33 @@
       max-width: 820px;
       margin: 1.4em auto 0;
     }
+
+    /* "Match the effort to the task": lede + three fragments is the most
+       normal-flow content in the held-title group, so it needs tighter
+       spacing (same ratio as .outline.wide, used for the same reason on the
+       sibling slide) to leave room above the footnote without crowding it. */
+    .reveal .effort .lede { margin-bottom: 0.5em; }
+    .reveal .effort .slide-text {
+      font-size: 0.85em;
+      margin-bottom: 0.7em;
+    }
+    /* Pin the footnote to the same bottom anchor every other footer in the
+       deck uses (.stats-aside: bottom:0.4em at font-size:0.55em, e.g. "Two
+       months in"'s privacy line) instead of leaving it wherever the
+       fragments above happen to end — that's what was letting it drift
+       below the canvas. Needs .effort itself sized to the full canvas (see
+       below, same as .stats) so the offset resolves against the real slide
+       height rather than the auto-height of the flowed content above it. */
+    .reveal .slides section.effort { height: 100%; }
+    .reveal .effort .footnote-box {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0.4em;
+      margin: 0 auto;
+      font-size: 0.55em;
+    }
+    .reveal .effort .footnote-box .footnote { font-size: 1em; }
 
     /* The closing Cowork warning, as a card tinted with the deck's coral
        accent rather than another plain paragraph — the one cautionary slide
@@ -832,7 +860,7 @@
         </p>
       </section>
 
-      <section class="title-held" data-title-group="working-efficiently">
+      <section class="title-held effort" data-title-group="working-efficiently">
         <h2>Working efficiently</h2>
         <p class="lede">Match the effort to the task.</p>
         <p class="slide-text fragment" data-fragment-index="0">
@@ -852,7 +880,7 @@
         </p>
         <div class="footnote-box">
           <p class="footnote fragment" data-fragment-index="0">
-            *For early LLMs, just writing &ldquo;think hard,&rdquo; or
+            <span class="footnote-mark">*</span>For early LLMs, just writing &ldquo;think hard,&rdquo; or
             &ldquo;ultrathink&rdquo; into their prompt led them to produce
             better results&mdash;the inspiration for the &ldquo;effort&rdquo;
             setting. <code>/ultrathink</code> still works too.
