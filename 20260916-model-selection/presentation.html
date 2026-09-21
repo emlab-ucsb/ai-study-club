@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Selection — emLab AI Study Club</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-top: #fbf8ff;
+      --bg-bottom: #ffffff;
+      /* Deepened from the flat #ff8a5c/#7dd3c0 pair so the stat numbers and
+         bullet dots hold contrast on a light background — the original pair
+         was tuned for the dark theme this deck used to run. */
+      --accent: #e2632c;
+      --accent-2: #1f9c82;
+      --ink: #201a35;
+      --ink-dim: #6f6690;
+      /* Claude brand "heather purple," darkened the same way
+         20260805-skills-demo darkens it — that deck is also light-on-cream,
+         so its rationale (contrast on a pale background) applies here too. */
+      --claude-purple: #7c6bc4;
+    }
+
+    body {
+      background: radial-gradient(circle at 20% 15%, var(--bg-top), var(--bg-bottom) 65%);
+    }
+
+    .reveal-viewport { background: var(--bg-bottom); }
+    /* reveal.css itself sets no base font-size — only the (unused) theme
+       files do — so without this the deck inherits the browser default and
+       reads tiny once Reveal scales the 960x700 canvas up to a projector.
+       34px sits between the browser-default look (too small on a projector)
+       and 52px (too large) — landed on by direct feedback. */
+    .reveal          { color: var(--ink); font-family: 'Inter', sans-serif; font-size: 34px; }
+
+    /* Soft glowing orbs behind the title, purely decorative. Fixed to the
+       viewport rather than the slide so they don't scale oddly with reveal's
+       zoom transform. */
+    .glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      /* Slide-driven drift: driftBlooms() below sets a new transform on
+         every slide change, and this transition is what turns that jump
+         into a slow glide. transform rather than top/left so the motion
+         stays on the compositor — nine blurred elements animating layout
+         properties would stutter on weaker hardware. Just a hair slower
+         than reveal's own 0.8s slide so the wash settles right after the
+         content lands. */
+      transition: transform 1s cubic-bezier(0.22, 0.61, 0.36, 1);
+      will-change: transform;
+    }
+    /* Fourteen blooms scattered across the viewport (percent-based, so
+       they stay spread out at any window size) cycling through all four
+       brand colors — coral, teal, brand purple, Fable blue. Sizes,
+       positions and opacities are all off-grid on purpose: matching any
+       two would read as a pattern instead of an organic wash. */
+    .glow-1  { width: 260px; height: 260px; top: 2%;  left: 6%;  background: var(--accent);         opacity: 0.34; }
+    .glow-2  { width: 200px; height: 200px; top: 12%; left: 72%; background: var(--claude-purple);  opacity: 0.29; }
+    .glow-3  { width: 340px; height: 340px; top: 38%; left: 33%; background: #6E93F0;               opacity: 0.25; }
+    .glow-4  { width: 280px; height: 280px; top: 58%; left: 82%; background: var(--accent-2);       opacity: 0.33; }
+    .glow-5  { width: 380px; height: 380px; top: 78%; left: 12%; background: var(--accent);         opacity: 0.28; }
+    .glow-6  { width: 220px; height: 220px; top: -6%; left: 46%; background: var(--accent-2);       opacity: 0.31; }
+    .glow-7  { width: 300px; height: 300px; top: 88%; left: 58%; background: var(--claude-purple);  opacity: 0.32; }
+    .glow-8  { width: 240px; height: 240px; top: 24%; left: -4%; background: #6E93F0;               opacity: 0.27; }
+    .glow-9  { width: 200px; height: 200px; top: 48%; left: 62%; background: var(--accent);         opacity: 0.24; }
+    .glow-10 { width: 180px; height: 180px; top: 66%; left: 40%; background: var(--claude-purple);  opacity: 0.26; }
+    .glow-11 { width: 320px; height: 320px; top: 6%;  left: 88%; background: var(--accent-2);       opacity: 0.23; }
+    .glow-12 { width: 230px; height: 230px; top: 30%; left: 18%; background: #6E93F0;               opacity: 0.30; }
+    .glow-13 { width: 270px; height: 270px; top: 84%; left: 84%; background: var(--accent);         opacity: 0.25; }
+    .glow-14 { width: 190px; height: 190px; top: 22%; left: 52%; background: var(--claude-purple);  opacity: 0.22; }
+
+    .reveal .slides section { z-index: 1; }
+
+    .reveal .deck-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.85em;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      max-width: 940px;
+      margin: 0 auto 0.7em;
+    }
+
+    /* The one word doing the work of the joke gets Fable's own brand blue,
+       matched from the model's app icon. */
+    .deck-title .highlight { color: #6E93F0; }
+
+    .reveal .byline {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3em;
+      font-weight: 500;
+      color: var(--ink);
+      margin: 0.2em 0;
+    }
+    .reveal .subline {
+      font-size: 1em;
+      color: var(--ink-dim);
+      margin: 0.2em 0 0;
+    }
+    .reveal .date {
+      font-size: 0.85em;
+      color: var(--claude-purple);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-top: 1.5em;
+    }
+
+    .reveal .rule {
+      width: 120px;
+      height: 5px;
+      margin: 1.1em auto;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border: none;
+      border-radius: 2px;
+    }
+
+    /* Content slides (everything past the title) share one heading style:
+       Space Grotesk, same ink as body text — headings no longer get their
+       own accent color, so they read as part of the same page rather than
+       a separately-colored label. */
+    .reveal h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.3em;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+      margin-bottom: 0.7em;
+    }
+
+    /* Outline slide: a plain list read as a set of stops on the talk, each
+       one picked out with an accent-colored marker instead of a default
+       bullet glyph. */
+    .reveal .outline {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      text-align: left;
+      max-width: 640px;
+      margin-inline: auto;
+    }
+    .reveal .outline li {
+      position: relative;
+      padding-left: 1.4em;
+      margin: 0.55em 0;
+      font-size: 1.05em;
+    }
+    .reveal .outline li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.42em;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    /* "Two months in": two stat callouts pinned to opposite corners of the
+       slide, per the README's "upper left / lower right, in text boxes"
+       instruction. The section is stretched to the full 700px canvas height
+       and split into the heading plus a flexed body — the boxes pin to that
+       body's corners (not the section's), so they land clear of the heading
+       instead of on top of it, and the intro text sits centered in the
+       space between them rather than running underneath either box. */
+    .reveal .slides section.stats { text-align: center; height: 100%; }
+    .reveal .stats-body {
+      position: relative;
+      height: 220px;
+      margin: 0.8em 0;
+    }
+    .reveal .stat-box {
+      position: absolute;
+      max-width: 280px;
+      padding: 0.5em 0.9em;
+      border-radius: 14px;
+      background: rgba(32, 26, 53, 0.04);
+      border: 1px solid rgba(32, 26, 53, 0.12);
+      backdrop-filter: blur(6px);
+    }
+    .reveal .stat-box.top-left     { top: 0; left: 10%; text-align: left; }
+    .reveal .stat-box.bottom-right { bottom: 0; right: 10%; text-align: right; }
+    .reveal .stat-number {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5em;
+      line-height: 1.1;
+    }
+    .stat-box.top-left     .stat-number { color: var(--accent); }
+    .stat-box.bottom-right .stat-number { color: var(--accent-2); }
+    /* Centered variant for a single-figure stats slide. */
+    .reveal .stats-body-single { margin: 0.9em 0; }
+    .reveal .stat-box.center {
+      position: static;
+      display: inline-block;
+      max-width: none;
+      text-align: center;
+    }
+    .stat-box.center .stat-number { color: #6E93F0; }
+    .reveal .stat-label {
+      display: block;
+      font-size: 0.6em;
+      color: var(--ink-dim);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-top: 0.15em;
+    }
+    .reveal .stats-intro {
+      max-width: 560px;
+      margin: 0 auto;
+      color: var(--ink);
+    }
+    .reveal .stats-footnote {
+      color: var(--ink);
+      margin-top: 0.6em;
+    }
+    /* Aside under the tallies: smaller and dimmed so it reads as a
+       footnote rather than another line of the slide, but not so small it
+       disappears from the back of a projected room. */
+    .reveal .stats-aside {
+      position: absolute;
+      bottom: 0.4em;
+      left: 10%;
+      right: 0;
+      font-size: 0.55em;
+      color: var(--ink-dim);
+      max-width: none;
+      margin: 0;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .reveal .stats-aside-mark {
+      position: relative;
+      top: -0.2em;
+    }
+
+    /* Held title: a real heading that lives outside any <section>, as a
+       direct child of .slides. Reveal's transition CSS only ever targets
+       `.slides > section`, so this element is invisible to it entirely —
+       it neither slides nor fades, it just sits at the same top-of-canvas
+       position every section starts from. Shown only while the current
+       slide is tagged data-title-group="two-months-in" (toggled in the
+       script at the bottom), so the body content underneath is free to
+       zip left/right using the deck's normal transition while the title
+       appears to hold still. The in-slide <h2> stays in the DOM on those
+       two slides (for no-JS/print) but is made invisible so its layout
+       space is preserved and the content below doesn't jump up. */
+    .reveal .held-title {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      pointer-events: none;
+      display: none;
+    }
+    .reveal .held-title.visible { display: block; }
+    .reveal .slides section.title-held h2 { visibility: hidden; }
+
+    /* Generic <code>, sized down slightly — Menlo's larger x-height reads
+       oversized next to Inter body text at the same nominal size. */
+    .reveal code { font-size: 0.85em; }
+
+    /* Plain body paragraphs on a content slide: centered (inherited from
+       reveal.css's default on .slides), just capped to a readable width. */
+    .reveal .slide-text {
+      max-width: 700px;
+      margin: 0 auto 2em;
+    }
+
+    /* Overrides the centered default for a block that should read flush
+       left instead — e.g. the "Claude uses a system of" + numbered-list
+       slide, where a left edge reads more like a real list than centered
+       lines of differing width would. */
+    .reveal .flush-left {
+      text-align: left;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .reveal .flush-left .slide-text { margin: 0 0 2em; }
+
+    /* "Working efficiently": the two definitions are wider than the
+       640px .flush-left default and get a visible gap between them
+       rather than relying on .slide-text's own bottom margin, so the
+       Token/Context window blocks read as separate paragraphs instead
+       of running together. */
+    .reveal .definitions .flush-left {
+      max-width: 780px;
+    }
+    .reveal .definitions .flush-left + .flush-left {
+      margin-top: 1.4em;
+    }
+
+    /* "Usage limits" slide 1: a numbered pair of limit types, styled to
+       match .outline's dot markers but with the number itself in the
+       badge instead of a plain bullet. */
+    .reveal .numbered {
+      list-style: none;
+      counter-reset: step;
+      text-align: left;
+      max-width: 640px;
+      margin: 0.8em auto;
+      padding: 0;
+    }
+    .reveal .numbered li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 1.9em;
+      margin: 0.5em 0;
+      font-size: 1.05em;
+    }
+    .reveal .numbered li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1.3em;
+      height: 1.3em;
+      line-height: 1.3em;
+      text-align: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.7em;
+    }
+
+    /* Usage-limits slides 2-3: the two menu screenshots. Sized explicitly
+       rather than by max-width, same reasoning as the videos in
+       20260805-skills-demo — a percentage has nothing definite to resolve
+       against inside reveal's scaled canvas, and letting the browser scale
+       from the source dimensions keeps each screenshot's own aspect ratio
+       (842x1168 portrait for the CLI menu, 2016x1330 landscape for the app
+       settings page) without distortion. */
+    .reveal .menu-shot {
+      display: block;
+      margin: 1em auto 0;
+      max-width: none;
+      max-height: none;
+      border-radius: 10px;
+      border: 1px solid rgba(32, 26, 53, 0.15);
+      box-shadow: 0 8px 24px rgba(32, 26, 53, 0.12);
+    }
+    .reveal .menu-shot.portrait  { width: 300px; height: 416px; }
+    .reveal .menu-shot.landscape { width: 620px; height: 409px; }
+
+    /* The closing shrug — the punchline for "there's no published
+       explanation," so it's sized to land as one, not just a big emoji. */
+    .reveal .shrug {
+      font-size: 2.2em;
+      margin-top: 0.5em;
+    }
+
+    /* "Model tiers": one card per model, filled with that model's own icon
+       color from the claude.ai model picker rather than the deck's accents —
+       the color coding is the slide. Text stays --ink on all four: white on
+       the blue and the coral only clears ~3:1, while ink clears ~5:1 on
+       every fill, which is the side to err on for a projector. */
+    .reveal .model-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.4em;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .reveal .model-card {
+      border-radius: 16px;
+      padding: 0.5em 0.7em;
+      text-align: left;
+      color: var(--ink);
+    }
+    .reveal .model-card.fable,  .reveal .model-chip.fable  { background: #6E93F0; }
+    .reveal .model-card.opus,   .reveal .model-chip.opus   { background: #D97757; }
+    .reveal .model-card.sonnet, .reveal .model-chip.sonnet { background: #F0EEE6; }
+    .reveal .model-card.haiku,  .reveal .model-chip.haiku  { background: #CFDBD0; }
+    .reveal .model-name {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+    }
+    .reveal .model-note {
+      display: block;
+      font-size: 0.62em;
+      margin-top: 0.1em;
+    }
+
+    /* Model tiers slide 2: the use-case table from Anthropic's docs, cut to
+       one line per model. A flex row per model rather than a real <table> or
+       a grid — each row has to be a single fragment element to appear on its
+       own, and a grid row wrapper would need display:contents, which reveal's
+       opacity-based fragments can't act on. The fixed chip width is what
+       keeps the use-case column aligned without one. The table is sized to
+       its longest row rather than to a fixed width, so it centers on itself
+       instead of leaving the short rows adrift in a wide box; the cap is
+       what makes an over-long row wrap instead of running off the canvas. */
+    .reveal .tier-table {
+      width: max-content;
+      max-width: 840px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .reveal .tier-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.55em;
+      margin-bottom: 0.5em;
+    }
+    /* Fable's row alone is wrapped, so it can carry a second fragment step of
+       its own: the row arrives in full color, then this wrapper's step dims
+       it. Grayscale rather than opacity alone — at 45% the blue chip would
+       still read as blue, and the point is that it's switched off. */
+    .reveal .tier-inner {
+      display: flex;
+      align-items: center;
+      gap: 0.55em;
+      transition: filter 0.4s ease, opacity 0.4s ease;
+    }
+    .reveal .fragment.custom.dim-out.visible {
+      filter: grayscale(1);
+      opacity: 0.45;
+    }
+    /* Out of flow, so the rows below don't shift when it comes and goes. It
+       overlaps where the Opus row will land, which is free real estate: the
+       annotation is gone by the step that reveals Opus. */
+    .reveal .tier-annot {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 0.35em;
+      font-size: 0.62em;
+      color: var(--ink-dim);
+      white-space: nowrap;
+    }
+    .reveal .model-chip {
+      flex: none;
+      width: 200px;
+      padding: 0.3em 0;
+      border-radius: 12px;
+      text-align: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.8em;
+      color: var(--ink);
+    }
+    .reveal .tier-use {
+      font-size: 0.72em;
+      line-height: 1.35;
+    }
+
+    /* "Working efficiently": definitions, each revealed as a fragment.
+       A generic footnote style for the context-window definition's asterisk —
+       smaller and dimmed like .stats-aside, but sitting inline under its own
+       paragraph rather than pinned to a corner, since this slide doesn't
+       share that layout. No max-width/auto margin of its own — it fills its
+       flush-left parent so its left edge lines up with the paragraph above
+       instead of centering a narrower box inside a wider one. */
+    .reveal .footnote {
+      font-size: 0.55em;
+      color: var(--ink-dim);
+      margin: 0.4em 0 0;
+      text-align: left;
+    }
+
+    /* Each efficiency slide opens with a one-line thesis in the heading
+       face, sized between body text and <h2> so it reads as the slide's
+       claim without competing with the held title above it. */
+    .reveal .lede {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.1em;
+      margin: 0 auto 1.2em;
+    }
+
+    /* Wider, smaller variant of .outline for items that are whole sentences
+       rather than the outline slide's two-word phrases — at the base
+       .outline size each of these wraps four times and runs off the bottom
+       of the canvas. */
+    .reveal .outline.wide { max-width: 820px; }
+    .reveal .outline.wide li { font-size: 0.85em; margin: 0.75em 0; }
+    .reveal .outline.wide li::before { top: 0.35em; }
+
+    /* .footnote takes its width from its parent (see above), so on a slide
+       with no flush-left block for it to sit in it needs a box of its own,
+       or it runs the full width of the canvas. */
+    .reveal .footnote-box {
+      max-width: 820px;
+      margin: 1.4em auto 0;
+    }
+
+    /* The closing Cowork warning, as a card tinted with the deck's coral
+       accent rather than another plain paragraph — the one cautionary slide
+       in the deck should look like a different kind of statement. */
+    .reveal .warning-card {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0.8em 1.1em;
+      border-radius: 16px;
+      border: 1px solid rgba(226, 99, 44, 0.4);
+      background: rgba(226, 99, 44, 0.08);
+      text-align: left;
+    }
+    .reveal .warning-card .lede { margin: 0 0 0.7em; color: var(--accent); }
+    .reveal .warning-card .slide-text { max-width: none; margin: 0 0 0.8em; }
+    .reveal .warning-card .slide-text:last-child { margin-bottom: 0; }
+
+    /* "Kelvin": the harness's runtime stats table (cost/tokens/wall clock
+       per model). A real <table> rather than the tier-table flex rows above
+       — those exist to keep one fragment per row, but this slide reveals
+       all at once and the data genuinely lines up in columns. */
+    .reveal .stats-table {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      font-size: 0.62em;
+    }
+    .reveal .stats-table th,
+    .reveal .stats-table td {
+      padding: 0.5em 0.7em;
+      text-align: left;
+      border-bottom: 1px solid rgba(32, 26, 53, 0.12);
+    }
+    .reveal .stats-table th {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.9em;
+      color: var(--ink-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .reveal .stats-table td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .reveal .stats-table a { color: var(--accent-2); }
+    /* Smaller inline chip than the 200px .model-chip original, so it fits a
+       table cell instead of a fixed-width tier row. */
+    .reveal .stats-table .model-chip {
+      display: inline-block;
+      width: auto;
+      padding: 0.25em 0.7em;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
+  <div class="glow glow-4"></div>
+  <div class="glow glow-5"></div>
+  <div class="glow glow-6"></div>
+  <div class="glow glow-7"></div>
+  <div class="glow glow-8"></div>
+  <div class="glow glow-9"></div>
+  <div class="glow glow-10"></div>
+  <div class="glow glow-11"></div>
+  <div class="glow glow-12"></div>
+  <div class="glow glow-13"></div>
+  <div class="glow glow-14"></div>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Lives outside every <section> — see the .held-title comment in
+           <style> for why that's what keeps it from sliding or fading with
+           the rest of a slide's content. -->
+      <h2 class="held-title" id="held-title-two-months-in">Two months in</h2>
+      <h2 class="held-title" id="held-title-usage-limits">Usage limits</h2>
+      <h2 class="held-title" id="held-title-model-tiers">Model tiers</h2>
+      <h2 class="held-title" id="held-title-working-efficiently">Working efficiently</h2>
+
+      <!-- Slide 1: title. -->
+      <section class="center">
+        <h1 class="deck-title">How to create fabulous work
+          without using <span class="highlight">Fable</span></h1>
+        <hr class="rule">
+        <p class="byline">Jordan Wingenroth</p>
+        <p class="subline">Claude Study Club</p>
+        <p class="date">September 16, 2026</p>
+      </section>
+
+      <!-- Slide 2: Outline. -->
+      <section>
+        <h2>Outline</h2>
+        <ul class="outline">
+          <li class="fragment">Two months in</li>
+          <li class="fragment">Usage limits</li>
+          <li class="fragment">Model tiers</li>
+          <li class="fragment">Efficiency tricks</li>
+          <li class="fragment">Use cases</li>
+          <li class="fragment">Live demo??</li>
+        </ul>
+      </section>
+
+      <!-- Slides 3-4: Two months in, held title. Both carry title-held and
+           the matching data-title-group, so #held-title-two-months-in shows
+           in place of their own <h2> (see the script at the bottom) — the
+           deck's normal zip transition is untouched, only the title stops
+           moving with it. -->
+      <section class="stats title-held" data-title-group="two-months-in">
+        <h2>Two months in</h2>
+        <p class="stats-intro">
+          Since our team account opened in mid-July, emLab has engaged in
+        </p>
+        <div class="stats-body">
+          <div class="stat-box top-left">
+            <span class="stat-number">1,372</span>
+            <span class="stat-label">Code sessions</span>
+          </div>
+          <div class="stat-box bottom-right">
+            <span class="stat-number">1,255</span>
+            <span class="stat-label">Chat and Cowork conversations</span>
+          </div>
+        </div>
+        <p class="stats-footnote">&hellip;and counting*</p>
+        <p class="stats-aside">
+          <span class="stats-aside-mark">*</span>The contents of which are
+          private. The admin panel just shows summary stats.
+        </p>
+      </section>
+
+      <section class="stats title-held" data-title-group="two-months-in">
+        <h2>Two months in</h2>
+        <p class="stats-intro">
+          We have done much of that within our individual usage limits,
+          but we have also taken advantage of
+        </p>
+        <div class="stats-body-single">
+          <div class="stat-box center">
+            <span class="stat-number">$2,500</span>
+            <span class="stat-label">Extra usage credits</span>
+          </div>
+        </div>
+        <p class="stats-footnote">provided by Anthropic<br>as a welcome bonus.</p>
+      </section>
+
+      <!-- Slides 5-7: Usage limits, held title (same mechanism as slides
+           3-4 above). -->
+      <section class="title-held" data-title-group="usage-limits">
+        <h2>Usage limits</h2>
+        <p class="slide-text">
+          Now that we have used up the extra credits, those usage warnings
+          carry a bit more weight.
+        </p>
+        <div class="fragment">
+          <p class="slide-text" style="text-align: center;">
+            Claude uses a system of<br>
+            <span style="white-space: nowrap;">
+              <strong style="text-decoration: underline;">5-hour session limits</strong> and
+              <strong style="text-decoration: underline;">7-day weekly limits.</strong>
+            </span>
+          </p>
+        </div>
+        <p class="slide-text fragment">
+          How to view their status depends on which platform you are using.
+        </p>
+      </section>
+
+      <section class="title-held" data-title-group="usage-limits">
+        <h2>Usage limits</h2>
+        <p class="slide-text" style="margin-bottom: 1em;">
+          On Claude Code, you can type <code>/usage</code>.
+        </p>
+        <img class="menu-shot portrait" src="../assets/usage_menu.png"
+             alt="The /usage command output in Claude Code, showing 5-hour session and weekly limit usage">
+      </section>
+
+      <section class="title-held" data-title-group="usage-limits">
+        <h2>Usage limits</h2>
+        <p class="slide-text" style="margin-bottom: 1em;">
+          In the Chat and Cowork apps, it is a page in the settings menu
+          accessed by clicking your name in the lower left.
+        </p>
+        <img class="menu-shot landscape" src="../assets/app_usage_menu.png"
+             alt="The usage page in the Claude app's settings menu">
+      </section>
+
+      <section class="title-held" data-title-group="usage-limits">
+        <h2>Usage limits</h2>
+        <p class="slide-text">
+          Every individual user has their own limit. Unlike the shared
+          extra usage credits, now your usage doesn't affect availability
+          for others at all.
+        </p>
+        <p class="slide-text fragment">
+          Usage of Chat, Code, and Cowork all deduct from the same limit,
+          although they may have different per-token rates.
+        </p>
+      </section>
+
+      <section class="title-held" data-title-group="usage-limits">
+        <h2>Usage limits</h2>
+        <p class="slide-text">
+          Across the platforms, the higher-tier models burn usage faster,
+          but the relative rates aren't known.
+        </p>
+        <div class="fragment">
+          <p class="slide-text">
+            Ultimately, there is no published explanation of how Anthropic
+            gets to the percent value you see in the menu.
+          </p>
+          <p class="shrug" aria-hidden="true">🤷</p>
+        </div>
+      </section>
+
+      <!-- Slides 8-9: Model tiers, held title (same mechanism as the groups
+           above). -->
+      <section class="title-held" data-title-group="model-tiers">
+        <h2>Model tiers</h2>
+        <p class="slide-text">There are four levels of Claude.</p>
+        <p class="slide-text">Current versions are:</p>
+        <div class="model-grid">
+          <div class="model-card fable">
+            <span class="model-name">Fable 5.1</span>
+            <span class="model-note">Newest and most capable</span>
+          </div>
+          <div class="model-card opus">
+            <span class="model-name">Opus 5</span>
+            <span class="model-note">Heavy lifting and deep reasoning</span>
+          </div>
+          <div class="model-card sonnet">
+            <span class="model-name">Sonnet 5</span>
+            <span class="model-note">The balanced default</span>
+          </div>
+          <div class="model-card haiku">
+            <span class="model-name">Haiku 4.5</span>
+            <span class="model-note">Fastest and lightest</span>
+          </div>
+        </div>
+        <p class="slide-text fragment" style="margin-top: 2em;">
+          There is also a restricted model called Mythos, which Fable is
+          built on.
+        </p>
+      </section>
+
+      <section class="title-held" data-title-group="model-tiers">
+        <h2>Model tiers</h2>
+        <p class="slide-text">Consider starting with:</p>
+        <div class="tier-table">
+          <div class="tier-row fragment" data-fragment-index="0">
+            <div class="tier-inner fragment custom dim-out" data-fragment-index="1">
+              <span class="model-chip fable">Fable 5.1</span>
+              <span class="tier-use">Deep research and math questions, autonomous improvement of large model codebases</span>
+            </div>
+            <span class="tier-annot fragment fade-in-then-out" data-fragment-index="1">No longer available on our plan 😭</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="2">
+            <span class="model-chip opus">Opus 5</span>
+            <span class="tier-use">Complex agentic coding, data exploration, statistical modeling, tasks with creative or visual elements</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="3">
+            <span class="model-chip sonnet">Sonnet 5</span>
+            <span class="tier-use">Sufficient for most text creation and editing, administrative tasks, and code development</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="4">
+            <span class="model-chip haiku">Haiku 4.5</span>
+            <span class="tier-use">Focused on cost-effectiveness and instant responses, but sometimes prone to hallucination</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slides 10-15: Working efficiently, held title (same mechanism as
+           the groups above — worth using now that the heading repeats across
+           six slides rather than sitting on one). -->
+      <section class="definitions title-held" data-title-group="working-efficiently">
+        <h2>Working efficiently</h2>
+        <p class="slide-text">First, some definitions:</p>
+        <p class="slide-text fragment flush-left">
+          <strong>Token:</strong> Large language models (LLMs) are trained
+          on and work with text in units of a few characters each&mdash;about
+          4 on average per token including spaces and punctuation.
+        </p>
+        <div class="fragment flush-left">
+          <p class="slide-text">
+            <strong>Context window:</strong> When you write the first prompt
+            of a conversation, the LLM reads a bunch of other text and files
+            alongside it. For subsequent prompts, it remembers the whole
+            conversation, including file reads and writes.*
+          </p>
+          <p class="footnote">
+            *until it runs out of space, but frontier models have room for
+            1,000,000+ tokens in their context window, the equivalent of
+            around 2,000 pages.
+          </p>
+        </div>
+      </section>
+
+      <section class="title-held" data-title-group="working-efficiently">
+        <h2>Working efficiently</h2>
+        <p class="lede">Keep conversations short.</p>
+        <p class="slide-text fragment">
+          Every prompt re-reads the whole conversation above it, so the
+          twentieth message costs far more than the first.
+        </p>
+        <p class="slide-text fragment">
+          When the topic changes, start over: <code>/clear</code> in Claude
+          Code, or a new chat in the app.
+        </p>
+      </section>
+
+      <section class="title-held" data-title-group="working-efficiently">
+        <h2>Working efficiently</h2>
+        <p class="lede">Give it less to read.</p>
+        <ul class="outline wide">
+          <li class="fragment" data-fragment-index="0">
+            <strong>Name the file or folder you mean.</strong> A vague prompt
+            sends Claude hunting around your whole project first.
+          </li>
+          <li class="fragment" data-fragment-index="1">
+            <strong>Attach the table, not the 200-page report</strong> it
+            came in.
+          </li>
+          <li class="fragment" data-fragment-index="2">
+            <strong>If efficiency is key, disable connectors you don't
+            use.</strong> Every one that is switched on is described in the
+            context window every turn.
+          </li>
+          <li class="fragment" data-fragment-index="3">
+            <strong>Batch tasks.</strong> If you have a few clear and
+            related goals, putting them all in one prompt may help Claude
+            economize.
+          </li>
+        </ul>
+        <p class="slide-text fragment" data-fragment-index="4" style="margin-top: 1.2em;">
+          In Claude Code, <code>/context</code> shows you what is actually
+          taking up space.
+        </p>
+      </section>
+
+      <section class="title-held" data-title-group="working-efficiently">
+        <h2>Working efficiently</h2>
+        <p class="lede">Match the effort to the task.</p>
+        <p class="slide-text fragment" data-fragment-index="0">
+          <code>/effort</code> sets how hard the model thinks before it
+          answers: <code>low</code>, <code>medium</code>, <code>high</code>,
+          <code>xhigh</code>, <code>max</code>.* Effort can be customized
+          for all models except Haiku.
+        </p>
+        <p class="slide-text fragment" data-fragment-index="1">
+          <code>high</code> is the default but often not necessary. Save
+          <code>xhigh</code> and <code>max</code> for huge, challenging
+          projects.
+        </p>
+        <p class="slide-text fragment" data-fragment-index="2">
+          Effort is displayed next to the model name in the Chat and Cowork
+          apps.
+        </p>
+        <div class="footnote-box">
+          <p class="footnote fragment" data-fragment-index="0">
+            *For early LLMs, just writing &ldquo;think hard,&rdquo; or
+            &ldquo;ultrathink&rdquo; into their prompt led them to produce
+            better results&mdash;the inspiration for the &ldquo;effort&rdquo;
+            setting. <code>/ultrathink</code> still works too.
+          </p>
+        </div>
+      </section>
+
+      <section class="title-held" data-title-group="working-efficiently">
+        <h2>Working efficiently</h2>
+        <p class="lede">Write the standing context down once.</p>
+        <p class="slide-text fragment">
+          <strong>CLAUDE.md</strong> in Claude Code, <strong>Projects</strong>
+          in the app: the facts about your work that Claude would otherwise
+          burn usage rediscovering in each new session.
+        </p>
+        <p class="slide-text fragment">
+          Keep it short &mdash; it is re-read on every turn, so a bloated
+          CLAUDE.md is a tax you pay continuously.
+        </p>
+      </section>
+
+      <!-- The closing warning. Stays inside the held-title group, so the
+           tinted card is the only thing marking it out as a different kind
+           of statement — hence the ⚠️ sitting in the card's lede rather than
+           in a heading it no longer has to itself. -->
+      <section class="title-held" data-title-group="working-efficiently">
+        <h2>Working efficiently</h2>
+        <div class="warning-card">
+          <p class="lede">⚠️ Cowork is a usage hog.</p>
+          <p class="slide-text fragment">
+            It is at its most expensive when it drives your computer or your
+            Chrome browser: for many actions, it takes a screenshot and
+            looks at it, and an image costs many times what the same
+            information in plain text would.
+            <br><br>
+            It is also working unattended, so nobody is watching the meter.
+          </p>
+        </div>
+      </section>
+
+      <!-- "Actual tasks": the harness's id.md prompt run against all four
+           models (see prompts/id.md and results_<model>/id/), responses
+           revealed ascending by tier. Each is trimmed to its identifying
+           line for slide legibility — Fable's raw answer runs three
+           paragraphs plus a link, Haiku's is a labeled multi-line block;
+           the untrimmed text lives in the results_<model>/id/ files. -->
+      <section>
+        <h2>Actual tasks</h2>
+        <p class="slide-text" style="font-style: italic;">
+          &ldquo;What model are you? Write your reply in a text
+          file.&rdquo;
+        </p>
+        <div class="tier-table">
+          <div class="tier-row fragment" data-fragment-index="0">
+            <span class="model-chip haiku">Haiku 4.5</span>
+            <span class="tier-use">&ldquo;Model: Claude Haiku 4.5&rdquo;</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="1">
+            <span class="model-chip sonnet">Sonnet 5</span>
+            <span class="tier-use">&ldquo;I am Sonnet 5&hellip;built by Anthropic.&rdquo;</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="2">
+            <span class="model-chip opus">Opus 5</span>
+            <span class="tier-use">&ldquo;I am Claude Opus 5&hellip;running as Claude Code.&rdquo;</span>
+          </div>
+          <div class="tier-row fragment" data-fragment-index="3">
+            <span class="model-chip fable">Fable 5.1</span>
+            <span class="tier-use">&ldquo;I am Claude Fable 5.1&hellip;made by Anthropic.&rdquo;</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- "Kelvin": runtime stats from tasks/kelvin/<model>.json for the
+           kelvin.md prompt (build a Kelvin-wave explainer/visualization),
+           linking each model's actual output under results_<model>/kelvin/.
+           Token counts sum input + cache-write + cache-read + output from
+           each file's "usage" block; wall clock is duration_ms. Opus hit
+           the harness's $5 per-run budget cap (terminal_reason
+           "budget_exhausted") before it finished, so its numbers reflect a
+           cut-off run, not a completed one — flagged rather than hidden. -->
+      <section>
+        <h2>Kelvin</h2>
+        <p class="slide-text" style="margin-bottom: 0.8em;">
+          Same real task, run against all four models: build an interactive
+          page explaining this month's Kelvin wave news.
+        </p>
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th class="num">Cost</th>
+              <th class="num">Tokens</th>
+              <th class="num">Wall clock</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="model-chip haiku">Haiku 4.5</span></td>
+              <td class="num">$0.12</td>
+              <td class="num">120K</td>
+              <td class="num">1m 15s</td>
+              <td><a href="results_haiku/kelvin/kelvin-wave-visualization.html">view</a></td>
+            </tr>
+            <tr>
+              <td><span class="model-chip sonnet">Sonnet 5</span></td>
+              <td class="num">$0.60</td>
+              <td class="num">549K</td>
+              <td class="num">4m 29s</td>
+              <td><a href="results_sonnet/kelvin/kelvin_wave_2026.html">view</a></td>
+            </tr>
+            <tr>
+              <td><span class="model-chip opus">Opus 5</span></td>
+              <td class="num">$5.09*</td>
+              <td class="num">3.64M</td>
+              <td class="num">23m 20s*</td>
+              <td><a href="results_opus/kelvin/kelvin-wave.html">view</a></td>
+            </tr>
+            <tr>
+              <td><span class="model-chip fable">Fable 5.1</span></td>
+              <td class="num">$3.70</td>
+              <td class="num">753K</td>
+              <td class="num">8m 37s</td>
+              <td><a href="results_fable/kelvin/kelvin-wave-2026.html">view</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="footnote" style="max-width: 900px; margin: 0.8em auto 0;">
+          *Opus hit the harness's $5 per-run budget cap and was cut off
+          mid-task &mdash; its row is an incomplete run, not a finished one. Also, note that costs are calculated from tokens at the model-specific rate. They are deducted from usage caps, not actually billed.
+        </p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({ hash: true, center: false });
+
+    // Show #held-title-<group> in place of the current slide's own <h2>
+    // whenever it carries a matching data-title-group — see the .held-title
+    // comment in <style>. Runs on 'ready' too so a deep link or a reload
+    // mid-group starts with the right title already showing.
+    function syncHeldTitle(slide) {
+      document.querySelectorAll('.held-title').forEach(function (el) {
+        el.classList.remove('visible');
+      });
+      var group = slide && slide.dataset.titleGroup;
+      if (group) {
+        var el = document.getElementById('held-title-' + group);
+        if (el) el.classList.add('visible');
+      }
+    }
+    // Drift every bloom to a new spot on each slide change. The offset is a
+    // deterministic function of (slide index, bloom index), so a given slide
+    // always looks the same — rehearsal matches the talk, and stepping back
+    // returns the wash to where it was. Range is ±240px — a real sweep
+    // under the blur, and with fourteen blooms there's always color left
+    // behind wherever one has drifted away from.
+    function driftBlooms(index) {
+      document.querySelectorAll('.glow').forEach(function (el, i) {
+        var seed = Math.sin((index + 1) * 12.9898 + (i + 1) * 78.233) * 43758.5453;
+        var frac = seed - Math.floor(seed);
+        var seed2 = Math.sin((index + 1) * 39.3467 + (i + 1) * 11.135) * 24634.6345;
+        var frac2 = seed2 - Math.floor(seed2);
+        var dx = Math.round((frac  - 0.5) * 480);
+        var dy = Math.round((frac2 - 0.5) * 480);
+        el.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+      });
+    }
+
+    Reveal.on('ready', function (event) {
+      syncHeldTitle(event.currentSlide);
+      driftBlooms(event.indexh);
+    });
+    Reveal.on('slidechanged', function (event) {
+      syncHeldTitle(event.currentSlide);
+      driftBlooms(event.indexh);
+    });
+  </script>
+</body>
+</html>

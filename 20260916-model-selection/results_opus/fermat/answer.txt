@@ -1,0 +1,8 @@
+2^2026 mod 2027 = 1
+
+Reasoning:
+2027 is prime (it has no prime factor <= sqrt(2027) ~ 45.02).
+2 is not divisible by 2027, so Fermat's little theorem gives
+    2^(2027-1) = 2^2026 = 1 (mod 2027).
+
+Answer: 1

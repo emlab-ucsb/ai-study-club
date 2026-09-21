@@ -1,0 +1,1 @@
+What is the remainder when 2^2026 is divided by 2027? Write it as a text file.

@@ -1,0 +1,1 @@
+What is a Kelvin wave? Is there news out recently about it? Create an informative data visualization about what its potential effects might be and where they might occur using maps, charts, or other creative elements you come up with.

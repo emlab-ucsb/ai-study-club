@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kelvin Waves: The Hidden Pulse Behind the 2026 Super El Niño</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --grid:           #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+
+    --series-blue:    #2a78d6;   /* equatorial Kelvin wave */
+    --series-orange:  #eb6834;   /* coastal Kelvin wave */
+    --series-red:     #e34948;   /* warm subsurface anomaly */
+    --land:           #eceae2;
+    --ocean:          #eef4fb;
+
+    --warning:        #fab219;
+    --critical:       #d03b3b;
+    --good:           #0ca30c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --grid:           #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+
+      --series-blue:    #3987e5;
+      --series-orange:  #d95926;
+      --series-red:     #e66767;
+      --land:           #242422;
+      --ocean:          #16202b;
+
+      --warning:        #fab219;
+      --critical:       #e66767;
+      --good:           #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --grid:           #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+
+    --series-blue:    #3987e5;
+    --series-orange:  #d95926;
+    --series-red:     #e66767;
+    --land:           #242422;
+    --ocean:          #16202b;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .viz-root { max-width: 980px; margin: 0 auto; padding: 28px 20px 48px; color: var(--text-primary); }
+
+  h1 { font-size: 26px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .subtitle { color: var(--text-secondary); font-size: 15px; margin: 0 0 4px; max-width: 720px; }
+  .asof { color: var(--text-muted); font-size: 12px; margin: 0 0 24px; }
+
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 20px; }
+  .card h2 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+  .card .desc { color: var(--text-secondary); font-size: 13px; margin: 0 0 14px; max-width: 680px; }
+
+  .explainer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .explainer-grid { grid-template-columns: 1fr; } }
+  .explainer-item { border-left: 3px solid var(--series-blue); padding: 2px 0 2px 14px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; }
+  .explainer-item.coastal { border-left-color: var(--series-orange); }
+  .explainer-item b { color: var(--text-primary); }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 700px) { .kpi-row { grid-template-columns: 1fr; } }
+  .stat-tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .stat-tile .label { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 6px; }
+  .stat-tile .value { font-size: 30px; font-weight: 600; line-height: 1.1; }
+  .stat-tile .value.blue { color: var(--series-blue); }
+  .stat-tile .value.orange { color: var(--series-orange); }
+  .stat-tile .value.red { color: var(--series-red); }
+  .stat-tile .sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 12px; font-size: 12.5px; color: var(--text-secondary); }
+  .legend .swatch { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  svg text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .map-label { font-size: 11px; fill: var(--text-secondary); }
+  .map-label-muted { font-size: 10.5px; fill: var(--text-muted); }
+  .map-title { font-size: 12px; fill: var(--text-primary); font-weight: 600; }
+  .axis-label { font-size: 11px; fill: var(--text-muted); }
+
+  .callout { margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; background: color-mix(in srgb, var(--warning) 12%, var(--surface-1)); border: 1px solid color-mix(in srgb, var(--warning) 45%, var(--border)); border-radius: 10px; padding: 12px 14px; }
+  .callout .icon { font-size: 16px; line-height: 1.3; }
+  .callout .txt { font-size: 13px; color: var(--text-secondary); }
+  .callout .txt b { color: var(--text-primary); }
+
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+  table.data-table th, table.data-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); }
+  table.data-table th { color: var(--text-muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.02em; }
+  table.data-table td { color: var(--text-secondary); }
+  table.data-table td:first-child { color: var(--text-primary); font-weight: 500; }
+
+  .toggle-btn { font-size: 12px; color: var(--text-secondary); background: var(--page); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+  .toggle-btn:hover { color: var(--text-primary); }
+  .hidden { display: none; }
+
+  .sources { font-size: 11.5px; color: var(--text-muted); line-height: 1.7; }
+  .sources a { color: var(--text-muted); }
+  .caveat { font-size: 11.5px; color: var(--text-muted); font-style: italic; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+
+  <h1>Kelvin Waves: The Hidden Pulse Behind the 2026 Super El Niño</h1>
+  <p class="subtitle">A slow, basin-wide pulse of warm water is crossing the equatorial Pacific and peeling off a second wave that is now sliding up the West Coast — raising coastal sea levels for weeks at a time.</p>
+  <p class="asof">Reported conditions as of Sept 16, 2026 · forecasts evolve week to week</p>
+
+  <!-- WHAT IS IT -->
+  <div class="card">
+    <h2>What is a Kelvin wave?</h2>
+    <p class="desc">Not a surface swell — a slow-moving pulse thousands of miles wide that travels through the ocean (or atmosphere) trapped along the equator or a coastline. There are two kinds at work right now:</p>
+    <div class="explainer-grid">
+      <div class="explainer-item">
+        <b>Equatorial Kelvin wave</b> — forms when trade winds weaken or reverse, letting a pool of warm water that's normally piled up in the western Pacific slosh eastward, submerged 50–250 m below the surface. It takes about <b>2–3 months</b> to cross the Pacific and is the main engine that builds an El Niño.
+      </div>
+      <div class="explainer-item coastal">
+        <b>Coastal (poleward-trapped) Kelvin wave</b> — when the equatorial wave hits South America, part of it turns and hugs the coastline, traveling north as a band of slightly elevated sea level at roughly <b>6 mph</b>. It's this branch now approaching California.
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="stat-tile">
+      <div class="label">Peak subsurface warm anomaly</div>
+      <div class="value red">+8°C</div>
+      <div class="sub">reported across the 50–250 m layer, equatorial Pacific</div>
+    </div>
+    <div class="stat-tile">
+      <div class="label">Projected sea-level rise, SF Bay</div>
+      <div class="value orange">~1 ft</div>
+      <div class="sub">above baseline tide, expected mid-October</div>
+    </div>
+    <div class="stat-tile">
+      <div class="label">Chance of a very strong El Niño</div>
+      <div class="value blue">&gt;90%</div>
+      <div class="sub">NOAA CPC outlook, winter 2026–27</div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="card" style="margin-top:20px;">
+    <h2>Where the wave is headed</h2>
+    <p class="desc">Schematic, not to scale. The equatorial wave (blue) has already crossed the Pacific; its coastal branch (orange) is now moving north along the Americas.</p>
+    <div class="legend">
+      <span class="swatch"><span class="dot" style="background:var(--series-blue)"></span> Equatorial Kelvin wave (subsurface warmth)</span>
+      <span class="swatch"><span class="dot" style="background:var(--series-orange)"></span> Coastal Kelvin wave (elevated sea level, moving poleward)</span>
+    </div>
+
+    <svg viewBox="0 0 1000 580" width="100%" role="img" aria-label="Schematic map of the equatorial Kelvin wave crossing the Pacific and splitting into a coastal wave moving north along the Americas">
+      <rect x="0" y="0" width="1000" height="580" fill="var(--ocean)" rx="10"/>
+
+      <!-- landmasses -->
+      <path d="M0,0 L150,0 L120,180 L60,320 L0,340 Z" fill="var(--land)"/>
+      <text x="30" y="150" class="map-label-muted">ASIA /</text>
+      <text x="20" y="165" class="map-label-muted">AUSTRALIA</text>
+      <text x="30" y="180" class="map-label-muted">(western Pacific)</text>
+
+      <path d="M980,0 L860,0 L800,90 L840,170 L800,230 L840,300 L800,360 L820,420 L780,480 L720,560 L780,580 L1000,580 L1000,0 Z" fill="var(--land)"/>
+      <text x="880" y="70" class="map-label-muted">NORTH</text>
+      <text x="875" y="84" class="map-label-muted">AMERICA</text>
+      <text x="850" y="500" class="map-label-muted">SOUTH</text>
+      <text x="845" y="514" class="map-label-muted">AMERICA</text>
+
+      <!-- equator -->
+      <line x1="10" y1="300" x2="990" y2="300" stroke="var(--baseline)" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="14" y="293" class="axis-label">Equator</text>
+
+      <!-- equatorial kelvin wave -->
+      <defs>
+        <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="var(--series-blue)"/>
+        </marker>
+        <marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="var(--series-orange)"/>
+        </marker>
+      </defs>
+
+      <circle cx="700" cy="300" r="34" fill="var(--series-red)" opacity="0.18"/>
+      <line x1="150" y1="300" x2="792" y2="300" stroke="var(--series-blue)" stroke-width="4" marker-end="url(#arrowBlue)"/>
+      <text x="300" y="285" class="map-title" fill="var(--series-blue)">Equatorial Kelvin wave</text>
+      <text x="300" y="322" class="map-label">~2–3 months, west → east</text>
+      <text x="640" y="345" class="map-label-muted">+8°C anomaly, 50–250 m deep</text>
+
+      <!-- branch + coastal wave path -->
+      <path d="M792,300 C 850,270 855,180 835,140 C 815,95 845,60 838,25"
+            fill="none" stroke="var(--series-orange)" stroke-width="4" marker-end="url(#arrowOrange)"/>
+      <text x="700" y="230" class="map-title" fill="var(--series-orange)" transform="rotate(-70 700 230)">Coastal Kelvin wave — turns north</text>
+
+      <!-- waypoints (south to north) -->
+      <g>
+        <circle cx="795" cy="298" r="6" fill="var(--text-secondary)" stroke="var(--surface-1)" stroke-width="2"/>
+        <text x="808" y="303" class="map-label">Reaches S. America coast — early Sept</text>
+      </g>
+      <g>
+        <circle cx="852" cy="258" r="6" fill="var(--text-secondary)" stroke="var(--surface-1)" stroke-width="2"/>
+        <text x="865" y="262" class="map-label">Mexico / Central America — detected ~Sept 5</text>
+      </g>
+      <g>
+        <circle cx="842" cy="205" r="6" fill="var(--text-secondary)" stroke="var(--surface-1)" stroke-width="2"/>
+        <text x="855" y="210" class="map-label">Baja California — ~Sept 22</text>
+      </g>
+      <g>
+        <circle cx="826" cy="155" r="6" fill="var(--text-secondary)" stroke="var(--surface-1)" stroke-width="2"/>
+        <text x="700" y="150" class="map-label">Southern California — late Sept–early Oct</text>
+      </g>
+      <g>
+        <circle cx="838" cy="105" r="6" fill="var(--text-secondary)" stroke="var(--surface-1)" stroke-width="2"/>
+        <text x="700" y="100" class="map-label">Central Coast (Santa Barbara) — early–mid Oct</text>
+      </g>
+      <g>
+        <circle cx="836" cy="55" r="6" fill="var(--text-secondary)" stroke="var(--surface-1)" stroke-width="2"/>
+        <text x="660" y="50" class="map-label">San Francisco Bay Area — mid Oct, +~1 ft</text>
+      </g>
+      <text x="700" y="18" class="map-label-muted">effects continue north (Pacific NW) — not yet detailed in reports</text>
+    </svg>
+    <p class="caveat">Coastline and wave paths are illustrative schematics, not geographic projections. Dates are approximate and vary slightly by source (see below).</p>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="card">
+    <h2>Expected arrival along the coast</h2>
+    <p class="desc">Estimated arrival window of the coastal Kelvin wave at each location, ordered south (bottom) to north (top).</p>
+    <svg viewBox="0 0 1000 300" width="100%" role="img" aria-label="Timeline of coastal Kelvin wave arrival windows from September 2026 through January 2027, with a highlighted risk window from November through January">
+      <!-- risk band -->
+      <rect x="700" y="10" width="270" height="230" fill="var(--warning)" opacity="0.15"/>
+      <text x="705" y="26" class="map-label" fill="var(--text-secondary)">⚠ Peak flood-risk window</text>
+      <text x="705" y="40" class="map-label-muted">king tides + winter storms may stack on wave</text>
+
+      <!-- x axis: Sept 1 (x=40) .. Jan 15 (x=970), ~6.1px/day -->
+      <line x1="40" y1="240" x2="970" y2="240" stroke="var(--baseline)" stroke-width="1"/>
+      <g class="axis-label">
+        <text x="40" y="256">Sep 1</text>
+        <text x="220" y="256">Oct 1</text>
+        <text x="404" y="256">Nov 1</text>
+        <text x="584" y="256">Dec 1</text>
+        <text x="768" y="256">Jan 1</text>
+      </g>
+      <line x1="220" y1="10" x2="220" y2="240" stroke="var(--grid)" stroke-width="1"/>
+      <line x1="404" y1="10" x2="404" y2="240" stroke="var(--grid)" stroke-width="1"/>
+      <line x1="584" y1="10" x2="584" y2="240" stroke="var(--grid)" stroke-width="1"/>
+      <line x1="768" y1="10" x2="768" y2="240" stroke="var(--grid)" stroke-width="1"/>
+
+      <!-- rows (south to north, bottom to top) -->
+      <!-- row y positions -->
+      <!-- Mexico/CA coast -->
+      <text x="40" y="215" class="map-label">Mexico / Central America coast</text>
+      <rect x="70" y="222" width="30" height="8" rx="4" fill="var(--series-orange)"/>
+      <text x="108" y="230" class="map-label-muted">+few in</text>
+
+      <text x="40" y="180" class="map-label">Baja California</text>
+      <rect x="127" y="187" width="36" height="8" rx="4" fill="var(--series-orange)"/>
+      <text x="171" y="195" class="map-label-muted">+few in</text>
+
+      <text x="40" y="145" class="map-label">Southern California</text>
+      <rect x="175" y="152" width="50" height="8" rx="4" fill="var(--series-orange)"/>
+      <text x="233" y="160" class="map-label-muted">few–6 in with tides/surf</text>
+
+      <text x="40" y="110" class="map-label">Central Coast (Santa Barbara)</text>
+      <rect x="212" y="117" width="42" height="8" rx="4" fill="var(--series-orange)"/>
+      <text x="262" y="125" class="map-label-muted">6–12 in with storms</text>
+
+      <text x="40" y="75" class="map-label">San Francisco Bay Area</text>
+      <rect x="238" y="82" width="30" height="8" rx="4" fill="var(--series-orange)"/>
+      <text x="276" y="90" class="map-label-muted">~1 ft peak</text>
+
+      <text x="40" y="40" class="map-label-muted">(further N: not yet detailed)</text>
+    </svg>
+  </div>
+
+  <!-- DEPTH PROFILE -->
+  <div class="card">
+    <h2>Why the ocean is warm below the surface</h2>
+    <p class="desc">Illustrative — approximates NOAA/GFDL reporting of a warm anomaly peaking around +8°C, concentrated between roughly 50 and 250 meters depth along the equator. Not an official vertical profile.</p>
+    <svg viewBox="0 0 700 220" width="100%" role="img" aria-label="Bar chart of subsurface temperature anomaly by depth band, showing warmest anomaly between 50 and 250 meters">
+      <line x1="140" y1="10" x2="140" y2="190" stroke="var(--baseline)" stroke-width="1"/>
+      <!-- depth bands, bars grow right, length = anomaly °C, scale 30px/°C -->
+      <text x="130" y="35" text-anchor="end" class="map-label">0–50 m</text>
+      <rect x="140" y="22" width="60" height="20" rx="4" fill="var(--series-red)"/>
+      <text x="208" y="37" class="map-label-muted">+2°C</text>
+
+      <text x="130" y="75" text-anchor="end" class="map-label">50–150 m</text>
+      <rect x="140" y="62" width="240" height="20" rx="4" fill="var(--series-red)"/>
+      <text x="388" y="77" class="map-label-muted">+8°C</text>
+
+      <text x="130" y="115" text-anchor="end" class="map-label">150–250 m</text>
+      <rect x="140" y="102" width="210" height="20" rx="4" fill="var(--series-red)"/>
+      <text x="358" y="117" class="map-label-muted">+7°C</text>
+
+      <text x="130" y="155" text-anchor="end" class="map-label">250 m+</text>
+      <rect x="140" y="142" width="60" height="20" rx="4" fill="var(--series-red)"/>
+      <text x="208" y="157" class="map-label-muted">+2°C</text>
+
+      <text x="140" y="205" class="axis-label">temperature anomaly vs. normal →</text>
+    </svg>
+  </div>
+
+  <!-- TABLE VIEW TOGGLE -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+      <h2 style="margin:0;">Table view</h2>
+      <button class="toggle-btn" onclick="document.getElementById('tbl').classList.toggle('hidden')">Show / hide table</button>
+    </div>
+    <div id="tbl" class="hidden">
+      <table class="data-table">
+        <thead>
+          <tr><th>Location</th><th>Estimated arrival</th><th>Sea-level effect</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Mexico / Central America coast</td><td>~Sept 5, 2026</td><td>Several inches</td></tr>
+          <tr><td>Baja California</td><td>~Sept 22, 2026</td><td>Several inches</td></tr>
+          <tr><td>Southern California</td><td>Late Sept–early Oct 2026</td><td>Several in., up to ~6 in with high surf/tides</td></tr>
+          <tr><td>Central Coast (Santa Barbara)</td><td>Early–mid Oct 2026</td><td>6–12 in combined with storms/tides</td></tr>
+          <tr><td>San Francisco Bay Area</td><td>Mid Oct 2026</td><td>Up to ~1 ft above baseline</td></tr>
+          <tr><td>Whole coast, Nov 2026–Jan 2027</td><td>Ongoing risk window</td><td>Compounding risk if wave overlaps king tides + storms</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <span class="icon">⚠️</span>
+      <span class="txt"><b>Worst case:</b> if a follow-on Kelvin wave, a king tide, and a coastal storm line up between November and January, forecasters warn of potentially record-breaking coastal flooding.</span>
+    </div>
+  </div>
+
+  <p class="sources">
+    Sources:
+    <a href="https://www.gfdl.noaa.gov/prediction/september-2026-el-nino-predictions/">GFDL — September 2026 El Niño Predictions</a> ·
+    <a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.pdf">NOAA CPC ENSO Diagnostic Discussion</a> ·
+    <a href="https://www.abovethenormnews.com/2026/09/03/el-nino-kelvin-wave-2026/">Above the Norm News — "El Niño Could Go Off The Charts"</a> ·
+    <a href="https://www.yahoo.com/news/science/articles/kelvin-waves-mean-el-ni-192257175.html">Yahoo News — "What are Kelvin waves, and what do they mean for El Niño?"</a> ·
+    <a href="https://ktla.com/news/california/coastal-flooding-threat-kelvin-waves-california/">KTLA — coastal flooding threat</a> ·
+    <a href="https://www.cbsnews.com/sanfrancisco/news/bay-area-sea-levels-kelvin-wave-pacific-ocean-el-nino/">CBS San Francisco — Bay Area sea levels</a> ·
+    <a href="https://keyt.com/news/santa-barbara-s-county/2026/09/15/rare-kelvin-wave-expected-to-influence-water-levels-on-the-central-coast/">KEYT — Central Coast water levels</a>
+  </p>
+  <p class="caveat">Figures compiled from multiple news reports published Sept 3–15, 2026; exact timing and magnitude vary by outlet and will be refined as NOAA/CPC updates its forecast. This graphic is an editorial synthesis, not an official NOAA product.</p>
+
+</div>
+</body>
+</html>
