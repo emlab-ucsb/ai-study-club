@@ -29,6 +29,9 @@ session needs rules of its own, add a `CLAUDE.md` inside that folder.
 - `20260805-skills-demo/` — a Reveal.js slide deck (`index.html`, CDN-loaded,
   no build step). Open the file in a browser or serve via GitHub Pages.
 
+- `20261014-hpc-autopilot/` — a Reveal.js slide deck (`presentation.html`) on
+  unattended Claude Code runs on the GRIT cluster. Same no-build pattern.
+
 ## Conventions
 
 - R style: `<-` for assignment, package-qualified calls (`ggplot2::aes()`), roxygen

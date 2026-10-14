@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude on the Cluster — emLab AI Study Club</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f8f6;
+      --ink: #1d2428;
+      --ink-dim: #5d6a70;
+      --accent: #0f7c86;     /* teal: "running / allowed" */
+      --accent-2: #c56a1a;   /* amber: "watch out" */
+      --panel: rgba(29, 36, 40, 0.05);
+      --line: rgba(29, 36, 40, 0.14);
+      --term-bg: #1d2428;
+      --term-ink: #e6ece9;
+    }
+
+    body { background: var(--bg); }
+    .reveal-viewport { background: var(--bg); }
+    /* No Reveal theme is loaded (only reveal.css), so the base size has to
+       be set here; 34px is what the 20260916 deck settled on for the
+       projector. */
+    .reveal { color: var(--ink); font-family: 'IBM Plex Sans', sans-serif; font-size: 34px; }
+
+    .reveal h1, .reveal h2 { font-family: 'IBM Plex Sans', sans-serif; font-weight: 700; color: var(--ink); }
+    .reveal h2 { font-size: 1.3em; margin-bottom: 0.6em; }
+    .reveal h2 .num { color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-weight: 500; margin-right: 0.3em; }
+
+    .reveal .deck-title { font-size: 1.9em; line-height: 1.2; margin: 0 auto 0.4em; }
+    .reveal .deck-title .hl { color: var(--accent); }
+    .reveal .subline { color: var(--ink-dim); font-size: 1em; }
+    .reveal .date {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75em; color: var(--accent-2);
+      letter-spacing: 0.05em; text-transform: uppercase; margin-top: 1.4em;
+    }
+    .reveal .rule { width: 120px; height: 5px; border: none; margin: 1em auto;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 2px; }
+
+    .reveal code { font-family: 'IBM Plex Mono', monospace; font-size: 0.85em; }
+    .reveal p code, .reveal li code { background: var(--panel); padding: 0.05em 0.25em; border-radius: 4px; }
+
+    .reveal .points { list-style: none; text-align: left; max-width: 820px; margin: 0 auto; padding: 0; }
+    .reveal .points li { position: relative; padding-left: 1.2em; margin: 0.4em 0; font-size: 0.8em; line-height: 1.3; }
+    .reveal .points li::before { content: ''; position: absolute; left: 0; top: 0.5em;
+      width: 9px; height: 9px; border-radius: 2px; background: var(--accent); }
+    .reveal .points li.warn::before { background: var(--accent-2); }
+    .reveal .points .dim { color: var(--ink-dim); }
+
+    .reveal pre.term {
+      width: 840px; margin: 0.5em auto; box-shadow: none;
+      background: var(--term-bg); color: var(--term-ink);
+      border-radius: 10px; padding: 0.6em 0.9em; text-align: left;
+      font-size: 0.5em; line-height: 1.45;
+    }
+    .reveal pre.term code { font-size: 1em; max-height: none; padding: 0; background: none; }
+    .reveal pre.term .c { color: #8fa3a8; }   /* comment */
+    .reveal pre.term .k { color: #6fd0c6; }   /* emphasis */
+
+    .reveal .note { color: var(--ink-dim); font-size: 0.6em; margin-top: 0.8em; overflow-wrap: anywhere; }
+
+    /* Setup diagram: one row of boxes, laptop on the left, server on the right. */
+    .reveal .flow { display: flex; align-items: stretch; justify-content: center; gap: 0.4em; margin: 0.6em auto; }
+    .reveal .box { border: 1px solid var(--line); background: var(--panel); border-radius: 12px;
+      padding: 0.45em 0.6em; font-size: 0.62em; text-align: left; min-width: 150px; }
+    .reveal .box b { display: block; font-size: 1.05em; margin-bottom: 0.2em; }
+    .reveal .box.server { border-color: var(--accent); background: rgba(15, 124, 134, 0.07); }
+    .reveal .box.data { border-color: var(--accent-2); background: rgba(197, 106, 26, 0.07); }
+    .reveal .arrow { align-self: center; color: var(--ink-dim); font-size: 0.9em; }
+    .reveal .group { border: 2px dashed var(--accent); border-radius: 16px; padding: 0.35em; display: flex; gap: 0.4em; align-items: stretch; }
+    .reveal .group-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.45em; color: var(--accent); text-align: left; margin: 0 0 0.2em 0.3em; }
+
+    /* Restartability: one card per stage, each with what is saved and what
+       a failure there costs. */
+    .reveal .lead { font-size: 0.75em; max-width: 820px; margin: 0 auto 0.6em; }
+    .reveal .stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4em; max-width: 900px; margin: 0 auto 0.5em; text-align: left; }
+    .reveal .stage { border: 1px solid var(--accent); background: rgba(15, 124, 134, 0.07); border-radius: 12px; padding: 0.5em 0.6em; font-size: 0.5em; line-height: 1.35; }
+    .reveal .stage b { display: block; font-size: 1.15em; margin-bottom: 0.3em; }
+    .reveal .stage .lbl { display: block; margin-top: 0.45em; font-family: 'IBM Plex Mono', monospace; font-size: 0.8em; color: var(--accent-2); text-transform: uppercase; letter-spacing: 0.04em; }
+
+    /* Two columns: "dies with the laptop" vs "survives". */
+    .reveal .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8em; max-width: 880px; margin: 0.4em auto; text-align: left; }
+    .reveal .col { border-radius: 12px; padding: 0.5em 0.8em; font-size: 0.68em; border: 1px solid var(--line); }
+    .reveal .col.bad { background: rgba(197, 106, 26, 0.08); border-color: var(--accent-2); }
+    .reveal .col.good { background: rgba(15, 124, 134, 0.08); border-color: var(--accent); }
+    .reveal .col h3 { font-size: 1.1em; margin: 0 0 0.3em; text-transform: none; font-family: 'IBM Plex Sans', sans-serif; color: var(--ink); }
+
+    /* Supervision step lists: number, what you type, what it does. */
+    .reveal .steps { max-width: 900px; margin: 0 auto; text-align: left; }
+    .reveal .step { display: grid; grid-template-columns: 1.6em 300px 1fr; gap: 0.7em; align-items: center;
+      padding: 0.35em 0; border-bottom: 1px solid var(--line); font-size: 0.55em; line-height: 1.35; }
+    .reveal .step .n, .reveal .cycle li::before {
+      width: 1.6em; height: 1.6em; line-height: 1.6em; border-radius: 50%; text-align: center;
+      background: var(--accent); color: #fff; font-weight: 700; font-size: 0.9em; }
+    .reveal .step code { background: var(--term-bg); color: var(--term-ink); padding: 0.3em 0.5em; border-radius: 6px; font-size: 0.95em; }
+    .reveal .cycle { list-style: none; counter-reset: c; max-width: 820px; margin: 0 auto 0.5em; padding: 0; text-align: left; }
+    .reveal .cycle li { counter-increment: c; position: relative; padding-left: 2.3em; font-size: 0.62em; margin: 0.45em 0; line-height: 1.6em; }
+    .reveal .cycle li::before { content: counter(c); position: absolute; left: 0; top: 0; }
+    .reveal .cols.tk { max-width: 920px; }
+    .reveal .cols.tk .col { font-size: 0.55em; line-height: 1.35; }
+    .reveal .cols.tk ul { margin: 0; padding-left: 1.1em; }
+    .reveal .cols.tk li { margin: 0.35em 0; }
+    .reveal .col .small { display: block; margin-top: 0.4em; font-size: 0.85em; color: var(--ink-dim); }
+
+    /* Guardrail layers table. */
+    .reveal table.layers { font-size: 0.56em; border-collapse: collapse; margin: 0 auto; width: 900px; }
+    .reveal table.layers th, .reveal table.layers td { text-align: left; padding: 0.35em 0.5em; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .reveal table.layers th { color: var(--ink-dim); font-weight: 500; }
+    .reveal table.layers td:first-child { font-weight: 700; white-space: nowrap; }
+    .reveal table.layers td:last-child { color: var(--accent-2); }
+    .reveal table.layers.limits { font-size: 0.62em; width: 860px; }
+    .reveal table.layers.limits td { padding: 0.45em 0.5em; }
+    .reveal table.layers.limits td:first-child { color: var(--accent); }
+    .reveal table.layers.limits td:last-child { color: var(--ink); }
+
+    /* Permission rules example: one column per kind of access, allowed
+       lines in teal with a check, denied lines in amber with a cross. */
+    .reveal .perm { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5em; max-width: 920px; margin: 0 auto 0.4em; text-align: left; }
+    .reveal .pcol { border: 1px solid var(--line); border-radius: 12px; padding: 0.4em 0.6em; font-size: 0.5em; line-height: 1.3; background: var(--panel); }
+    .reveal .pcol h3 { font-family: 'IBM Plex Sans', sans-serif; text-transform: none; font-size: 1.3em; margin: 0 0 0.3em; color: var(--ink); }
+    .reveal .pcol p { margin: 0.35em 0; padding-left: 1.3em; position: relative; }
+    .reveal .pcol p::before { position: absolute; left: 0; font-weight: 700; }
+    .reveal .pcol p.y::before { content: '✓'; color: var(--accent); }
+    .reveal .pcol p.x::before { content: '✗'; color: var(--accent-2); }
+
+    /* Hook test results. */
+    .reveal .results { max-width: 820px; margin: 0.4em auto; text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 0.55em; }
+    .reveal .results div { display: flex; justify-content: space-between; gap: 1em; padding: 0.35em 0.6em; border-bottom: 1px solid var(--line); }
+    .reveal .results .ok { color: var(--accent); font-weight: 500; }
+    .reveal .results .no { color: var(--accent-2); font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- 1. Title -->
+      <section>
+        <h1 class="deck-title">Leaving Claude on <span class="hl">the cluster</span></h1>
+        <p class="subline">Unattended analysis runs on GRIT with Claude Code</p>
+        <hr class="rule">
+        <p class="subline">emLab AI Study Club</p>
+        <p class="date">October 14, 2026</p>
+      </section>
+
+      <!-- 2. The setup -->
+      <section>
+        <h2>The setup</h2>
+        <div class="flow">
+          <div class="box"><b>Laptop</b>ssh / Positron<br>attach, read, close</div>
+          <div class="arrow">→</div>
+          <div>
+            <p class="group-label">sequoia (GRIT)</p>
+            <div class="group">
+              <div class="box server"><b>tmux → claude</b><code>/loop</code> wakes up,<br>reads, decides,<br>writes the journal</div>
+              <div class="arrow">→</div>
+              <div class="box server"><b>SLURM jobs</b><code>sbatch</code>, one core<br>per replicate</div>
+            </div>
+          </div>
+          <div class="arrow">→</div>
+          <div class="box data"><b>Nextcloud tree</b>inputs, outputs,<br>results</div>
+        </div>
+        <ul class="points" style="margin-top:0.8em">
+          <li>Real case: DISPLACE model calibration, October 2026. About 2.5 h per version, six versions in parallel, for several days.</li>
+          <li>A written plan with gates and rules, a journal the agent keeps, small commits on its own branch.</li>
+          <li class="warn">Guardrails that make risky actions <em>impossible</em>, not just discouraged.</li>
+        </ul>
+      </section>
+
+      <!-- 3. Outline -->
+      <section>
+        <h2>Outline</h2>
+        <ul class="points" style="max-width:560px; font-size:1.2em">
+          <li>SLURM</li>
+          <li>Restartability</li>
+          <li>Supervision: closing the laptop</li>
+          <li>Guardrails</li>
+          <li>Data on Nextcloud</li>
+        </ul>
+      </section>
+
+      <!-- 4. SLURM: general guidance -->
+      <section>
+        <h2><span class="num">01</span>SLURM in one minute</h2>
+        <ul class="points">
+          <li><strong>The cluster is shared.</strong> You don't run things directly: you ask SLURM for cores, memory and time, and it queues your job until they are free.</li>
+          <li><strong>Ask for what you need, not the most you can get.</strong> A job that goes over its memory or time is killed, and what you reserve but don't use is blocked for everyone else.</li>
+          <li><strong>Measure on a small run first</strong>, then scale up from the real numbers.</li>
+          <li><strong>Split the work into independent pieces</strong> (one per seed or replicate), one core each. That scales almost linearly.</li>
+          <li><strong>Give jobs names that say what they are</strong>, so the queue tells you the story.</li>
+          <li class="warn"><strong>An agent will fill the node if you let it.</strong> It works toward its target, not toward your colleagues, so write the limits down.</li>
+        </ul>
+      </section>
+
+      <!-- 5. SLURM: the limits we set -->
+      <section>
+        <h2><span class="num">01</span>The limits we gave the agent</h2>
+        <table class="layers limits">
+          <tbody>
+            <tr><td>Jobs at once</td><td>At most 6; drop to 3 if colleagues' jobs are waiting. One in, one out: a new job only after a finished one has been read and recorded.</td></tr>
+            <tr><td>Memory</td><td>Start at 32 GB. If a job runs out of memory, retry at 64 GB, then 96 GB. Never more: record it and move on.</td></tr>
+            <tr><td>Time</td><td>Measured time plus a margin, set per run type once the first jobs showed the real times.</td></tr>
+            <tr><td>Stuck jobs</td><td>No progress for twice the expected time, or queued for over 6 h: cancel it, record it, resubmit once.</td></tr>
+            <tr><td>Disk</td><td>Check free space before each batch; stop submitting below a set threshold.</td></tr>
+            <tr><td>Deadline</td><td>No new submissions after Monday 06:00, so everything finishes before people need the node.</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Written in the plan file the agent rereads at every wake-up. Anything outside it goes to a FLAGS file for the human.</p>
+      </section>
+
+      <!-- 5. Restartability -->
+      <section>
+        <h2><span class="num">02</span>Restartability</h2>
+        <p class="lead">A run takes hours. When something fails near the end, you want to
+          <strong>restart from the last good point</strong>, not from scratch.</p>
+        <div class="stages">
+          <div class="stage">
+            <b>1 · Build inputs</b>
+            <span class="lbl">Saved</span>each pipeline step's result, then the finished input folder
+            <span class="lbl">If it fails</span>only the broken step reruns
+          </div>
+          <div class="stage">
+            <b>2 · Simulate</b>
+            <span class="lbl">Saved</span>one output folder per replicate
+            <span class="lbl">If it fails</span>rerun only the missing replicates; add more later
+          </div>
+          <div class="stage">
+            <b>3 · Check</b>
+            <span class="lbl">Saved</span>a pass/fail line in the status log
+            <span class="lbl">How</span>from the outputs (last record written), not the exit code
+          </div>
+          <div class="stage">
+            <b>4 · Report</b>
+            <span class="lbl">Saved</span>summary tables, before any plotting
+            <span class="lbl">If it fails</span>a plot error costs minutes, not the 2.5 h run
+          </div>
+        </div>
+        <ul class="points">
+          <li><strong>Each step leaves a "done" marker.</strong> Resubmit the same job and it skips straight to the step that failed.</li>
+          <li><strong>Never overwrite earlier results</strong>: additions go next to them.</li>
+          <li class="warn"><strong>Never edit a script while a job is running it</strong>: R and bash read it as they go.</li>
+        </ul>
+      </section>
+
+      <!-- 6. Supervision: closing the laptop -->
+      <section>
+        <h2><span class="num">03</span>Supervision: closing the laptop</h2>
+        <p class="lead">Claude in Positron's panel stops when the laptop closes.
+          Claude in <code>tmux</code> <strong>on the server</strong> keeps going.</p>
+        <div class="steps">
+          <div class="step"><span class="n">1</span><code>ssh sequoia</code><span>Log in to the server. Everything from here runs there, not on your laptop.</span></div>
+          <div class="step"><span class="n">2</span><code>tmux new -s calib</code><span>Open a terminal that lives on the server and keeps running after you disconnect.</span></div>
+          <div class="step"><span class="n">3</span><code>cd ~/project<br>claude</code><span>Start Claude in the project. <strong>Auto mode</strong> (<code>"defaultMode": "auto"</code> in <code>.claude/settings.local.json</code>) means it doesn't stop to ask while you're away. The rules in the same file limit what it can touch (section 04).</span></div>
+          <div class="step"><span class="n">4</span><code>/loop Read the plan,<br>then follow it ...</code><span>Give it a task to repeat on its own. It wakes up every 20–60 min to check on the jobs.</span></div>
+          <div class="step"><span class="n">5</span><code>Ctrl-b, then d</code><span>Detach: tmux keeps running. Close the laptop.</span></div>
+          <div class="step"><span class="n">6</span><code>tmux attach -t calib</code><span>Come back any time: the session is as you left it, and you can type to it.</span></div>
+        </div>
+        <p class="note">On sequoia, <code>claude</code> comes with Positron's extension:
+          <code>~/.positron-server/extensions/anthropic.claude-code-*/resources/native-binary/claude</code></p>
+      </section>
+
+      <!-- 7. Supervision: how it keeps checking -->
+      <section>
+        <h2><span class="num">03</span>Supervision: while you're away</h2>
+        <p class="lead">At every wake-up, Claude:</p>
+        <ol class="cycle">
+          <li><strong>Rereads the plan</strong>: targets, limits, what needs you.</li>
+          <li><strong>Checks the queue</strong>: which jobs finished, failed or are still running.</li>
+          <li><strong>Reads finished results</strong> and writes them in the journal.</li>
+          <li><strong>Decides</strong>: submit the next run within the limits, or flag it for you.</li>
+          <li><strong>Picks the next wake-up</strong> and goes idle. Waiting uses no usage.</li>
+        </ol>
+        <div class="cols">
+          <div class="col good">
+            <h3>Hit the session usage limit?</h3>
+            The jobs keep running. Claude waits in the open session and <strong>continues on its own when the limit resets</strong>.
+            <span class="small">Claude Code v2.1.234+ with a claude.ai plan; sequoia has 2.1.300.</span>
+          </div>
+          <div class="col bad">
+            <h3>Where it stops</h3>
+            A weekly limit (resets days away) or a third hit in a row: it waits for you.
+            A <code>/loop</code> also expires after 7 days.
+            <span class="small">Don't open the same conversation elsewhere with <code>--resume</code>: two copies act on it.</span>
+          </div>
+        </div>
+        <p class="note">You read the journal: newest first, every decision with its numbers and job ids, a status summary every few hours.</p>
+      </section>
+
+      <!-- 8. Guardrails: layers -->
+      <section>
+        <h2><span class="num">04</span>Guardrails: layers</h2>
+        <table class="layers">
+          <thead><tr><th>Layer</th><th>Example</th><th>Gap</th></tr></thead>
+          <tbody>
+            <tr><td>The written plan</td><td>"At most 6 jobs." "Anything outside these rules goes to <code>FLAGS.md</code>, not into action."</td><td>Relies on the agent following it</td></tr>
+            <tr><td>Permission rules</td><td>In <code>.claude/settings.local.json</code>: may write the journal, may not write the data folders (next slide)</td><td>Command rules match the start of the text: <code>/usr/bin/git push</code> slips past</td></tr>
+            <tr><td>Hook</td><td>A script run before every command: <code>git commit</code> / <code>push</code> only if the current branch is <code>calib_autopilot</code></td><td>Only as good as its pattern (slide after next)</td></tr>
+            <tr><td>GitHub</td><td>Branch protection on <code>main</code>: changes only through a pull request you review</td><td>None: holds however git is called</td></tr>
+            <tr><td>Filesystem</td><td>Raw data folder read-only for the account Claude runs as (<code>chmod -R a-w data/raw</code>)</td><td>Blocks you too, until you undo it</td></tr>
+            <tr><td>Deletions</td><td>A cleanup script: its dry run lists what would go (140 old folders, 21 GB); only <code>--delete</code> removes them</td><td>You review the list before it runs</td></tr>
+          </tbody>
+        </table>
+        <p class="note">The Bash sandbox (bubblewrap) would confine writes and network, but isn't installed on sequoia.</p>
+      </section>
+
+      <!-- Guardrails: the permission rules, by what they govern -->
+      <section>
+        <h2><span class="num">04</span>Permission rules: the DISPLACE example</h2>
+        <div class="perm">
+          <div class="pcol">
+            <h3>Read</h3>
+            <p class="y">the project folder (where Claude starts)</p>
+            <p class="y">the data tree on the share<br><code>additionalDirectories</code></p>
+            <p class="y">the model's source <code>~/displaceR</code></p>
+            <p class="x">other folders: not granted (but a shell command like <code>cat</code> can still read them)</p>
+          </div>
+          <div class="pcol">
+            <h3>Write</h3>
+            <p class="y">the plan, the journal, <code>params.csv</code></p>
+            <p class="y">pipeline code <code>r/**</code></p>
+            <p class="x">its own rules: <code>RUNBOOK.md</code>, <code>AUTOPILOT.md</code></p>
+            <p class="x">run scripts, <code>renv.lock</code>, the model source</p>
+            <p class="x">every data folder on the share: raw, inputs, outputs, results</p>
+          </div>
+          <div class="pcol">
+            <h3>Run</h3>
+            <p class="y"><code>squeue</code>, <code>sacct</code>, <code>sinfo</code>, <code>Rscript</code></p>
+            <p class="y"><code>sbatch --job-name=calib_*</code></p>
+            <p class="y"><code>git commit</code>, <code>git push origin calib_autopilot</code></p>
+            <p class="x"><code>git checkout</code>, <code>reset</code>, <code>push --force</code>, push to <code>main</code></p>
+            <p class="x"><code>rm -rf</code>, <code>pkill</code>, <code>sudo</code></p>
+          </div>
+        </div>
+        <ul class="points">
+          <li><strong>Deny beats allow</strong>, and a deny still blocks in auto mode.</li>
+          <li class="warn"><strong>The rules cover Claude, not the jobs it starts.</strong> Claude can't write to the output folders, but the SLURM jobs it submits do.</li>
+        </ul>
+      </section>
+
+      <!-- 9. Guardrails: test them -->
+      <section>
+        <h2><span class="num">04</span>Guardrails: test them</h2>
+        <p style="font-size:0.75em">Feed the hook sample commands before relying on it:</p>
+        <pre class="term"><code>echo '{"tool_input":{"command":"git push origin main"}}' | ./branch-guard.sh; echo $?</code></pre>
+        <div class="results">
+          <div><span>git commit -m "add seeds"</span><span class="ok">allowed</span></div>
+          <div><span>git push origin main</span><span class="no">blocked ✓</span></div>
+          <div><span>git commit -m "reset seeds"</span><span class="no">blocked ✗</span></div>
+          <div><span>git commit -m "fix main loop"</span><span class="no">blocked ✗</span></div>
+        </div>
+        <ul class="points" style="margin-top:0.6em">
+          <li>The pattern reads the commit message too: "reset" and "main" trip it.</li>
+          <li>It errs toward blocking, which is the right side, but test the harmless cases as well as the dangerous ones.</li>
+        </ul>
+      </section>
+
+      <!-- 10. Data on Nextcloud -->
+      <section>
+        <h2><span class="num">05</span>Data on Nextcloud</h2>
+        <p class="lead">On the server, the Nextcloud project folders <strong>are</strong> the storage.
+          There's no copy to keep in sync.</p>
+        <div class="cols">
+          <div class="col bad">
+            <h3>From a laptop</h3>
+            The Nextcloud app keeps a local copy. Files have to download before a run can read them, and results have to upload before anyone else sees them. That means gigabytes, and waiting.
+          </div>
+          <div class="col good">
+            <h3>From the server</h3>
+            Claude and the SLURM jobs read inputs and write results <strong>directly</strong> where Nextcloud keeps them. A result written at 3 am is in the shared folder at 3 am, and your laptop's Nextcloud app picks it up from there.
+          </div>
+        </div>
+        <ul class="points">
+          <li><strong>Point it there with instructions</strong>: the plan file says which folders to read from and write to.</li>
+          <li><strong>It's shared</strong>, so the guardrails matter: raw data protected, results never deleted, old versions kept next to corrected ones.</li>
+          <li class="warn"><strong>Network storage can stall</strong> for minutes. A slow <code>ls</code> isn't a failure.</li>
+        </ul>
+      </section>
+
+      <!-- 11. Takeaways -->
+      <section>
+        <h2>Takeaways: why, and what it takes</h2>
+        <div class="cols tk">
+          <div class="col good">
+            <h3>Advantages</h3>
+            <ul>
+              <li>Work goes on overnight and over the weekend, with nobody at the keyboard.</li>
+              <li>The cluster does the heavy lifting: six versions in parallel, not one at a time on a laptop.</li>
+              <li>Results land straight in the shared folder. No copying or syncing.</li>
+              <li>Every decision is written down with its numbers, so you can audit the run afterwards.</li>
+              <li>Each step is resumable, so a failure costs minutes, not the run.</li>
+            </ul>
+          </div>
+          <div class="col bad">
+            <h3>Safety concerns, and how we dealt with them</h3>
+            <ul>
+              <li><strong>It acts without asking.</strong> → Written limits, deny rules, a branch hook, GitHub protection.</li>
+              <li><strong>The node and storage are shared.</strong> → Job caps, backing off for colleagues, disk checks, a deadline.</li>
+              <li><strong>Some actions can't be undone.</strong> → No deleting; dry-run scripts a human approves.</li>
+              <li><strong>It chases the target.</strong> → Principles stated up front; anything else goes to a FLAGS file.</li>
+              <li><strong>The rules aren't airtight.</strong> → Several layers, each one tested.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Takeaways: what Claude managed on its own</h2>
+        <div class="cols tk">
+          <div class="col good">
+            <h3>Handled by itself</h3>
+            <ul>
+              <li>Ran the loop for days: submitted jobs, read results, chose the next version, recorded it.</li>
+              <li>Dozens of calibration versions, within the job and memory limits.</li>
+              <li>Recovered from failures: out-of-memory kills, missing packages.</li>
+              <li>Picked up after losing context by rereading the plan and the journal.</li>
+              <li>Kept the journal and the results table up to date for you to read.</li>
+            </ul>
+          </div>
+          <div class="col bad">
+            <h3>Still needed you</h3>
+            <ul>
+              <li>Setting the goal, the targets and the principles.</li>
+              <li>Decisions outside the rules (it flagged them and waited).</li>
+              <li>Checking explanations: several first explanations were corrected once checked against the data.</li>
+              <li>Deleting anything, and merging to the main branch.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Next: a skill -->
+      <section>
+        <h2>Next: one skill for all of this?</h2>
+        <p class="lead">A <strong>skill</strong> packages instructions and templates that Claude loads when the task matches.
+          Ask for "a long run on the cluster" and it brings these practices with it.</p>
+        <div class="cols tk">
+          <div class="col good">
+            <h3>What the skill would do</h3>
+            <ul>
+              <li>Ask the few things only you know: goal and targets, limits, deadline, which folders are off limits.</li>
+              <li>Write the plan, the journal and the permission rules from templates.</li>
+              <li>Build restartable job scripts with status lines and "done" markers.</li>
+              <li>Check the node and test its own guardrails before the first job.</li>
+              <li>Give you the exact <code>tmux</code> and <code>/loop</code> steps to start, leave and come back.</li>
+            </ul>
+          </div>
+          <div class="col">
+            <h3>What you'd still do</h3>
+            <ul>
+              <li>Answer its questions and review the plan.</li>
+              <li>Decide on what it flags.</li>
+              <li>Approve deletions and merges.</li>
+            </ul>
+            <h3 style="margin-top:0.7em">Worth it?</h3>
+            <ul>
+              <li>The raw material exists: the playbook was written to be generic, with 7 templates.</li>
+              <li>It pays off once several projects run long jobs on GRIT.</li>
+              <li>It needs upkeep as Claude Code and the cluster change.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="note">Playbook and templates: <code>agent_hpc_playbook/</code> on the
+          <code>calib_autopilot</code> branch of DISPLACE-westcoast-analysis</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({ hash: true });
+
+    // Reveal scales the 960x700 canvas to the window, but content taller
+    // than the canvas is clipped on every screen. Shrink such a slide's text
+    // (everything inside is sized in em) until it fits.
+    function fitSlide(slide) {
+      if (!slide) return;
+      var height = Reveal.getConfig().height;
+      var scale = 1;
+      slide.style.fontSize = '';
+      while (slide.scrollHeight > height && scale > 0.6) {
+        scale -= 0.04;
+        slide.style.fontSize = scale + 'em';
+      }
+      Reveal.layout();
+    }
+    function fitCurrent() { fitSlide(Reveal.getCurrentSlide()); }
+    Reveal.on('ready', function () { document.fonts.ready.then(fitCurrent); });
+    Reveal.on('slidechanged', fitCurrent);
+    Reveal.on('resize', fitCurrent);
+  </script>
+</body>
+</html>
