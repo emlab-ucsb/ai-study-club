@@ -24,5 +24,6 @@ The deck covers:
 7. **Next**: whether to turn all of this into a Claude skill.
 
 The source material, with templates (`job.sbatch`, `watch_job.sh`,
-`branch-guard.sh`, `settings.local.json`, ...), is `agent_hpc_playbook/` on the
-`calib_autopilot` branch of DISPLACE-westcoast-analysis.
+`branch-guard.sh`, `settings.local.json`, ...), is
+[agent_hpc_playbook/](agent_hpc_playbook/) in this folder (moved from the
+`calib_autopilot` branch of DISPLACE-westcoast-analysis on 2026-10-27).

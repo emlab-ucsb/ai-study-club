@@ -1,0 +1,53 @@
+{
+  "_comment": "Template .claude/settings.local.json for an agent working in one project folder on one branch. Adapt paths. Order: deny > ask > allow; first match wins; a deny in any settings file wins. Edit() rules also govern writes. Bash rules match command text by prefix: guard rails, not a boundary (see branch-guard.sh and GitHub branch protection).",
+  "permissions": {
+    "defaultMode": "auto",
+    "additionalDirectories": [
+      "//shared/project/data"
+    ],
+    "allow": [
+      "Edit(/analysis/agent/**)",
+      "Edit(/analysis/JOURNAL.md)",
+      "Edit(//shared/project/data/results/**)",
+      "Bash(sbatch *)",
+      "Bash(squeue *)",
+      "Bash(sacct *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push origin agent-branch)",
+      "Bash(git status *)",
+      "Bash(git log *)",
+      "Bash(git diff *)"
+    ],
+    "deny": [
+      "Edit(/analysis/RUNBOOK.md)",
+      "Edit(/pipeline/**)",
+      "Edit(//shared/project/data/raw/**)",
+      "Read(**/.env)",
+      "Bash(git checkout *)",
+      "Bash(git switch *)",
+      "Bash(git merge *)",
+      "Bash(git rebase *)",
+      "Bash(git reset *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push origin main*)",
+      "Bash(rm -rf *)",
+      "Bash(scancel *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/branch-guard.sh",
+            "onFailure": "block"
+          }
+        ]
+      }
+    ]
+  }
+}
